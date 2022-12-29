@@ -15,6 +15,7 @@ defmodule Smee.Metadata do
     :label,
     :entity_count,
     :uri,
+    :uri_hash,
     :file_uid,
     :valid_until
   ]
@@ -35,7 +36,7 @@ defmodule Smee.Metadata do
       downloaded_at: dlt,
       modified_at: Keyword.get(options, :modified_at, dlt),
       etag: Keyword.get(options, :etag, dhash),
-      label: Keyword.get(options, :label, nil)
+      label: Keyword.get(options, :label, nil),
     }
     |> extract_info()
     |> count_entities()
@@ -58,6 +59,8 @@ defmodule Smee.Metadata do
                 valid_until: ~x"string(/*/@validUntil)"s
               )
 
+    info = Map.merge(info, %{ uri_hash: Smee.Utils.sha1(info.uri) })
+
     Map.merge(metadata, info)
 
   end
@@ -76,6 +79,11 @@ defmodule Smee.Metadata do
     |> String.replace(~r{\A.*<xsplit/>}im, "<xsplit/>", global: false)
     |> String.splitter("<xsplit/>", trim: true)
     |> Enum.slice(1..-1)
+  end
+
+  def entities(metadata) do
+    split(metadata)
+    |> Enum.map(fn xml -> Smee.Entity.new(xml, metadata)  end)
   end
 
   def list_entities(metadata) do
