@@ -11,7 +11,7 @@ defmodule Smee.Metadata do
     :data,
     :url_hash,
     :data_hash,
-    :http_etag,
+    :etag,
     :label,
     :entity_count,
     :uri,
@@ -21,13 +21,21 @@ defmodule Smee.Metadata do
 
   def new(data, type, options \\ []) do
 
+    url = Keyword.get(options, :url, :nil)
+    dlt = DateTime.utc_now()
+    dhash = Smee.Utils.sha1(data)
+
     %Metadata{
-      url: "",
+      url: url,
       data: data,
       size: byte_size(data),
-      data_hash: Smee.Utils.sha1(data),
-      #url_hash: Smee.Utils.sha1(url),
-      type: Keyword.get(options, :type, :aggregate)
+      data_hash: dhash,
+      url_hash: Smee.Utils.sha1(url),
+      type: Keyword.get(options, :type, :aggregate),
+      downloaded_at: dlt,
+      modified_at: Keyword.get(options, :modified_at, dlt),
+      etag: Keyword.get(options, :etag, dhash),
+      label: Keyword.get(options, :label, nil)
     }
     |> extract_info()
     |> count_entities()
