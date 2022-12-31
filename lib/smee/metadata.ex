@@ -17,7 +17,9 @@ defmodule Smee.Metadata do
     :uri,
     :uri_hash,
     :file_uid,
-    :valid_until
+    :valid_until,
+    :cert_file,
+    :verified
   ]
 
   def new(data, type, options \\ []) do
@@ -37,6 +39,8 @@ defmodule Smee.Metadata do
       modified_at: Keyword.get(options, :modified_at, dlt),
       etag: Keyword.get(options, :etag, dhash),
       label: Keyword.get(options, :label, nil),
+      cert_file:  Keyword.get(options, :cert_file, nil),
+      verified: false
     }
     |> extract_info()
     |> count_entities()

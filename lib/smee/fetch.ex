@@ -13,7 +13,7 @@ defmodule Smee.Fetch do
       retry_delay: &retry_jitter/1
     )
 
-    Smee.Metadata.new(response.body, source.type, url: source.url)
+    Smee.Metadata.new(response.body, source.type, url: source.url, cert_file: source.cert_file)
 
   end
 
