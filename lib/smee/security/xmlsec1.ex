@@ -25,7 +25,7 @@ defmodule Smee.Security.Xmlsec1 do
   end
 
   def cert_file(metadata) do
-    cert_file = metadata.cert_file || Smee.Resources.default_cert_file()
+    metadata.cert_file || Smee.Resources.default_cert_file()
   end
 
   defp build_command(metadata) do

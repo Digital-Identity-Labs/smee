@@ -35,8 +35,6 @@ defmodule Smee.Entity do
 
   end
 
-
-
   defp extract_info(entity) do
 
     import SweetXml
