@@ -5,7 +5,7 @@ defmodule Smee.Resources do
   end
   
   def default_cert_file do
-    Application.get_env(:smee, default_cert_file, nil)
+    Application.get_env(:smee, :default_cert_file, nil)
   end
 
 end
