@@ -6,10 +6,8 @@ defmodule Smee.Security.Xmlsectool do
 
     Temp.track!
 
-    {:ok, xml_file} = Temp.path "smeevd"
+    {:ok, xml_file} = Temp.path "smeevf"
     :ok = File.write(xml_file, metadata.data)
-
-    IO.puts xml_file
 
     command = build_command(metadata, xml_file)
 

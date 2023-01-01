@@ -1,11 +1,36 @@
 defmodule Smee.Security do
 
-  def verify(metadata) do
-
-  end
+  alias Smee.Metadata
 
   def verify!(metadata) do
+    apply(selected_backend(metadata), :verify!, [metadata])
+  end
 
+  def verify(metadata) do
+    try do
+      {:ok, verify!(metadata)}
+    rescue
+      e -> {:error, e.message}
+    end
+  end
+
+  def verify?(%Metadata{verified: true}), do: true
+
+  def verify?(metadata) do
+    try do
+      %Metadata{verified: value} = verify!(metadata)
+      value
+    rescue
+      e -> false
+    end
+  end
+
+#  def expired?(metadata) do
+#
+#  end
+  
+  defp selected_backend(metadata) do
+    Application.get_env(:smee, :verifier, Smee.Security.Xmlsec1)
   end
 
 end
