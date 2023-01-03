@@ -9,7 +9,8 @@ defmodule Smee.Source do
     cert_file: nil,
     cache: true,
     redirects: 3,
-    retries: 5
+    retries: 5,
+    label: nil
   ]
 
   def new(url, options \\ []) do
@@ -18,7 +19,8 @@ defmodule Smee.Source do
       type: Keyword.get(options, :type, :aggregate),
       auth: Keyword.get(options, :auth, nil),
       cache: Keyword.get(options, :cache, true),
-      cert_file: Keyword.get(options, :cert_file, nil)
+      cert_file: Keyword.get(options, :cert_file, nil),
+      label: Keyword.get(options, :label, nil)
     }
   end
 
