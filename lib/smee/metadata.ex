@@ -25,7 +25,7 @@ defmodule Smee.Metadata do
   def new(data, type, options \\ []) do
 
     url = Keyword.get(options, :url, :nil)
-    dlt = DateTime.utc_now()
+    dlt = Keyword.get(options, :downloaded_at, DateTime.utc_now())
     dhash = Smee.Utils.sha1(data)
 
     %Metadata{
@@ -39,7 +39,7 @@ defmodule Smee.Metadata do
       modified_at: Keyword.get(options, :modified_at, dlt),
       etag: Keyword.get(options, :etag, dhash),
       label: Keyword.get(options, :label, nil),
-      cert_file:  Keyword.get(options, :cert_file, nil),
+      cert_file: Keyword.get(options, :cert_file, nil),
       verified: false
     }
     |> extract_info()
@@ -63,7 +63,7 @@ defmodule Smee.Metadata do
                 valid_until: ~x"string(/*/@validUntil)"s
               )
 
-    info = Map.merge(info, %{ uri_hash: Smee.Utils.sha1(info.uri) })
+    info = Map.merge(info, %{uri_hash: Smee.Utils.sha1(info.uri), valid_until: tweak_valid_until(info.valid_until)})
 
     Map.merge(metadata, info)
 
@@ -102,6 +102,19 @@ defmodule Smee.Metadata do
     xml_fragment
     |> xpath(~x"string(/*/@entityID)"s)
 
+  end
+
+  defp tweak_valid_until("") do
+    nil
+  end
+
+  defp tweak_valid_until(nil) do
+    nil
+  end
+
+  defp tweak_valid_until(date) when is_binary(date) and byte_size(date) > 1 do
+    {:ok, dt, 0} = DateTime.from_iso8601(date)
+    dt
   end
 
 end
