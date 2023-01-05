@@ -5,10 +5,11 @@ md = Smee.Fetch.remote(src)
 
 Benchee.run(
   %{
-    "xmlsec1" => fn -> Smee.Security.Xmlsec1.verify!(md) end,
-    "xmlsectool" => fn -> Smee.Security.Xmlsectool.verify!(md) end
+ #   "xmlsec1" => fn -> Smee.Security.Xmlsec1.verify!(md) end,
+ #   "xmlsectool" => fn -> Smee.Security.Xmlsectool.verify!(md) end,
+    "mdqt" => fn -> Smee.Security.Mdqt.verify!(md) end
   },
-  time: 30,
+  time: 320,
   memory_time: 1,
   parallel: 2
 )
