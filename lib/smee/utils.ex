@@ -39,4 +39,34 @@ defmodule Smee.Utils do
     end
   end
 
+  def normalize_url(url, options) when is_nil(url) or url == "" do
+    nil
+  end
+
+  def normalize_url(url = %URI{}) do
+    URI.to_string(url)
+  end
+
+  def normalize_url(url) do
+    uri = URI.parse(url)
+    cond do
+      uri.scheme == nil -> URI.to_string(Map.merge(uri, %{scheme: "file"}))
+      String.starts_with?(uri.scheme, "http") -> URI.to_string(uri)
+      String.starts_with?(uri.scheme, "file") -> URI.to_string(uri)
+      true -> uri
+    end
+  end
+
+  def file_url?(nil) do
+    false
+  end
+
+  def file_url?("") do
+    false
+  end
+
+  def file_url?(url) when is_binary(url) do
+    String.starts_with?(url, "file")
+  end
+
 end

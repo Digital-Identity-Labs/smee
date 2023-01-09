@@ -6,7 +6,8 @@ defmodule Smee.Source do
     url: nil,
     type: :aggregate,
     auth: nil,
-    cert_file: nil,
+    cert_url: nil,
+    cert_fingerprint: nil,
     cache: true,
     redirects: 3,
     retries: 5,
@@ -15,18 +16,19 @@ defmodule Smee.Source do
 
   def new(url, options \\ []) do
     %Source{
-      url: url,
+      url: Utils.normalize_url(url),
       type: Keyword.get(options, :type, :aggregate),
       auth: Keyword.get(options, :auth, nil),
       cache: Keyword.get(options, :cache, true),
-      cert_file: Keyword.get(options, :cert_file, nil),
+      cert_url: Utils.normalize_url(Keyword.get(options, :cert_url, nil)),
+      cert_fingerprint: Keyword.get(options, :cert_fingerprint, nil),
       label: Keyword.get(options, :label, nil)
     }
   end
 
   def validate(source) do
     cond do
-      source.cert_file && !File.exists?(source.cert_file) ->
+      source.cert_url && String.starts_with(source.cert_url, "file") && !File.exists?(source.cert_file) ->
         {:error, "Certificate file #{source.cert_file} cannot be found!"}
       true ->
         {:ok, source}
@@ -40,5 +42,7 @@ defmodule Smee.Source do
       {:error, msg} -> raise "Invalid source configuration: #{msg}"
     end
   end
+
+
 
 end
