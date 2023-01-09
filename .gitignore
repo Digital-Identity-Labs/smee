@@ -12,3 +12,4 @@ smee-*.tar
 /tmp/
 /*.xml*
 *.pem
+*.cer
