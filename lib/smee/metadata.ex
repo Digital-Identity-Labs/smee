@@ -1,6 +1,8 @@
 defmodule Smee.Metadata do
 
   alias __MODULE__
+  alias Smee.Utils
+
 
   defstruct [
     :downloaded_at,
@@ -18,28 +20,28 @@ defmodule Smee.Metadata do
     :uri_hash,
     :file_uid,
     :valid_until,
-    :cert_file,
+    :cert_url,
     :verified
   ]
 
   def new(data, type, options \\ []) do
 
-    url = Keyword.get(options, :url, :nil)
+    url = Keyword.get(options, :url, nil)
     dlt = Keyword.get(options, :downloaded_at, DateTime.utc_now())
     dhash = Smee.Utils.sha1(data)
 
     %Metadata{
-      url: url,
+      url: Utils.normalize_url(url),
       data: data,
       size: byte_size(data),
       data_hash: dhash,
-      url_hash: Smee.Utils.sha1(url),
+      url_hash: if(url, do: Smee.Utils.sha1(url), else: nil),
       type: Keyword.get(options, :type, :aggregate),
       downloaded_at: dlt,
       modified_at: Keyword.get(options, :modified_at, dlt),
       etag: Keyword.get(options, :etag, dhash),
       label: Keyword.get(options, :label, nil),
-      cert_file: Keyword.get(options, :cert_file, nil),
+      cert_url:  Utils.normalize_url(Keyword.get(options, :cert_url, nil)),
       verified: false
     }
     |> extract_info()
