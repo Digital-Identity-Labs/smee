@@ -1,7 +1,8 @@
 defmodule Smee.Utils do
 
   def sha1(data) do
-    :crypto.hash(:sha, data) |> Base.encode16(case: :lower)
+    :crypto.hash(:sha, data)
+    |> Base.encode16(case: :lower)
   end
 
   ## Based on code from https://github.com/wojtekmach/req by https://github.com/wojtekmach under Apache 2.0 license
@@ -20,9 +21,9 @@ defmodule Smee.Utils do
     "Dec" => "12"
   }
 
-  def parse_http_datetime(""),  do: nil
+  def parse_http_datetime(""), do: nil
 
-  def parse_http_datetime(nil),  do: nil
+  def parse_http_datetime(nil), do: nil
 
   def parse_http_datetime(list) when is_list(list), do: parse_http_datetime(List.first(list))
 
@@ -39,7 +40,11 @@ defmodule Smee.Utils do
     end
   end
 
-  def normalize_url(url, options) when is_nil(url) or url == "" do
+  def normalize_url(url) when is_nil(url) or url == "" do
+    nil
+  end
+
+  def normalize_url(url) when is_nil(url) or url == "" do
     nil
   end
 
@@ -67,6 +72,23 @@ defmodule Smee.Utils do
 
   def file_url?(url) when is_binary(url) do
     String.starts_with?(url, "file")
+  end
+
+  def local_cert?(%{cert_url: url} = source_or_metadata) do
+    file_url?(url)
+  end
+
+  def local?(%{url: url} = source_or_metadata) do
+    file_url?(url)
+  end
+
+  def file_url_to_path(url) do
+    if file_url?(url), do: URI.parse(url).path, else: raise "Not a file:/ URL!"
+  end
+
+  def file_url_to_path(url, base_path) do
+    reqpath = Path.absname(file_url_to_path(url))
+    if String.starts_with?(reqpath, base_path), do: reqpath, else: raise "Illegal path outside base directory!"
   end
 
 end
