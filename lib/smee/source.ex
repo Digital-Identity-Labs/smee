@@ -2,6 +2,10 @@ defmodule Smee.Source do
 
   alias __MODULE__
 
+  alias Smee.Utils
+
+  @source_types [:aggregate, :file, :mdq]
+
   defstruct [
     url: nil,
     type: :aggregate,
@@ -24,25 +28,32 @@ defmodule Smee.Source do
       cert_fingerprint: Keyword.get(options, :cert_fingerprint, nil),
       label: Keyword.get(options, :label, nil)
     }
+    |> fix_type()
   end
 
-  def validate(source) do
+  def check(source, options \\ []) do
     cond do
-      source.cert_url && String.starts_with(source.cert_url, "file") && !File.exists?(source.cert_file) ->
-        {:error, "Certificate file #{source.cert_file} cannot be found!"}
+      !Enum.member?(@source_types, source.type) ->
+        {:error, "Source type #{source.type} is unknown!"}
+      Utils.local?(source) && !File.exists?(Utils.file_url_to_path(source.url)) ->
+        {:error, "Metadata file #{Utils.file_url_to_path(source.url)} cannot be found!"}
+      Utils.local_cert?(source) && !File.exists?(Utils.file_url_to_path(source.cert_url)) ->
+        {:error, "Certificate file #{Utils.file_url_to_path(source.cert_url)} cannot be found!"}
       true ->
         {:ok, source}
     end
 
   end
 
-  def validate!(source) do
-    case validate(source) do
+  def check!(source, options \\ []) do
+    case check(source, options) do
       {:ok, source} -> source
       {:error, msg} -> raise "Invalid source configuration: #{msg}"
     end
   end
 
-
+  defp fix_type(source) do
+    source
+  end
 
 end
