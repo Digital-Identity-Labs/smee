@@ -21,6 +21,7 @@ defmodule Smee.Metadata do
     :file_uid,
     :valid_until,
     :cert_url,
+    :cert_fingerprint,
     :verified
   ]
 
@@ -42,6 +43,7 @@ defmodule Smee.Metadata do
       etag: Keyword.get(options, :etag, dhash),
       label: Keyword.get(options, :label, nil),
       cert_url:  Utils.normalize_url(Keyword.get(options, :cert_url, nil)),
+      cert_fingerprint:  Keyword.get(options, :cert_fingerprint, nil),
       verified: false
     }
     |> extract_info()

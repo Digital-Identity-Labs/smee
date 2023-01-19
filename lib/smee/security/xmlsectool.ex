@@ -1,5 +1,7 @@
 defmodule Smee.Security.Xmlsectool do
 
+  alias Smee.Certificate
+
   @base_command ~w(xmlsectool --verifySignature )
 
   def verify!(metadata) do
@@ -9,7 +11,9 @@ defmodule Smee.Security.Xmlsectool do
     {:ok, xml_file} = Temp.path "smeevf"
     :ok = File.write(xml_file, metadata.data)
 
-    command = build_command(metadata, xml_file)
+    cert_file = Certificate.prepare_file!(metadata)
+
+    command = build_command(xml_file, cert_file)
 
     try do
 
@@ -39,10 +43,10 @@ defmodule Smee.Security.Xmlsectool do
     metadata.cert_file || Smee.Resources.default_cert_file()
   end
 
-  defp build_command(metadata, xml_file) do
+  defp build_command(xml_file, cert_file) do
     @base_command ++ [
       "--certificate",
-      cert_file(metadata),
+      cert_file,
       "--inFile",
       xml_file
     ]
