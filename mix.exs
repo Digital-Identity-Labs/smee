@@ -23,11 +23,9 @@ defmodule Smxt.MixProject do
     [
       {:req, "~> 0.3.3"},
       {:sweet_xml, "~> 0.7.3"},
-
-      {:sign_xml, "~> 1.0"},
-      #   {:esaml, "~> 4.4"},
       {:exile, "~> 0.1.0"},
       {:temp, "~> 0.4.7"},
+      {:easy_ssl, "~> 1.3"},
 
       {:apex, "~> 1.2", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.5.0", only: [:dev, :test], runtime: false},
