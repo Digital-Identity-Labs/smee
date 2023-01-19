@@ -91,4 +91,8 @@ defmodule Smee.Utils do
     if String.starts_with?(reqpath, base_path), do: reqpath, else: raise "Illegal path outside base directory!"
   end
 
+  def http_agent_name do
+    "Smee #{Application.spec(:smee, :vsn)}"
+  end
+
 end
