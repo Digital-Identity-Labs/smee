@@ -2,11 +2,9 @@ defmodule Smee.Security.Xmlsec1 do
 
   alias Smee.Certificate
 
-  @base_command ~w(xmlsec1 verify --enabled-key-data rsa --id-attr:ID urn:oasis:names:tc:SAML:2.0:metadata:EntitiesDescriptor)
+  @base_command ~w(verify --enabled-key-data rsa --id-attr:ID urn:oasis:names:tc:SAML:2.0:metadata:EntitiesDescriptor)
 
   def verify!(metadata) do
-
-    {:ok, xml_stream} = StringIO.open(metadata.data)
 
     cert_file = Certificate.prepare_file!(metadata)
 
@@ -14,23 +12,15 @@ defmodule Smee.Security.Xmlsec1 do
 
     try do
 
-      Exile.stream!(
-        command,
-        input: IO.binstream(xml_stream, 65536),
-        use_stderr: true
-      )
-      |> Enum.to_list()
-
-      Map.merge(metadata, %{verified: true})
-
+      case Rambo.run("xmlsec1", command, in: metadata.data) do
+        {:ok, %Rambo{status: 0, out: out}} -> Map.merge(metadata, %{verified: true})
+        {:error, %Rambo{status: status, err: err}} -> raise parse_error(status, err)
+        _ -> {:error, "Unknown XSLT parser error has occurred"}
+      end
     rescue
-      e -> raise "Verification of signed XML has failed! Command was: #{debug_command(command)}"
+      e -> raise "Verification of signed XML has failed! Command was: #{debug_command(command)} #{e.message}"
     end
 
-  end
-
-  def cert_file(metadata) do
-    metadata.cert_file || Smee.Resources.default_cert_file()
   end
 
   defp build_command(metadata, cert_file) do
@@ -43,6 +33,15 @@ defmodule Smee.Security.Xmlsec1 do
 
   defp debug_command(command) do
     Enum.join(command, " ")
+  end
+
+  defp parse_error(status, err) do
+    type = case status do
+      1 -> "Verification failed"
+      _ -> "Unknown error"
+    end
+
+    "#{type}: #{err}"
   end
 
 end

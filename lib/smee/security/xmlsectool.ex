@@ -2,14 +2,15 @@ defmodule Smee.Security.Xmlsectool do
 
   alias Smee.Certificate
 
-  @base_command ~w(xmlsectool --verifySignature )
+  @base_command ~w(--verifySignature )
 
   def verify!(metadata) do
 
-    Temp.track!
+    {:ok, xml_file} = Briefly.create()
 
-    {:ok, xml_file} = Temp.path "smeevf"
-    :ok = File.write(xml_file, metadata.data)
+    {:ok, fh} = File.open(xml_file, [:write, :utf8])
+    IO.write(fh, metadata.data)
+    File.close(fh)
 
     cert_file = Certificate.prepare_file!(metadata)
 
@@ -17,24 +18,14 @@ defmodule Smee.Security.Xmlsectool do
 
     try do
 
-      if Exile.stream!(
-           command,
-           use_stderr: true
-         )
-         |> Enum.to_list()
-         |> Keyword.get_values(:stdout)
-         |> Enum.join(" ")
-         |> String.contains?("XML document signature verified") do
-        Map.merge(metadata, %{verified: true})
-      else
-        raise "Verification of signed XML has failed!"
+      case Rambo.run("xmlsectool", command) do
+        {:ok, %Rambo{status: 0, out: out}} -> Map.merge(metadata, %{verified: true})
+        {:error, %Rambo{status: status, err: err}} -> raise parse_error(status, err)
+        _ -> {:error, "Unknown XSLT parser error has occurred"}
       end
 
     rescue
       e -> raise "Verification of signed XML has failed! Command was: #{debug_command(command)}"
-    after
-      :ok = File.rm!(xml_file)
-      Temp.cleanup
     end
 
   end
@@ -54,6 +45,16 @@ defmodule Smee.Security.Xmlsectool do
 
   defp debug_command(command) do
     Enum.join(command, " ")
+  end
+
+
+  defp parse_error(status, err) do
+    type = case status do
+      1 -> "Verification failed"
+      _ -> "Unknown error"
+    end
+
+    "#{type}: #{err}"
   end
 
 end
