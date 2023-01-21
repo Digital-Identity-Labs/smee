@@ -22,7 +22,8 @@ defmodule Smee.Metadata do
     :valid_until,
     :cert_url,
     :cert_fingerprint,
-    :verified
+    :verified,
+    changes: 0
   ]
 
   def new(data, type, options \\ []) do
@@ -49,6 +50,11 @@ defmodule Smee.Metadata do
     |> extract_info()
     |> count_entities()
 
+  end
+
+  def update(md, xml) do
+    changes = md.changes + 1
+    Map.merge(md, %{data: xml, changes: changes})
   end
 
   defp extract_info(metadata) do

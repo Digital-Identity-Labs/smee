@@ -94,5 +94,4 @@ defmodule Smee.Utils do
   def http_agent_name do
     "Smee #{Application.spec(:smee, :vsn)}"
   end
-
 end

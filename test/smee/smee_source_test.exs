@@ -113,9 +113,6 @@ defmodule SmeeSourceTest do
 
   end
 
-
-
-
   describe "check!/2" do
 
     test "returns the source struct when no errors are found" do

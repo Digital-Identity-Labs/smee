@@ -44,7 +44,6 @@ defmodule Smee.Security.Mdqt do
     Enum.join(command, " ")
   end
 
-
   defp parse_error(status, err) do
     type = case status do
       1 -> "Verification failed"
