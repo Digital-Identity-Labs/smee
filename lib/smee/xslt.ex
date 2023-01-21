@@ -11,9 +11,9 @@ defmodule Smee.XSLT do
 
     {:ok, template_file} = Briefly.create()
 
-    {:ok, file} = File.open(template_file, [:write, :utf8])
-    IO.write(file, template)
-    File.close(file)
+    {:ok, fh} = File.open(template_file, [:write, :utf8])
+    IO.write(fh, template)
+    File.close(fh)
 
     command = build_command(template_file, params)
 
