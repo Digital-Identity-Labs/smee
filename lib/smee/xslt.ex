@@ -3,7 +3,7 @@ defmodule Smee.XSLT do
   alias Smee.Metadata
 
 
-  @base_command ~w(xsltproc --nowrite --verbose)
+  @base_command ~w(--nowrite)
 
   def transform(xml, template, params \\ [], options \\ []) do
 
@@ -19,24 +19,14 @@ defmodule Smee.XSLT do
 
     try do
 
-      out_stream = ExCmd.stream!(
-        command,
-        input: IO.binstream(xml_stream, 65536),
-        log: false
-      )
-
-      out = out_stream
-            |> Enum.to_list()
-            |> Apex.ap()
-            |> Enum.join("")
-
-
-
-      {:ok, out}
+      case Rambo.run("xsltproc", command, in: xml) do
+      {:ok, %Rambo{status: 0, out: out}} -> {:ok, out}
+      {:error, %Rambo{status: status, err: err}} -> {:error, parse_error(status, err)}
+        _ -> {:error, "Unknown XSLT parser error has occurred"}
+      end
 
     rescue
-      e -> msg = parse_exception(e)
-           {:error, msg}
+      e -> msg = {:error, "Unknown XSLT exception has occurred #{e.message}"}
     end
 
   end
@@ -66,25 +56,23 @@ defmodule Smee.XSLT do
     Enum.join(command, " ")
   end
 
-  defp parse_exception(e) do
-    #    case e.message do
-    #      "command exited with status: {:exit, 1}" -> "No argument"
-    #      "command exited with status: {:exit, 2}" -> "Too many parameters"
-    #      "command exited with status: {:exit, 3}" -> "Unknown option"
-    #      "command exited with status: {:exit, 4}" -> "Failed to parse the stylesheet"
-    #      "command exited with status: {:exit, 5}" -> "Error in the stylesheet"
-    #      "command exited with status: {:exit, 6}" -> "Error in one of the documents"
-    #      "command exited with status: {:exit, 7}" -> "Unsupported xsl:output method"
-    #      "command exited with status: {:exit, 8}" -> "String parameter contains both quote and double-quotes"
-    #      "command exited with status: {:exit, 9}" -> "Internal Processing error"
-    #      "Failed to read from the external process. errno: 9" -> "Internal Processing error"
-    #      "command exited with status: {:exit, 10}" -> "Processing was stopped by a terminating message"
-    #      "command exited with status: {:exit, 11}" -> "Could not write the result to the output file"
-    #      _ -> "Uknown error"
-    #    end
+  defp parse_error(status, err) do
+    type = case status do
+      1 -> "No argument"
+      2 -> "Too many parameters"
+      3 -> "Unknown option"
+      4 -> "Failed to parse the stylesheet"
+      5 -> "Error in the stylesheet"
+      6 -> "Error in one of the documents"
+      7 -> "Unsupported xsl:output method"
+      8 -> "String parameter contains both quote and double-quotes"
+      9 -> "Internal Processing error"
+      10 -> "Processing was stopped by a terminating message"
+      11 -> "Could not write the result to the output file"
+      _ -> "Unknown error"
+    end
 
-    Apex.ap e
-    "ehat?"
+    "#{type}: #{err}"
 
   end
 
