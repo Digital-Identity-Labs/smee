@@ -3,10 +3,10 @@ defmodule Smee.Transform do
   alias Smee.XSLT
   alias Smee.Metadata
 
-  @valid_until_t File.read! "priv/xslt_templates/valid_until.xs"
+  @valid_until_t File.read! "priv/xslt/valid_until.xsl"
 
-  def transform(md, template, params \\ []) do
-    case XSLT.transform(md.data, template, params) do
+  def transform(md, stylesheet, params \\ []) do
+    case XSLT.transform(md.data, stylesheet, params) do
       {:ok, xml} -> {:ok, Metadata.update(md, xml)}
       {:error, msg} -> {:error, msg}
     end

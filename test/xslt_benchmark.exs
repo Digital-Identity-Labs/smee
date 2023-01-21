@@ -2,7 +2,7 @@
 
 data_small = File.read!("test/support/static/indiid.xml")
 data_big = File.read!("test/support/static/aggregate.xml")
-template = File.read!("test/support/static/valid_until.xs")
+template = File.read!("test/support/static/valid_until.xsl")
 
 Benchee.run(
   %{

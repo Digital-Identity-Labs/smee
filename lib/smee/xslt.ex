@@ -5,17 +5,17 @@ defmodule Smee.XSLT do
 
   @base_command ~w(--nowrite)
 
-  def transform(xml, template, params \\ [], options \\ []) do
+  def transform(xml, stylesheet, params \\ [], options \\ []) do
 
     {:ok, xml_stream} = StringIO.open(xml)
 
-    {:ok, template_file} = Briefly.create()
+    {:ok, stylesheet_file} = Briefly.create()
 
-    {:ok, fh} = File.open(template_file, [:write, :utf8])
-    IO.write(fh, template)
+    {:ok, fh} = File.open(stylesheet_file, [:write, :utf8])
+    IO.write(fh, stylesheet)
     File.close(fh)
 
-    command = build_command(template_file, params)
+    command = build_command(stylesheet_file, params)
 
     try do
 
@@ -31,15 +31,15 @@ defmodule Smee.XSLT do
 
   end
 
-  def transform!(xml, template, params \\ [], options \\ []) do
-    case transform(xml, template, params, options) do
+  def transform!(xml, stylesheet, params \\ [], options \\ []) do
+    case transform(xml, stylesheet, params, options) do
       {:ok, data} -> data
       {:error, msg} -> raise msg
     end
   end
 
-  defp build_command(template_file, params) do
-    @base_command ++ format_params(params) ++ [template_file] ++ ["-"]
+  defp build_command(stylesheet_file, params) do
+    @base_command ++ format_params(params) ++ [stylesheet_file] ++ ["-"]
   end
 
   defp format_params([])  do
