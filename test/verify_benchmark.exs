@@ -9,6 +9,7 @@ Benchee.run(
   %{
     "xmlsec1_big" => fn -> Smee.Security.Xmlsec1.verify!(big_md) end,
      "xmlsectool_big" => fn -> Smee.Security.Xmlsectool.verify!(big_md) end,
+     "mdqt_big" => fn -> Smee.Security.Mdqt.verify!(big_md) end,
 #    "xmlsec1_small" => fn -> Smee.Security.Xmlsec1.verify!(small_md) end,
 #    "xmlsectool_small" => fn -> Smee.Security.Xmlsectool.verify!(small_md) end,
   },
