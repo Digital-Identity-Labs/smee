@@ -66,16 +66,22 @@ defmodule Smee.Certificate do
 
   defp  ensure_local_cert("http" <> _ = url) do
     hashname = Utils.sha1(url) <> ".pem"
-    if File.exists?(hashname) do
-      {:ok, hashname}
+    cert_file = Path.join(dynamic_cert_dir, hashname)
+
+    if File.exists?(cert_file) do
+      {:ok, cert_file}
     else
       try do
         pem_data = download(url)
-        :ok = File.write!(hashname, pem_data)
+
+        {:ok, fh} = File.open(cert_file, [:write, :utf8])
+        IO.write(fh, pem_data)
+        File.close(fh)
+
       rescue
         e -> {:error, "File #{url} cannot be downloaded!"}
       end
-      {:ok, hashname}
+      {:ok, cert_file}
     end
   end
 
@@ -133,6 +139,15 @@ defmodule Smee.Certificate do
     fingerprint
     |> String.trim()
     |> String.upcase()
+  end
+
+  def dynamic_cert_dir do
+
+    case Application.get_env(:smee, :cert_dir) do
+      {:ok, dir} -> dir
+      _ -> Briefly.create(directory: true)
+    end
+
   end
 
 end
