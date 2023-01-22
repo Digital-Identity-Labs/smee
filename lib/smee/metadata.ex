@@ -54,7 +54,7 @@ defmodule Smee.Metadata do
 
   def update(md, xml) do
     changes = md.changes + 1
-    Map.merge(md, %{data: xml, changes: changes})
+    Map.merge(md, %{data: xml, changes: changes, data_hash: Utils.sha1(xml), size: byte_size(xml)})
   end
 
   defp extract_info(metadata) do
