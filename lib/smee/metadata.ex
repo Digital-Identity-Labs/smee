@@ -3,6 +3,7 @@ defmodule Smee.Metadata do
   alias __MODULE__
   alias Smee.Utils
 
+  @metadata_types [:aggregate, :single]
 
   defstruct [
     :downloaded_at,
@@ -43,10 +44,11 @@ defmodule Smee.Metadata do
       modified_at: Keyword.get(options, :modified_at, dlt),
       etag: Keyword.get(options, :etag, dhash),
       label: Keyword.get(options, :label, nil),
-      cert_url:  Utils.normalize_url(Keyword.get(options, :cert_url, nil)),
-      cert_fingerprint:  Keyword.get(options, :cert_fingerprint, nil),
+      cert_url: Utils.normalize_url(Keyword.get(options, :cert_url, nil)),
+      cert_fingerprint: Keyword.get(options, :cert_fingerprint, nil),
       verified: false
     }
+    |> fix_type()
     |> extract_info()
     |> count_entities()
 
@@ -57,7 +59,7 @@ defmodule Smee.Metadata do
     Map.merge(md, %{data: xml, changes: changes, data_hash: Utils.sha1(xml), size: byte_size(xml)})
   end
 
-  defp extract_info(metadata) do
+  defp extract_info(%{type: :aggregate} = metadata) do
 
     import SweetXml
 
@@ -79,6 +81,24 @@ defmodule Smee.Metadata do
 
   end
 
+  defp extract_info(%{type: :single} = metadata) do
+
+    import SweetXml
+
+    info = metadata.data
+           |> xmap(
+                uri: ~x"string(/*/@entityID)"s,
+                file_uid: ~x"string(/*/@ID)"s,
+                cache_duration: ~x"string(/*/@cacheDuration)"s,
+                valid_until: ~x"string(/*/@validUntil)"s
+              )
+
+    info = Map.merge(info, %{uri_hash: Smee.Utils.sha1(info.uri), valid_until: tweak_valid_until(info.valid_until)})
+
+    Map.merge(metadata, info)
+
+  end
+
   defp count_entities(metadata) do
     count = length(String.split(metadata.data, "entityID=\"")) - 1
 
@@ -86,7 +106,7 @@ defmodule Smee.Metadata do
 
   end
 
-  def split(metadata) do
+  def split(%{type: :aggregate} = metadata) do
     metadata.data
     |> String.replace(~r{<[md:]*EntityDescriptor}im, "<xsplit/>\\0")
     |> String.replace(~r{</[md:]*EntitiesDescriptor>}im, "")
@@ -95,14 +115,23 @@ defmodule Smee.Metadata do
     |> Enum.slice(1..-1)
   end
 
+  def split(%{type: :single} = metadata) do
+    [metadata.data
+    |> String.replace(~r{<[?]xml.*[?]>}im, "")]
+  end
+
   def entities(metadata) do
     split(metadata)
     |> Enum.map(fn xml -> Smee.Entity.new(xml, metadata)  end)
   end
 
+  ## THIS IS TOO SLOW, but might be memory efficient. Uodate: No, it's terrible at that too.
   def list_entities(metadata) do
     split(metadata)
     |> Enum.map(fn xml_fragment -> extract_id(xml_fragment) end)
+    #     import SweetXml
+    #     metadata.data
+    #     |> xpath(~x"EntityDescriptor/@entityID"sl)
   end
 
   defp extract_id(xml_fragment) do
@@ -125,6 +154,16 @@ defmodule Smee.Metadata do
   defp tweak_valid_until(date) when is_binary(date) and byte_size(date) > 1 do
     {:ok, dt, 0} = DateTime.from_iso8601(date)
     dt
+  end
+
+  defp fix_type(source) do
+    #    type = cond do
+    #      String.ends_with?(source, ["entities", "entities/"]) -> :mdq
+    #      String.starts_with?(source, ["file:"]) && !String.ends_with?(source, [".xml"]) -> :ld
+    #      true -> source.type
+    #    end
+    #    Map.merge(source, %{type: type})
+    source
   end
 
 end

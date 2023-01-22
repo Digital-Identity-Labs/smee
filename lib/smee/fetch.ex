@@ -17,7 +17,7 @@ defmodule Smee.Fetch do
 
     response = Req.get!(
       source.url,
-      headers: [{"accept", "application/samlmetadata+xml"}],
+      headers: [{"accept", "application/samlmetadata+xml"}, {"Accept-Charset", "utf-8"}],
       max_redirects: source.redirects,
       cache: source.cache,
       user_agent: Utils.http_agent_name,
@@ -30,6 +30,7 @@ defmodule Smee.Fetch do
       response.body,
       source.type,
       url: source.url,
+      type: source.type,
       cert_url: source.cert_url,
       cert_fingerprint: source.cert_fingerprint,
       modified_at: Smee.Utils.parse_http_datetime(Req.Response.get_header(response, "last-modified")),

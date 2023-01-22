@@ -13,3 +13,4 @@ smee-*.tar
 /*.xml*
 *.pem
 *.cer
+/test.exs

@@ -4,7 +4,7 @@ defmodule Smee.Source do
 
   alias Smee.Utils
 
-  @source_types [:aggregate, :file, :mdq]
+  @source_types [:aggregate, :single, :mdq, :ld]
 
   defstruct [
     url: nil,
@@ -29,6 +29,7 @@ defmodule Smee.Source do
       label: Keyword.get(options, :label, nil)
     }
     |> fix_type()
+    |> fix_url()
   end
 
   def check(source, options \\ []) do
@@ -53,7 +54,24 @@ defmodule Smee.Source do
   end
 
   defp fix_type(source) do
-    source
+    type = cond do
+      String.ends_with?(source.url, ["entities", "entities/"]) -> :mdq
+      String.starts_with?(source.url, ["file:"]) && !String.ends_with?(source.url, [".xml"]) -> :ld
+      true -> source.type
+    end
+    Map.merge(source, %{type: type})
+  end
+
+  defp fix_url(source) do
+    url = cond do
+      source.type == :mdq && String.ends_with?(source.url, ["entities", "entities/"]) -> source.url
+      source.type == :mdq -> source.url
+                             |> URI.parse()
+                             |> URI.merge("entities")
+                             |> URI.to_string()
+      true -> source.url
+    end
+    Map.merge(source, %{url: url})
   end
 
 end
