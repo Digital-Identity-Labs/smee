@@ -23,6 +23,11 @@ defmodule Smee.MDQ do
     |> URI.encode()
   end
 
+  def all(%{type: :mdq} = source) do
+    source = Map.merge(source, %{type: :aggregate})
+    Fetch.remote!(source)
+  end
+
   def lookup(%{type: :mdq} = source, id) do
     source = Map.merge(source, %{type: :single, url: url(source, id)})
     Fetch.remote!(source)
