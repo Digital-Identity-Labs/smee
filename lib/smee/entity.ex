@@ -22,7 +22,7 @@ defmodule Smee.Entity do
     dhash = Smee.Utils.sha1(data)
 
     %Entity{
-      data: data,
+      data: String.trim(data),
       downloaded_at: dlt,
       data_hash: dhash,
       modified_at: Keyword.get(options, :modified_at, dlt),
