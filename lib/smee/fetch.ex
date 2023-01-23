@@ -53,6 +53,7 @@ defmodule Smee.Fetch do
       data,
       source.type,
       url: source.url,
+      type: source.type,
       cert_url: source.cert_url,
       cert_fingerprint: source.cert_fingerprint,
       modified_at: DateTime.from_unix!(File.stat!(file_path, time: :posix).mtime),
