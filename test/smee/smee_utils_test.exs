@@ -93,8 +93,7 @@ defmodule SmeeUtilsTest do
     end
 
     test "return false when passed a Source or Metadata struct that does not contain a local metadata URL" do
-      refute Utils.local?(Smee.Source.new(nil))
-      refute Utils.local?(Smee.Source.new("http://example.com/remote.pem"))
+      refute Utils.local?(Smee.Source.new("http://example.com/metadata.xml"))
       refute Utils.local?(Smee.Metadata.new(@xml, :aggregate, url: nil))
       refute Utils.local?(Smee.Metadata.new(@xml, :aggregate, url: "http://example.com/remote.pem"))
     end

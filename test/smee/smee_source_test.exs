@@ -19,7 +19,7 @@ defmodule SmeeSourceTest do
 
     test "type option can set a specific type" do
       assert %Source{
-               url: "http://mdq.ukfederation.org.uk/",
+               type: :mdq,
              } = Source.new("http://mdq.ukfederation.org.uk/", type: :mdq)
     end
 
