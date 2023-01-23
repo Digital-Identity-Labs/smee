@@ -107,32 +107,21 @@ defmodule Smee.Metadata do
 
   end
 
-  def split(%{type: :aggregate} = metadata) do
-    metadata.data
-    |> String.replace(~r{<[md:]*EntityDescriptor}im, "<xsplit/>\\0")
-    |> String.replace(~r{</[md:]*EntitiesDescriptor>}im, "")
-    |> String.replace(~r{\A.*<xsplit/>}im, "<xsplit/>", global: false)
-    |> String.splitter("<xsplit/>", trim: true)
-    |> Enum.slice(1..-1)
-  end
-
-  def split(%{type: :single} = metadata) do
-    [
-      metadata.data
-      |> String.replace(~r{<[?]xml.*[?]>}im, "")
-    ]
-  end
-
   def entities(metadata) do
-    split(metadata)
-    |> Enum.map(fn xml -> Smee.Entity.new(xml, metadata)  end)
+    stream_entities(metadata)
+    |> Enum.to_list
   end
 
-  def list_entities(%{type: :single} = metadata) do
+  def stream_entities(metadata) do
+    split_to_stream(metadata)
+    |> Stream.map(fn xml -> Smee.Entity.new(xml, metadata)  end)
+  end
+
+  def list_ids(%{type: :single} = metadata) do
     extract_id(metadata.data)
   end
 
-  def list_entities(%{type: :aggregate} = metadata) do
+  def list_ids(%{type: :aggregate} = metadata) do
     if metadata.size > 100_000 do
       list_ids_ext(metadata)
     else
@@ -140,13 +129,25 @@ defmodule Smee.Metadata do
     end
   end
 
+  defp split_to_stream(%{type: :aggregate} = metadata) do
+    metadata.data
+    |> String.replace(~r{<[md:]*EntityDescriptor}im, "<xsplit/>\\0")
+    |> String.replace(~r{</[md:]*EntitiesDescriptor>}im, "")
+    |> String.replace(~r{\A.*<xsplit/>}im, "<xsplit/>", global: false)
+    |> String.splitter("<xsplit/>", trim: true)
+    |> Stream.drop(1)
+  end
+
+  defp split_to_stream(%{type: :single} = metadata) do
+    xml_without_xmlprefix = metadata.data
+                      |> String.replace(~r{<[?]xml.*[?]>}im, "")
+    Stream.concat([xml_without_xmlprefix])
+  end
+
   defp extract_id(xml_fragment) do
-
     import SweetXml
-
     xml_fragment
     |> xpath(~x"string(/*/@entityID)"s)
-
   end
 
   defp tweak_valid_until("") do
@@ -172,8 +173,9 @@ defmodule Smee.Metadata do
   end
 
   defp list_ids_int(metadata) do
-    split(metadata)
-    |> Enum.map(fn xml_fragment -> extract_id(xml_fragment) end)
+    split_to_stream(metadata)
+    |> Stream.map(fn xml_fragment -> extract_id(xml_fragment) end)
+    |> Enum.to_list
   end
 
   defp list_ids_ext(md)  do

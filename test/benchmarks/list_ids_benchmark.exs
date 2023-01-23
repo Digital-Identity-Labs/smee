@@ -6,9 +6,9 @@ big_md = Smee.Source.new("http://metadata.ukfederation.org.uk/ukfederation-metad
 
 Benchee.run(
   %{
-    "ids-ext_small" => fn -> Smee.Metadata.list_entities(small_md) end,
-    "ids-ext_mid" => fn -> Smee.Metadata.list_entities(mid_md) end,
-    "ids-ext_big" => fn -> Smee.Metadata.list_entities(big_md) end,
+    "ids-ext_small" => fn -> Smee.Metadata.list_ids(small_md) end,
+    "ids-ext_mid" => fn -> Smee.Metadata.list_ids(mid_md) end,
+    "ids-ext_big" => fn -> Smee.Metadata.list_ids(big_md) end,
   },
   time: 30,
   memory_time: 10,

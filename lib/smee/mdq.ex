@@ -13,7 +13,7 @@ defmodule Smee.MDQ do
   def list(%{type: :mdq} = source) do
     source
     |> Fetch.remote!()
-    |> Metadata.list_entities()
+    |> Metadata.list_ids()
   end
 
   def url(%{type: :mdq} = source, id) do
