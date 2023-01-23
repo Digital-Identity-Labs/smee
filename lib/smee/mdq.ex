@@ -30,7 +30,7 @@ defmodule Smee.MDQ do
 
   def transform_uri(uri_id) do
     "{sha1}" <> (uri_id
-                 |> String.strip
+                 |> String.trim
                  |> Utils.sha1)
   end
 
