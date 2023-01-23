@@ -132,8 +132,9 @@ defmodule Smee.Metadata do
   defp split_to_stream(%{type: :aggregate} = metadata) do
     metadata.data
     |> String.replace(~r{<[md:]*EntityDescriptor}im, "<xsplit/>\\0")
-    |> String.replace(~r{</[md:]*EntitiesDescriptor>}im, "")
-    |> String.replace(~r{\A.*<xsplit/>}im, "<xsplit/>", global: false)
+    |> String.replace_suffix("</md:EntitiesDescriptor>", "")
+    |> String.replace_suffix("</EntitiesDescriptor>", "")
+    |> String.trim()
     |> String.splitter("<xsplit/>", trim: true)
     |> Stream.drop(1)
   end
