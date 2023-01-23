@@ -2,6 +2,7 @@ defmodule Smee.Metadata do
 
   alias __MODULE__
   alias Smee.Utils
+  alias Smee.Extract
 
   @metadata_types [:aggregate, :single]
 
@@ -116,8 +117,10 @@ defmodule Smee.Metadata do
   end
 
   def split(%{type: :single} = metadata) do
-    [metadata.data
-    |> String.replace(~r{<[?]xml.*[?]>}im, "")]
+    [
+      metadata.data
+      |> String.replace(~r{<[?]xml.*[?]>}im, "")
+    ]
   end
 
   def entities(metadata) do
@@ -125,13 +128,16 @@ defmodule Smee.Metadata do
     |> Enum.map(fn xml -> Smee.Entity.new(xml, metadata)  end)
   end
 
-  ## THIS IS TOO SLOW, but might be memory efficient. Uodate: No, it's terrible at that too.
-  def list_entities(metadata) do
-    split(metadata)
-    |> Enum.map(fn xml_fragment -> extract_id(xml_fragment) end)
-    #     import SweetXml
-    #     metadata.data
-    #     |> xpath(~x"EntityDescriptor/@entityID"sl)
+  def list_entities(%{type: :single} = metadata) do
+    extract_id(metadata.data)
+  end
+
+  def list_entities(%{type: :aggregate} = metadata) do
+    if metadata.size > 100_000 do
+      list_ids_ext(metadata)
+    else
+      list_ids_int(metadata)
+    end
   end
 
   defp extract_id(xml_fragment) do
@@ -156,14 +162,22 @@ defmodule Smee.Metadata do
     dt
   end
 
-  defp fix_type(source) do
-    #    type = cond do
-    #      String.ends_with?(source, ["entities", "entities/"]) -> :mdq
-    #      String.starts_with?(source, ["file:"]) && !String.ends_with?(source, [".xml"]) -> :ld
-    #      true -> source.type
-    #    end
-    #    Map.merge(source, %{type: type})
-    source
+  defp fix_type(metadata) do
+    type = cond do
+      metadata.type == :mdq && metadata.entity_count > 1 -> :aggregate
+      metadata.type == :mdq && metadata.entity_count == 1 -> :single
+      true -> metadata.type
+    end
+    Map.merge(metadata, %{type: type})
+  end
+
+  defp list_ids_int(metadata) do
+    split(metadata)
+    |> Enum.map(fn xml_fragment -> extract_id(xml_fragment) end)
+  end
+
+  defp list_ids_ext(md)  do
+    Extract.list_ids(md)
   end
 
 end
