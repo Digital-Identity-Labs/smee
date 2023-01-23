@@ -6,7 +6,11 @@ defmodule Smee.Filter do
   def run!(stream) do
     
   end
-  
+
+  def xpath(enum, bool) do
+
+  end
+
   def idps(enum, bool) do
     
   end
