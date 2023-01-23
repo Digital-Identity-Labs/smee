@@ -7,7 +7,7 @@
 
     https://github.com/ukf/ukf-meta/blob/170af3942ceeb4a309a654ce2b80c962ddd44b7d/mdx/strip-comments.xsl
 
-    Apache License
+    Apache 2 License
 
 -->
 <xsl:stylesheet version="1.0"
