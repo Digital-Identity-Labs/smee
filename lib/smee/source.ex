@@ -64,10 +64,11 @@ defmodule Smee.Source do
 
   defp fix_url(source) do
     url = cond do
-      source.type == :mdq && String.ends_with?(source.url, ["entities", "entities/"]) -> source.url
+      source.type == :mdq && String.ends_with?(source.url, ["entities"]) -> source.url
+      source.type == :mdq && String.ends_with?(source.url, ["entities/"]) -> String.trim_trailing(source.url, "/")
       source.type == :mdq -> source.url
                              |> URI.parse()
-                             |> URI.merge("entities")
+                             |> URI.merge("entities") #BUG
                              |> URI.to_string()
       true -> source.url
     end
