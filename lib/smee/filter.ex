@@ -1,33 +1,36 @@
 defmodule Smee.Filter do
 
-  alias Smee.XSLT
-  alias Smee.Metadata
+  alias Smee.Entity
 
-  def run!(stream) do
-    
+  import SweetXml
+
+#  def xpath(enum, xpath, value) do
+#    enum |> Stream.filter(fn e -> xpath(e.xdoc, xpath) == value end)
+#  end
+
+  def uri(enum, uris, bool \\ true) when is_list(uris) do
+    enum |> Stream.filter(fn e -> (Enum.member?(uris, e.uri)) == bool end)
   end
 
-  def xpath(enum, bool) do
-
+  def uri(enum, uri, bool ) do
+    enum |> Stream.filter(fn e -> (e.uri == uri) == bool end)
   end
 
-  def idps(enum, bool) do
-    
+  def idp(enum, bool \\ true) do
+    enum |> Stream.filter(fn e -> Entity.idp?(e) == bool end)
   end
 
-  def sps(enum, bool) do
-
+  def sp(enum, bool \\ true) do
+    enum |> Stream.filter(fn e -> Entity.sp?(e) == bool end)
   end
 
-  def aas(enum, bool) do
-
+  def end_and_count(enum) do
+    Enum.count(enum)
   end
+  
+#  def aa(enum, bool) do
+#
+#  end
 
-  defp wrap_results(results) do
-    case results do
-      {:ok, data} -> data
-      {:error, msg} -> raise msg
-    end
-  end
 
 end
