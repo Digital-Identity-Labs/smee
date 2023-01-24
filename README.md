@@ -14,6 +14,10 @@ def deps do
   ]
 end
 ```
+* https://github.com/trscavo/saml-library/tree/master/lib
+* https://github.com/johnhamelink/xslt
+* https://swamid.se/swamid-metadata.git/tree/xslt
+* https://github.com/ukf/ukf-meta
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
