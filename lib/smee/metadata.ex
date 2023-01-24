@@ -174,9 +174,9 @@ defmodule Smee.Metadata do
   end
 
   defp list_ids_int(metadata) do
-    split_to_stream(metadata)
-    |> Stream.map(fn xml_fragment -> extract_id(xml_fragment) end)
-    |> Enum.to_list
+    stream_entities(metadata)
+    |> Stream.map(fn e -> e.uri end)
+    |> Stream.run
   end
 
   defp list_ids_ext(md)  do
