@@ -30,6 +30,7 @@ defmodule Smxt.MixProject do
       {:temp, "~> 0.4.7"},
       {:briefly, "~> 0.4.0"},
       {:easy_ssl, "~> 1.3"},
+      {:json, "~> 1.4"},
 
       {:apex, "~> 1.2", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.5.0", only: [:dev, :test], runtime: false},
