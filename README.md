@@ -29,3 +29,12 @@ be found at <https://hexdocs.pm/Smee>.
 
 ```
 
+## Extra things needed for mDeco use
+
+* Wrap metadata with namespace declarations
+* Normalise namespaces so they are consistent
+* Maaaaybeeee sign metadata
+* Purge all or some Entity Attributes
+* Insert new Entity Attributes
+* Join metadata fragments together
+
