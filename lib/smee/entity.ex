@@ -1,5 +1,7 @@
 defmodule Smee.Entity do
 
+  import SweetXml
+
   alias __MODULE__
 
   defstruct [
@@ -9,9 +11,11 @@ defmodule Smee.Entity do
     :modified_at,
     :uri,
     :data,
+    :xdoc,
     :data_hash,
     :valid_until,
     :label,
+    :size,
     changes: 0,
   ]
 
@@ -31,26 +35,45 @@ defmodule Smee.Entity do
       metadata_uri: metadata.uri,
       metadata_uri_hash: metadata.uri_hash,
     }
+    |> parse_data()
     |> extract_info()
 
   end
 
+  def update(entity, xml) do
+    changes = entity.changes + 1
+    Map.merge(entity, %{data: xml, changes: changes, data_hash: Utils.sha1(xml), size: byte_size(xml)})
+    |> parse_data()
+  end
+
+  def idp?(entity) do
+    case entity.xdoc
+         |> xpath(~x"//md:IDPSSODescriptor|IDPSSODescriptor"e) do
+      nil -> false
+      _ -> true
+    end
+  end
+
+  def sp?(entity) do
+    case entity.xdoc
+         |> xpath(~x"//md:SPSSODescriptor|SPSSODescriptor"e) do
+      nil -> false
+      _ -> true
+    end
+  end
+
+  defp parse_data(entity) do
+    xdoc = SweetXml.parse(entity.data, namespace_conformant: false)
+    Map.merge(entity, %{xdoc: xdoc})
+  end
+
   defp extract_info(entity) do
 
-    import SweetXml
-
-    snippet = case Regex.run(~r/<[md:]*EntityDescriptor.*?>/s, entity.data) do
-      [capture] -> capture
-      nil -> raise "Can't extract EntityDescriptor! Data was: #{String.slice(entity.data, 0..100)}[...]"
-    end
-
-    info = Regex.replace(~r/>$/, snippet, "\/>")
-           |> xmap(
-                uri: ~x"string(/*/@entityID)"s,
-                id: ~x"string(/*/@ID)"s,
-              )
-
-    #
+    info = entity.xdoc
+    |> xmap(
+         uri: ~x"string(/*/@entityID)"s,
+         id: ~x"string(/*/@ID)"s,
+       )
 
     Map.merge(entity, info)
 
