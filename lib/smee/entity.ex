@@ -43,6 +43,11 @@ defmodule Smee.Entity do
 
   end
 
+  def update(entity) do
+    entity = decompress(entity)
+    update(entity, entity.data)
+  end
+
   def update(entity, xml) do
     changes = entity.changes + 1
     Map.merge(entity, %{data: xml, changes: changes, data_hash: Utils.sha1(xml), size: byte_size(xml), compressed: false})
