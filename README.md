@@ -14,6 +14,10 @@ def deps do
   ]
 end
 ```
+
+* https://shibboleth.atlassian.net/wiki/spaces/IDP4/pages/2986475557/MetadataDrivenConfigurationExamples
+* https://shibboleth.atlassian.net/wiki/spaces/IDP4/pages/1265631679/MetadataDrivenConfiguration
+
 * https://github.com/trscavo/saml-library/tree/master/lib
 * https://github.com/johnhamelink/xslt
 * https://swamid.se/swamid-metadata.git/tree/xslt
