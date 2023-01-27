@@ -131,17 +131,33 @@ defmodule Smee.Metadata do
 
   defp split_to_stream(%{type: :aggregate} = metadata) do
     metadata.data
-    |> String.replace(~r{<[md:]*EntityDescriptor}im, "<xsplit/>\\0")
-    |> String.replace_suffix("</md:EntitiesDescriptor>", "")
-    |> String.replace_suffix("</EntitiesDescriptor>", "")
-    |> String.trim()
-    |> String.splitter("<xsplit/>", trim: true)
-    |> Stream.drop(1)
+    |> String.splitter("EntityDescriptor>", trim: true)
+    |> Stream.map(
+         fn xf ->
+           xf <> "EntityDescriptor>"
+           |> String.trim()
+         end
+       )
+    |> Stream.with_index()
+    |> Stream.map(fn {fx, n} -> strip_leading(fx, n) end)
+    |> Stream.reject(fn xf -> String.starts_with?(xf, ["</EntitiesDescriptor>", "</md:EntitiesDescriptor>"]) end)
+    #  |> Stream.drop(1)
+  end
+
+  defp strip_leading(fx, 0) do
+    fx
+    |> String.split(~r{(<[md:]*EntityDescriptor)}, include_captures: true)
+    |> Enum.drop(1)
+    |> Enum.join()
+  end
+
+  defp strip_leading(fx, n) do
+    fx
   end
 
   defp split_to_stream(%{type: :single} = metadata) do
     xml_without_xmlprefix = metadata.data
-                      |> String.replace(~r{<[?]xml.*[?]>}im, "")
+                            |> String.replace(~r{<[?]xml.*[?]>}im, "")
     Stream.concat([xml_without_xmlprefix])
   end
 
