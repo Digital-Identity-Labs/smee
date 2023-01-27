@@ -20,11 +20,15 @@ defmodule Smee.Extract do
     end
   end
 
-  def list_entity_attrs(md)  do
+  def list_entity_attrs(%Metadata{} = md)  do
     case XSLT.transform(md.data, @list_entity_attrs_s, []) do
       {:ok, txt} -> build_ea_tree(txt)
       {:error, msg} -> %{}
     end
+  end
+
+  def list_entity_attrs(md)  do
+   raise "Only works with Metadata structs!"
   end
 
   defp wrap_results(results) do
