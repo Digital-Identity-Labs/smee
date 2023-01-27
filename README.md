@@ -15,6 +15,10 @@ def deps do
 end
 ```
 
+* https://shibboleth.atlassian.net/wiki/spaces/SC/pages/1912406916/OAuthRPMetadataProfile
+* https://shibboleth.atlassian.net/wiki/spaces/SC/pages/1836417024/ADFSMetadataProfile
+* https://shibboleth.atlassian.net/wiki/spaces/SC/pages/1879344655/CASMetadataProfile
+
 * https://shibboleth.atlassian.net/wiki/spaces/IDP4/pages/2986475557/MetadataDrivenConfigurationExamples
 * https://shibboleth.atlassian.net/wiki/spaces/IDP4/pages/1265631679/MetadataDrivenConfiguration
 
