@@ -3,13 +3,25 @@ defmodule Smee.Lint do
   alias Smee.Metadata
   alias Smee.Resources
 
-  @base_command ~w(--format )
+  @base_command ~w(--nonet)
 
   def validate(xml, options \\ []) do
+    lint(xml, :validate, options)
+  end
+
+  def tidy(xml, options \\ []) do
+    lint(xml, :tidy, options)
+  end
+
+  def well_formed(xml, options \\ []) do
+    lint(xml, :well_formed, options)
+  end
+
+  defp lint(xml, mode \\ :tidy, options \\ []) do
 
     {:ok, xml_stream} = StringIO.open(xml)
 
-    command = build_command(options)
+    command = build_command(mode, options)
 
     IO.puts debug_command(command)
 
@@ -27,8 +39,16 @@ defmodule Smee.Lint do
 
   end
 
-  defp build_command(options) do
+  defp build_command(:validate, options) do
     @base_command ++ schema(options) ++ format_options(options) ++ ["-"]
+  end
+
+  defp build_command(:well_formed, options) do
+    @base_command ++ ["-"]
+  end
+
+  defp build_command(:tidy, options) do
+    @base_command ++ ["--format", "--nsclean"] ++ format_options(options) ++ ["-"]
   end
 
   defp schema(options) do

@@ -14,3 +14,5 @@ smee-*.tar
 *.pem
 *.cer
 /test.exs
+/dev2.xsl
+/dev.xsl
