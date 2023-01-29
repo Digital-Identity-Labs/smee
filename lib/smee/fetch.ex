@@ -28,7 +28,7 @@ defmodule Smee.Fetch do
 
     Smee.Metadata.new(
       response.body,
-      source.type,
+      type: source.type,
       url: source.url,
       type: source.type,
       cert_url: source.cert_url,
@@ -51,7 +51,7 @@ defmodule Smee.Fetch do
 
     Smee.Metadata.new(
       data,
-      source.type,
+      type: source.type,
       url: source.url,
       type: source.type,
       cert_url: source.cert_url,
