@@ -23,10 +23,11 @@ defmodule Smee.Metadata do
     :uri_hash,
     :file_uid,
     :valid_until,
-     :cache_duration,
+    :cache_duration,
     :cert_url,
     :cert_fingerprint,
     :verified,
+    compressed: false,
     changes: 0
   ]
 
@@ -87,11 +88,47 @@ defmodule Smee.Metadata do
 
   end
 
+  def update(metadata) do
+    entity = decompress(metadata)
+    update(metadata, metadata.data)
+  end
 
+  def update(metadata, xml) do
+    changes = metadata.changes + 1
+    Map.merge(
+      metadata,
+      %{data: xml, changes: changes, data_hash: Utils.sha1(xml), size: byte_size(xml), compressed: false}
+    )
+  end
 
-  def update(md, xml) do
-    changes = md.changes + 1
-    Map.merge(md, %{data: xml, changes: changes, data_hash: Utils.sha1(xml), size: byte_size(xml)})
+  def compressed?(metadata) do
+    metadata.compressed || false
+  end
+
+  def compress(%{compressed: true} = metadata) do
+    metadata
+  end
+
+  def compress(metadata) do
+    metadata
+    |> Map.merge(%{data: :zlib.gzip(metadata.data), compressed: true})
+  end
+
+  def decompress(%{compressed: false} = metadata) do
+    metadata
+  end
+
+  def decompress(metadata) do
+    metadata
+    |> Map.merge(%{data: :zlib.gunzip(metadata.data), compressed: false})
+  end
+
+  def xml(%{compressed: true} = metadata) do
+    decompress(metadata).data
+  end
+
+  def xml(metadata) do
+    metadata.data
   end
 
   defp extract_info(%{type: :aggregate} = metadata) do
