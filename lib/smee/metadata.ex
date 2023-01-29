@@ -10,6 +10,7 @@ defmodule Smee.Metadata do
     :downloaded_at,
     :modified_at,
     :url,
+    :id,
     :type,
     :size,
     :data,
@@ -22,13 +23,44 @@ defmodule Smee.Metadata do
     :uri_hash,
     :file_uid,
     :valid_until,
+     :cache_duration,
     :cert_url,
     :cert_fingerprint,
     :verified,
     changes: 0
   ]
 
-  def new(data, type, options \\ []) do
+  def new(%Stream{} = stream, options \\ []) do
+
+    url = Keyword.get(options, :url, nil)
+    dlt = DateTime.utc_now()
+
+    data = Smee.Publish.to_xml(stream)
+    hash = Smee.Utils.sha1(data)
+
+    %Metadata{
+      url: Utils.normalize_url(url),
+      uri: Keyword.get(options, :uri, nil),
+      id: Keyword.get(options, :id, nil),
+      cache_duration: nil,
+      valid_until: Keyword.get(options, :valid_until, nil),
+      data: data,
+      url_hash: if(url, do: Smee.Utils.sha1(url), else: nil),
+      type: :aggregate,
+      downloaded_at: dlt,
+      data_hash: hash,
+      size: byte_size(data),
+      etag: hash,
+      modified_at: Keyword.get(options, :modified_at, dlt),
+      label: Keyword.get(options, :label, nil),
+      cert_url: Utils.normalize_url(Keyword.get(options, :cert_url, nil)),
+      cert_fingerprint: Keyword.get(options, :cert_fingerprint, nil),
+      verified: false
+    }
+    |> count_entities()
+  end
+
+  def new(data, options) when is_binary(data) do
 
     url = Keyword.get(options, :url, nil)
     dlt = Keyword.get(options, :downloaded_at, DateTime.utc_now())
@@ -54,6 +86,8 @@ defmodule Smee.Metadata do
     |> count_entities()
 
   end
+
+
 
   def update(md, xml) do
     changes = md.changes + 1
