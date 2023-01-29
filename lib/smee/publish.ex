@@ -136,7 +136,7 @@ defmodule Smee.Publish do
     replacement_top = """
     <?xml version="1.0" encoding="UTF-8"?>
     <EntityDescriptor
-    #{xml_namespace_declarations}"
+    #{xml_namespace_declarations}
         ID="#{id}" cacheDuration="P0Y0M0DT6H0M0.000S"
         entityID="#{entity.uri}" validUntil="#{DateTime.to_iso8601(entity.valid_until)}">
     """
