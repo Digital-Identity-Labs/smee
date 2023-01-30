@@ -19,8 +19,6 @@ defmodule Smee.Lint do
 
   defp lint(xml, mode \\ :tidy, options \\ []) do
 
-    {:ok, xml_stream} = StringIO.open(xml)
-
     command = build_command(mode, options)
 
     IO.puts debug_command(command)
@@ -28,6 +26,7 @@ defmodule Smee.Lint do
     try do
 
       case Rambo.run("xmllint", command, in: xml) do
+        {:ok, %Rambo{status: 0, out: ""}} -> {:ok, xml}
         {:ok, %Rambo{status: 0, out: out}} -> {:ok, out}
         {:error, %Rambo{status: status, err: err}} -> {:error, parse_error(status, err)}
         _ -> {:error, "Unknown XML linter error has occurred"}
@@ -40,11 +39,11 @@ defmodule Smee.Lint do
   end
 
   defp build_command(:validate, options) do
-    @base_command ++ schema(options) ++ format_options(options) ++ ["-"]
+    @base_command ++ schema(options) ++ format_options(options) ++ ["--noout", "-"]
   end
 
   defp build_command(:well_formed, options) do
-    @base_command ++ ["-"]
+    @base_command ++ ["--noout", "-"]
   end
 
   defp build_command(:tidy, options) do
@@ -52,7 +51,7 @@ defmodule Smee.Lint do
   end
 
   defp schema(options) do
-  ["--schema", Resources.saml_metadata_xml_schema_file()]
+    ["--schema", Resources.saml_metadata_xml_schema_file()]
   end
 
   defp format_options([])  do
@@ -60,9 +59,6 @@ defmodule Smee.Lint do
   end
 
   defp format_options(options) do
-#    params
-#    |> Enum.map(fn {k, v} -> ["--stringparam", "#{k}", "#{v}"] end)
-#    |> List.flatten
     []
   end
 
