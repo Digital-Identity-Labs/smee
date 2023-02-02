@@ -29,6 +29,12 @@ defmodule Smee.Publish do
     aggregate_stream(entities, options)
   end
 
+  def to_xml_stream_size(entities, options) do
+    to_xml_stream(entities, options)
+    |> Stream.map(fn x -> byte_size(x) end)
+    |> Enum.reduce(0, fn x, acc -> x + acc end)
+  end
+  
   def to_xml(entities, options \\ []) do
     to_xml_stream(entities, options)
     |> Enum.join("\n")
@@ -47,7 +53,7 @@ defmodule Smee.Publish do
     footer_stream = [aggregate_footer(options)]
 
     estream = entities
-              |> Stream.map(fn e -> e.data end)
+              |> Stream.map(fn e -> Entity.xml(e) end)
 
     Stream.concat([header_stream, estream, footer_stream])
   end
