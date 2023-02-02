@@ -21,8 +21,6 @@ defmodule Smee.Lint do
 
     command = build_command(mode, options)
 
-    IO.puts debug_command(command)
-
     try do
 
       case Rambo.run("xmllint", command, in: xml) do
@@ -86,35 +84,3 @@ defmodule Smee.Lint do
 
   end
 end
-
-0
-
-
-1
-
-
-2
-
-
-3
-
-
-4
-
-
-5
-
-
-6
-
-
-7
-
-
-8
-
-
-9
-
-
-10
