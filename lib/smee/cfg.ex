@@ -15,6 +15,8 @@ defmodule Smee.Cfg do
     shibmd: "urn:mace:shibboleth:metadata:1.0",
     ukfedlabel: "http://ukfederation.org.uk/2006/11/label",
     xenc: "http://www.w3.org/2001/04/xmlenc#",
+    remd: "http://refeds.org/metadata"
+    #      xsi="http://www.w3.org/2001/XMLSchema-instance"
   }
 
   @risky_eas ~w(
