@@ -105,11 +105,26 @@ defmodule Smee.Entity do
   end
 
   def xml(%{compressed: true} = entity) do
-   decompress(entity).data
+    decompress(entity).data
   end
 
   def xml(entity) do
     entity.data
+  end
+
+  def filename(entity) do
+    filename(entity, :sha1)
+  end
+
+  def filename(entity, :sha1) do
+    "#{entity.uri_hash}.xml"
+  end
+
+  def filename(entity, :uri) do
+    name = entity.uri
+           |> String.replace(["://", ":", ".", "/"], "_")
+           |> String.trim_trailing("_")
+    "#{name}.xml"
   end
 
   defp parse_data(%{compressed: true} = entity) do

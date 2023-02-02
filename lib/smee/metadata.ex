@@ -200,6 +200,45 @@ defmodule Smee.Metadata do
     end
   end
 
+  def filename(%{uri: uri} = metadata) when  not is_nil(uri) do
+    filename(metadata, :sha1)
+  end
+
+  def filename(%{url: url} = metadata) when not is_nil(url) do
+    filename(metadata, :url)
+  end
+
+  def filename(metadata) do
+    raise "No Name/URI or download URI to identify and name the metadata!"
+  end
+
+  def filename(metadata, :sha1) do
+    "#{metadata.uri_hash}.xml"
+  end
+
+  def filename(%{uri: nil} = metadata, :uri) do
+    raise "No URI/name in metadata to base file name on!"
+  end
+
+  def filename(metadata, :uri) do
+    name = metadata.uri
+           |> String.replace(["://", ":", ".", "/"], "_")
+           |> String.trim_trailing("_")
+    "#{name}.xml"
+  end
+
+  def filename(%{url: nil} = metadata, :url) do
+    raise "No download URL in metadata to base file name on!"
+  end
+
+  def filename(metadata, :url) do
+    name = metadata.url
+           |> String.replace(["://", ":", ".", "/"], "_")
+           |> String.trim_trailing("_")
+           |> String.trim_trailing("_xml")
+    "#{name}.xml"
+  end
+
   defp split_to_stream(%{type: :aggregate} = metadata) do
     metadata.data
     |> String.splitter("EntityDescriptor>", trim: true)
