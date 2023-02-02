@@ -33,6 +33,10 @@ defmodule Smee.MDQ do
     Fetch.remote!(source)
   end
 
+  def transform_uri("{sha1}" <> _ = uri_id) do
+    uri_id
+  end
+
   def transform_uri(uri_id) do
     "{sha1}" <> (uri_id
                  |> String.trim
