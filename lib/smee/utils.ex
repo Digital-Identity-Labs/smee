@@ -98,6 +98,7 @@ defmodule Smee.Utils do
   def xdoc_to_string(xdoc) do
     :xmerl.export([xdoc], XmerlXmlIndent)
     |> to_string()
+    |> String.replace("\t", "    ")
   end
 
 end
