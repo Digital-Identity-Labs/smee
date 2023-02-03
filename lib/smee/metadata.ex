@@ -3,6 +3,7 @@ defmodule Smee.Metadata do
   alias __MODULE__
   alias Smee.Utils
   alias Smee.Extract
+  alias Smee.Entity
 
   @metadata_types [:aggregate, :single]
 
