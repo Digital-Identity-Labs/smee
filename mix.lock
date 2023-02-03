@@ -51,5 +51,7 @@
   "telemetry": {:hex, :telemetry, "1.1.0", "a589817034a27eab11144ad24d5c0f9fab1f58173274b1e9bae7074af9cbee51", [:rebar3], [], "hexpm", "b727b2a1f75614774cff2d7565b64d0dfa5bd52ba517f16543e6fc7efcc0df48"},
   "temp": {:hex, :temp, "0.4.7", "2c78482cc2294020a4bc0c95950b907ff386523367d4e63308a252feffbea9f2", [:mix], [], "hexpm", "6af19e7d6a85a427478be1021574d1ae2a1e1b90882586f06bde76c63cd03e0d"},
   "unicode_util_compat": {:hex, :unicode_util_compat, "0.7.0", "bc84380c9ab48177092f43ac89e4dfa2c6d62b40b8bd132b1059ecc7232f9a78", [:rebar3], [], "hexpm", "25eee6d67df61960cf6a794239566599b09e17e668d3700247bc498638152521"},
+  "xmerl_xml_indent": {:hex, :xmerl_xml_indent, "0.1.0", "c66c2c4832a0432eb2f72edca0680306ed46bee06179ff90eb4c35ede9e6eb5d", [:mix], [], "hexpm", "bd691be047a49318672e6120b80b2041374519779d63a4663b46897bff225933"},
+  "xmlixer": {:hex, :xmlixer, "0.1.1", "235fab6f84bebca5641fa4a84c074867c95aa1875c296bb8e786668071c0598e", [:mix], [], "hexpm", "da876ca3fbcf40dd26838475eec267a872b1f9bfba5aa86e2779d10c16353b82"},
   "xslt": {:hex, :xslt, "0.1.1", "fe327c60f2dccac6a0842fbe4601f118fc85fbaeda4f0802609366c9ebc8478a", [:mix], [{:porcelain, "~> 2.0", [hex: :porcelain, repo: "hexpm", optional: false]}], "hexpm", "7a7dcaac65d6f29fd764ee7cd62bab281731172df7a42e78c942d950abee7c00"},
 }

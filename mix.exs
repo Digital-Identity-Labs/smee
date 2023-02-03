@@ -31,7 +31,9 @@ defmodule Smxt.MixProject do
       {:rambo, "~> 0.3.4"},
       {:briefly, "~> 0.4.0"},
       {:easy_ssl, "~> 1.3"},
-
+      {:xmerl_xml_indent, "~> 0.1.0"},
+      {:xmlixer, "~> 0.1.1"},
+    
       {:apex, "~> 1.2", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.5.0", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.13.0", only: :test},

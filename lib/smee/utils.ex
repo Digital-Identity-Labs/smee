@@ -94,4 +94,10 @@ defmodule Smee.Utils do
   def http_agent_name do
     "Smee #{Application.spec(:smee, :vsn)}"
   end
+
+  def xdoc_to_string(xdoc) do
+    :xmerl.export([xdoc], XmerlXmlIndent)
+    |> to_string()
+  end
+
 end
