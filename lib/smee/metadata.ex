@@ -171,12 +171,10 @@ defmodule Smee.Metadata do
 
   end
 
-  ## This could be improved I think
-  defp count_entities(metadata) do
+
+  def count_entities(metadata) do
     count = length(String.split(metadata.data, "entityID=\"")) - 1
-
     Map.merge(metadata, %{entity_count: count})
-
   end
 
   def entities(metadata) do
@@ -189,7 +187,7 @@ defmodule Smee.Metadata do
     |> Stream.map(fn xml -> Smee.Entity.new(xml, metadata)  end)
   end
 
-  def random_entity(%Metadata{entity_count: max } = metadata) do
+  def random_entity(%Metadata{entity_count: max} = metadata) do
     pos = :random.uniform(max)
     stream_entities(metadata)
     |> Stream.with_index()
