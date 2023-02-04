@@ -20,7 +20,11 @@ defmodule Smee.Entity do
     :size,
     compressed: false,
     changes: 0,
+    priority: 5,
+    trustiness: 0.5
   ]
+
+  ## Need another new that's more vanilla, based on options, like other
 
   def new(data, metadata, options \\ []) do
 
@@ -37,6 +41,8 @@ defmodule Smee.Entity do
       label: Keyword.get(options, :label, nil),
       metadata_uri: metadata.uri,
       metadata_uri_hash: metadata.uri_hash,
+      priority: metadata.priority,
+      trustiness: metadata.trustiness,
     }
     |> parse_data()
     |> extract_info()
@@ -125,6 +131,15 @@ defmodule Smee.Entity do
            |> String.replace(["://", ":", ".", "/"], "_")
            |> String.trim_trailing("_")
     "#{name}.xml"
+  end
+
+  def trustiness(entity) do
+    trustiness = entity.trustiness
+    cond do
+      is_nil(trustiness) -> 0.0
+      trustiness > 0.9 -> 0.9
+      trustiness == 0 -> 0.0
+    end
   end
 
   defp parse_data(%{compressed: true} = entity) do

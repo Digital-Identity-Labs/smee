@@ -24,9 +24,10 @@ defmodule Smee.Filter do
     enum |> Stream.filter(fn e -> Entity.sp?(e) == bool end)
   end
 
-  def end_and_count(enum) do
-    Enum.count(enum)
+  def trustiness(enum, trustiness \\ 0.7, bool \\ true) do
+    enum |> Stream.filter(fn e -> (Entity.trustiness(e) >= trustiness) == bool end)
   end
+
   
 #  def aa(enum, bool) do
 #

@@ -7,7 +7,7 @@ defmodule Smee.Fetch do
     local!(source, options)
   end
 
-  def fetch!(%{url: "http" <> _ } = source, options) do
+  def fetch!(%{url: "http" <> _} = source, options) do
     remote!(source, options)
   end
 
@@ -36,7 +36,9 @@ defmodule Smee.Fetch do
       modified_at: Smee.Utils.parse_http_datetime(Req.Response.get_header(response, "last-modified")),
       downloaded_at: Smee.Utils.parse_http_datetime(Req.Response.get_header(response, "date")),
       etag: extract_http_etag(response, source),
-      label: source.label
+      label: source.label,
+      priority: source.priority,
+      trustiness: source.trustiness
     )
 
   end
@@ -46,7 +48,7 @@ defmodule Smee.Fetch do
     if !Utils.file_url?(source.url), do: raise "Source URL #{source.url} is not a local file!"
 
     file_path = Utils.file_url_to_path(source.url)
-    
+
     data = File.read!(file_path)
 
     Smee.Metadata.new(
@@ -59,7 +61,9 @@ defmodule Smee.Fetch do
       modified_at: DateTime.from_unix!(File.stat!(file_path, time: :posix).mtime),
       downloaded_at: DateTime.utc_now(),
       etag: Utils.sha1(data),
-      label: source.label
+      label: source.label,
+      priority: source.priority,
+      trustiness: source.trustiness
     )
 
   end

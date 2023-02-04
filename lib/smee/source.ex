@@ -15,7 +15,9 @@ defmodule Smee.Source do
     cache: true,
     redirects: 3,
     retries: 5,
-    label: nil
+    label: nil,
+    priority: 5,
+    trustiness: 0.5
   ]
 
   def new(url, options \\ []) do
@@ -26,7 +28,9 @@ defmodule Smee.Source do
       cache: Keyword.get(options, :cache, true),
       cert_url: Utils.normalize_url(Keyword.get(options, :cert_url, nil)),
       cert_fingerprint: Keyword.get(options, :cert_fingerprint, nil),
-      label: Keyword.get(options, :label, nil)
+      label: Keyword.get(options, :label, nil),
+      priority: Keyword.get(options, :priority, 5),
+      trustiness: Keyword.get(options, :trustiness, 0.5)
     }
     |> fix_type()
     |> fix_url()
