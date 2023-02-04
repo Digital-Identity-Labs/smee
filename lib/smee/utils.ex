@@ -1,5 +1,7 @@
 defmodule Smee.Utils do
 
+  @moduledoc false
+
   def sha1(data) do
     :crypto.hash(:sha, data)
     |> Base.encode16(case: :lower)
@@ -100,5 +102,7 @@ defmodule Smee.Utils do
     |> to_string()
     |> String.replace("\t", "    ")
   end
+
+  ################################################################################
 
 end

@@ -1,5 +1,7 @@
 defmodule Smee.XSLT do
 
+  @moduledoc false
+
   alias Smee.Metadata
 
 
@@ -37,6 +39,8 @@ defmodule Smee.XSLT do
       {:error, msg} -> raise msg
     end
   end
+
+  ################################################################################
 
   defp build_command(stylesheet_file, params) do
     @base_command ++ format_params(params) ++ [stylesheet_file] ++ ["-"]

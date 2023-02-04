@@ -1,5 +1,7 @@
 defmodule Smee.Certificate do
 
+  @moduledoc false
+
   alias __MODULE__
   alias Smee.Metadata
   alias Smee.Utils
@@ -54,6 +56,9 @@ defmodule Smee.Certificate do
   #  def exists?(c) do
   #
   #  end
+
+
+  ################################################################################
 
   defp  ensure_local_cert("file:" <> _ = url) do
     path = Utils.file_url_to_path(url)

@@ -57,6 +57,8 @@ defmodule Smee.Source do
     end
   end
 
+  ################################################################################
+
   defp fix_type(source) do
     type = cond do
       String.ends_with?(source.url, ["entities", "entities/"]) -> :mdq

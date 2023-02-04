@@ -1,5 +1,7 @@
 defmodule Smee.Cfg do
 
+  @moduledoc false
+
   @default_namespace :md
 
   @namespaces %{
@@ -45,5 +47,8 @@ defmodule Smee.Cfg do
   def risky_entity_attributes() do
     Application.get_env(:smee, :risky_entity_attributes, nil) || @risky_eas
   end
+
+  ################################################################################
+
 
 end

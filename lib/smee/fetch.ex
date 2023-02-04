@@ -68,6 +68,8 @@ defmodule Smee.Fetch do
 
   end
 
+  ################################################################################
+
   defp retry_jitter(n) do
     trunc(Integer.pow(2, n) * 1000 * (1 - 0.1 * :rand.uniform()))
   end

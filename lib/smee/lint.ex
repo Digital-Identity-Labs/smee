@@ -17,6 +17,8 @@ defmodule Smee.Lint do
     lint(xml, :well_formed, options)
   end
 
+  ################################################################################
+
   defp lint(xml, mode \\ :tidy, options \\ []) do
 
     command = build_command(mode, options)

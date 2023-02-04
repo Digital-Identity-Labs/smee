@@ -25,10 +25,13 @@ defmodule Smee.Security do
     end
   end
 
-#  def expired?(metadata) do
-#
-#  end
-  
+  #  def expired?(metadata) do
+  #
+  #  end
+
+  ################################################################################
+
+
   defp selected_backend(metadata) do
     Application.get_env(:smee, :verifier, Smee.Security.Xmlsec1)
   end

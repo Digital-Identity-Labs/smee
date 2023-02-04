@@ -23,6 +23,8 @@ defmodule Smee.Transform do
 
   def valid_until!(md, date), do: wrap_results(valid_until(md, date))
 
+  ################################################################################
+
   defp wrap_results(results) do
     case results do
       {:ok, data} -> data

@@ -1,5 +1,7 @@
 defmodule Smee.Security.Xmlsec1 do
 
+  @moduledoc false
+
   alias Smee.Certificate
 
   @base_command ~w(verify --enabled-key-data rsa --id-attr:ID urn:oasis:names:tc:SAML:2.0:metadata:EntitiesDescriptor)

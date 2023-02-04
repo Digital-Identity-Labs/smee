@@ -142,6 +142,8 @@ defmodule Smee.Entity do
     end
   end
 
+  ################################################################################
+
   defp parse_data(%{compressed: true} = entity) do
     entity
     |> decompress()

@@ -1,5 +1,7 @@
 defmodule Smee.Security.Mdqt do
 
+  @moduledoc false
+
   alias Smee.Certificate
   alias Smee.Utils
 

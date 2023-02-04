@@ -1,5 +1,7 @@
 defmodule Smee.Security.Xmlsectool do
 
+  @moduledoc false
+
   alias Smee.Certificate
 
   @base_command ~w(--verifySignature )

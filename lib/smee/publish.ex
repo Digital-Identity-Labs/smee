@@ -47,6 +47,8 @@ defmodule Smee.Publish do
     |> Enum.join("\n")
   end
 
+  ################################################################################
+
   defp single(entity, options \\ []) do
     xml = expand_single_top(entity, options)
     [xml]
