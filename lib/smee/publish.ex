@@ -9,8 +9,15 @@ defmodule Smee.Publish do
 
   @top_tag ~r|<[md:]*EntityDescriptor.*>|im
 
-  def to_index do
+  def to_index_stream(entities, options \\ []) do
+    entities
+    |> Stream.map(fn e -> e.uri end)
+  end
 
+  def to_index(entities, options \\ []) do
+    to_index_stream(entities, options)
+    |> Enum.to_list
+    |> Enum.join("\n")
   end
 
   def to_eds do
