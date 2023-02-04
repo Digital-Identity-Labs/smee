@@ -20,13 +20,13 @@ defmodule Smee.Publish do
     |> Enum.join("\n")
   end
 
-  def to_eds do
-
-  end
-
-  def to_dj do
-
-  end
+#  def to_eds do
+#
+#  end
+#
+#  def to_dj do
+#
+#  end
 
   def to_xml_stream(%Entity{} = entity, options \\ []) do
     single(entity, options)
