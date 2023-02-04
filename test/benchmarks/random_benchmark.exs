@@ -5,10 +5,12 @@ md = Smee.Fetch.remote!(big_md)
 
 Benchee.run(
   %{
-    "random_1" => fn -> Smee.Metadata.random_entity(md) end,
-    "random_2" => fn -> Smee.Metadata.random_entity2(md) end,
+    "stream with index, n == pos" => fn -> Smee.Metadata.random_entity1(md) end,
+    "stream, drop lower, take 1" => fn -> Smee.Metadata.random_entity2(md) end,
+    "Enum.random" => fn -> Smee.Metadata.random_entity3(md) end,
+    "Enum.at" => fn -> Smee.Metadata.random_entity4(md) end,
   },
   time: 10,
-  memory_time: 10,
+  memory_time: 2,
   parallel: 5
 )
