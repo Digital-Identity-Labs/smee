@@ -29,7 +29,9 @@ defmodule Smee.Metadata do
     :cert_fingerprint,
     :verified,
     compressed: false,
-    changes: 0
+    changes: 0,
+    priority: 5,
+    trustiness: 0.5
   ]
 
   def new(%Stream{} = stream, options \\ []) do
@@ -57,7 +59,9 @@ defmodule Smee.Metadata do
       label: Keyword.get(options, :label, nil),
       cert_url: Utils.normalize_url(Keyword.get(options, :cert_url, nil)),
       cert_fingerprint: Keyword.get(options, :cert_fingerprint, nil),
-      verified: false
+      verified: false,
+      priority: Keyword.get(options, :priority, 5),
+      trustiness: Keyword.get(options, :trustiness, 0.5)
     }
     |> count_entities()
   end
@@ -189,6 +193,15 @@ defmodule Smee.Metadata do
   end
 
   def random_entity(%Metadata{entity_count: max} = metadata) do
+    offset = :random.uniform(max) - 1
+    stream_entities(metadata)
+    |> Stream.drop(offset)
+    |> Stream.take(1)
+    |> Enum.to_list()
+    |> List.first()
+  end
+
+  def random_entity1(%Metadata{entity_count: max} = metadata) do
     pos = :random.uniform(max)
     stream_entities(metadata)
     |> Stream.with_index()
@@ -197,6 +210,28 @@ defmodule Smee.Metadata do
     |> Enum.to_list()
     |> List.first()
   end
+
+  def random_entity2(%Metadata{entity_count: max} = metadata) do
+    offset = :random.uniform(max) - 1
+    stream_entities(metadata)
+    |> Stream.drop(offset)
+    |> Stream.take(1)
+    |> Enum.to_list()
+    |> List.first()
+  end
+
+  def random_entity3(%Metadata{entity_count: max} = metadata) do
+   # offset = :random.uniform(max) - 1
+    stream_entities(metadata)
+    |> Enum.random()
+  end
+
+  def random_entity4(%Metadata{entity_count: max} = metadata) do
+    pos = :random.uniform(max)
+    stream_entities(metadata)
+    |> Enum.at(pos)
+  end
+  ?
 
   def list_ids(%{type: :single} = metadata) do
     extract_id(metadata.data)
