@@ -7,23 +7,19 @@ defmodule Smee do
     
   end
 
-  def fetch_metadata(source) do
+  def fetch(source) do
     
   end
 
-  def lookup_entity(source, entity_uri) do
+  def lookup(source, entity_uri) do
     
   end
-  
-  def verify(metadata_or_entity) do
+
+  def entity_ids(metadata) do
 
   end
 
-  def list(metadata) do
-
-  end
-
-  def entities(metadata) do
+  def stream_entities(metadata) do
 
   end
 
