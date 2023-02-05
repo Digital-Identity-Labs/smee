@@ -75,7 +75,7 @@ defmodule Smee.Fetch do
   end
 
   defp extract_http_etag(response, source) do
-    (Req.Response.get_header(response, "etag") || [nil])
+    Req.Response.get_header(response, "etag")
     |> List.first()
   end
 

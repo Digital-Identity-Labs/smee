@@ -5,6 +5,25 @@ defmodule Smee.Entity do
   alias __MODULE__
   alias Smee.Utils
 
+  @type t :: %__MODULE__{
+               metadata_uri: nil | binary(),
+               metadata_uri_hash: nil | binary(),
+               downloaded_at: nil | struct(),
+               modified_at: nil | struct(),
+               uri: nil | binary(),
+               uri_hash: nil | binary(),
+               data: nil | binary(),
+               xdoc: nil | binary(),
+               data_hash: nil | binary(),
+               valid_until: nil | struct(),
+               label: nil | binary(),
+               size: integer(),
+               compressed: boolean(),
+               changes: integer(),
+               priority: integer(),
+               trustiness: float()
+             }
+
   defstruct [
     :metadata_uri,
     :metadata_uri_hash,

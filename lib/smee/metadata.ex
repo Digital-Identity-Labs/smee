@@ -7,6 +7,33 @@ defmodule Smee.Metadata do
 
   @metadata_types [:aggregate, :single]
 
+  @type t :: %__MODULE__{
+               downloaded_at: nil | struct(),
+               modified_at: nil | struct(),
+               url: binary(),
+               id: nil | binary(),
+               type: atom(),
+               size: integer(),
+               data: nil | binary(),
+               url_hash: nil | binary(),
+               data_hash: nil | binary(),
+               etag: nil | binary(),
+               label: nil | binary(),
+               entity_count: integer(),
+               uri: nil | binary(),
+               uri_hash: nil | binary(),
+               file_uid: nil | binary(),
+               valid_until: nil | struct(),
+               cache_duration: nil | binary(),
+               cert_url: nil | binary(),
+               cert_fingerprint: nil | binary(),
+               verified: boolean(),
+               compressed: false,
+               changes: integer(),
+               priority: integer(),
+               trustiness: float()
+             }
+
   defstruct [
     :downloaded_at,
     :modified_at,
@@ -354,8 +381,8 @@ defmodule Smee.Metadata do
 
   defp fix_type(metadata) do
     type = cond do
-      metadata.type == :mdq && metadata.entity_count > 1 -> :aggregate
-      metadata.type == :mdq && metadata.entity_count == 1 -> :single
+      metadata.type == :mdq && count(metadata) > 1 -> :aggregate
+      metadata.type == :mdq && count(metadata) == 1 -> :single
       true -> metadata.type
     end
     Map.merge(metadata, %{type: type})

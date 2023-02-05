@@ -6,6 +6,20 @@ defmodule Smee.Source do
 
   @source_types [:aggregate, :single, :mdq, :ld]
 
+  @type t :: %__MODULE__{
+               url: binary(),
+               type: nil | atom(),
+               auth: nil | keyword(),
+               cert_url: binary(),
+               cert_fingerprint: nil | binary(),
+               cache: boolean(),
+               redirects: integer(),
+               retries: integer(),
+               label: nil | binary(),
+               priority: integer(),
+               trustiness: float()
+             }
+
   defstruct [
     url: nil,
     type: :aggregate,
