@@ -136,13 +136,17 @@ defmodule Smee.Metadata do
     metadata.data
   end
 
+  def count(%Metadata{entity_count: count} = metadata) do
+    count || 0
+  end
+  
   def count_entities(metadata) do
     count = length(String.split(metadata.data, "entityID=\"")) - 1
     Map.merge(metadata, %{entity_count: count})
   end
 
   def entity(metadata, uri) do
-
+    Extract.entity!(metadata, uri)
   end
 
   def entities(metadata) do
@@ -156,12 +160,15 @@ defmodule Smee.Metadata do
   end
 
   def random_entity(%Metadata{entity_count: max} = metadata) do
-    offset = :random.uniform(max) - 1
-    stream_entities(metadata)
-    |> Stream.drop(offset)
-    |> Stream.take(1)
-    |> Enum.to_list()
-    |> List.first()
+    if max > 10 do
+      uri = Extract.list_ids(metadata)
+            |> Enum.random()
+      Extract.entity!(metadata, uri)
+    else
+      pos = :rand.uniform(max)
+      stream_entities(metadata)
+      |> Enum.at(pos)
+    end
   end
 
   def random_entity1(%Metadata{entity_count: max} = metadata) do
@@ -201,11 +208,11 @@ defmodule Smee.Metadata do
     Extract.entity!(metadata, uri)
   end
 
-  def list_ids(%{type: :single} = metadata) do
+  def entity_ids(%{type: :single} = metadata) do
     extract_id(metadata.data)
   end
 
-  def list_ids(%{type: :aggregate} = metadata) do
+  def entity_ids(%{type: :aggregate} = metadata) do
     if metadata.size > 100_000 do
       list_ids_ext(metadata)
     else
