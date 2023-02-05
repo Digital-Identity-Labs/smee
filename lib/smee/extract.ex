@@ -2,9 +2,11 @@ defmodule Smee.Extract do
 
   alias Smee.XSLT
   alias Smee.Metadata
+  alias Smee.Entity
 
   @list_ids_s File.read! "priv/xslt/list_ids.xsl"
   @list_entity_attrs_s File.read! "priv/xslt/list_entity_attrs.xsl"
+  @entity_s File.read! "priv/xslt/extract_entity.xsl"
 
   def list_ids(md)  do
     case XSLT.transform(md.data, @list_ids_s, []) do
@@ -22,6 +24,13 @@ defmodule Smee.Extract do
 
   def list_entity_attrs(md)  do
    raise "Only works with Metadata structs!"
+  end
+
+  def entity!(md, uri) do
+    case XSLT.transform(md.data, @entity_s, [entityID: uri]) do
+      {:ok, xml} -> Entity.new(xml, md)
+      {:error, msg} -> raise "Cannot find #{uri} in metadata!"
+      end
   end
 
   ################################################################################

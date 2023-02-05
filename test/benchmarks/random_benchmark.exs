@@ -9,6 +9,7 @@ Benchee.run(
     "stream, drop lower, take 1" => fn -> Smee.Metadata.random_entity2(md) end,
     "Enum.random" => fn -> Smee.Metadata.random_entity3(md) end,
     "Enum.at" => fn -> Smee.Metadata.random_entity4(md) end,
+    "Shell out to xsltproc, twice" => fn -> Smee.Metadata.random_entity5(md) end,
   },
   time: 10,
   memory_time: 2,
