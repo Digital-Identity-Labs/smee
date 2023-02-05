@@ -17,15 +17,15 @@ projects.
 The top level Smee module contains simplified, top level functions better suited to simpler scripts. Other modules in
 Smee contain more tools for handling SAML metadata, such as:
 
-    * `Smee.Source` - define sources of metadata
-    * `Smee.Metadata` - functions for handling metadata aggregates
-    * `Smee.Entity` - individual SAML entity definitions
-    * `Smee.Extract` - processing metadata to extract information
-    * `Smee.Fetch` - downloading metadata sources
-    * `Smee.MDQ` - functions for MDQ clients (and emulating MDQ clients)
-    * `Smee.Filter` - filtering streams of entity records
-    * `Smee.Transform` - processing and editing entity XML
-    * `Smee.Publish` - Formatting and outputting metadata in various formats
+* `Smee.Source` - define sources of metadata
+* `Smee.Metadata` - functions for handling metadata aggregates
+* `Smee.Entity` - individual SAML entity definitions
+* `Smee.Extract` - processing metadata to extract information
+* `Smee.Fetch` - downloading metadata sources
+* `Smee.MDQ` - functions for MDQ clients (and emulating MDQ clients)
+* `Smee.Filter` - filtering streams of entity records
+* `Smee.Transform` - processing and editing entity XML
+* `Smee.Publish` - Formatting and outputting metadata in various formats
 
 ## Examples
 
