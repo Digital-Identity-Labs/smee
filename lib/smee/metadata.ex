@@ -136,52 +136,13 @@ defmodule Smee.Metadata do
     metadata.data
   end
 
-  ################################################################################
-
-  defp extract_info(%{type: :aggregate} = metadata) do
-
-    import SweetXml
-
-    snippet = case Regex.run(~r/<[md:]*EntitiesDescriptor.*?>/s, metadata.data) do
-      [capture] -> capture
-      nil -> raise "Can't extract EntitiesDescriptor! Data was: #{String.slice(metadata.data, 0..100)}[...]"
-    end
-
-    info = Regex.replace(~r/>$/, snippet, "\/>")
-           |> xmap(
-                uri: ~x"string(/*/@Name)"s,
-                file_uid: ~x"string(/*/@ID)"s,
-                valid_until: ~x"string(/*/@validUntil)"s
-              )
-
-    info = Map.merge(info, %{uri_hash: Smee.Utils.sha1(info.uri), valid_until: tweak_valid_until(info.valid_until)})
-
-    Map.merge(metadata, info)
-
-  end
-
-  defp extract_info(%{type: :single} = metadata) do
-
-    import SweetXml
-
-    info = metadata.data
-           |> xmap(
-                uri: ~x"string(/*/@entityID)"s,
-                file_uid: ~x"string(/*/@ID)"s,
-                cache_duration: ~x"string(/*/@cacheDuration)"s,
-                valid_until: ~x"string(/*/@validUntil)"s
-              )
-
-    info = Map.merge(info, %{uri_hash: Smee.Utils.sha1(info.uri), valid_until: tweak_valid_until(info.valid_until)})
-
-    Map.merge(metadata, info)
-
-  end
-
-
   def count_entities(metadata) do
     count = length(String.split(metadata.data, "entityID=\"")) - 1
     Map.merge(metadata, %{entity_count: count})
+  end
+
+  def entity(metadata, uri) do
+
   end
 
   def entities(metadata) do
@@ -223,7 +184,7 @@ defmodule Smee.Metadata do
   end
 
   def random_entity3(%Metadata{entity_count: max} = metadata) do
-   # offset = :random.uniform(max) - 1
+    # offset = :random.uniform(max) - 1
     stream_entities(metadata)
     |> Enum.random()
   end
@@ -236,7 +197,7 @@ defmodule Smee.Metadata do
 
   def random_entity5(%Metadata{entity_count: max} = metadata) do
     uri = Extract.list_ids(metadata)
-    |> Enum.random()
+          |> Enum.random()
     Extract.entity!(metadata, uri)
   end
 
@@ -289,6 +250,48 @@ defmodule Smee.Metadata do
            |> String.trim_trailing("_")
            |> String.trim_trailing("_xml")
     "#{name}.xml"
+  end
+
+  ################################################################################
+
+  defp extract_info(%{type: :aggregate} = metadata) do
+
+    import SweetXml
+
+    snippet = case Regex.run(~r/<[md:]*EntitiesDescriptor.*?>/s, metadata.data) do
+      [capture] -> capture
+      nil -> raise "Can't extract EntitiesDescriptor! Data was: #{String.slice(metadata.data, 0..100)}[...]"
+    end
+
+    info = Regex.replace(~r/>$/, snippet, "\/>")
+           |> xmap(
+                uri: ~x"string(/*/@Name)"s,
+                file_uid: ~x"string(/*/@ID)"s,
+                valid_until: ~x"string(/*/@validUntil)"s
+              )
+
+    info = Map.merge(info, %{uri_hash: Smee.Utils.sha1(info.uri), valid_until: tweak_valid_until(info.valid_until)})
+
+    Map.merge(metadata, info)
+
+  end
+
+  defp extract_info(%{type: :single} = metadata) do
+
+    import SweetXml
+
+    info = metadata.data
+           |> xmap(
+                uri: ~x"string(/*/@entityID)"s,
+                file_uid: ~x"string(/*/@ID)"s,
+                cache_duration: ~x"string(/*/@cacheDuration)"s,
+                valid_until: ~x"string(/*/@validUntil)"s
+              )
+
+    info = Map.merge(info, %{uri_hash: Smee.Utils.sha1(info.uri), valid_until: tweak_valid_until(info.valid_until)})
+
+    Map.merge(metadata, info)
+
   end
 
   defp split_to_stream(%{type: :aggregate} = metadata) do
