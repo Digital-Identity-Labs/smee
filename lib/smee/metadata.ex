@@ -172,7 +172,7 @@ defmodule Smee.Metadata do
   end
 
   def random_entity1(%Metadata{entity_count: max} = metadata) do
-    pos = :random.uniform(max)
+    pos = :rand.uniform(max)
     stream_entities(metadata)
     |> Stream.with_index()
     |> Stream.filter(fn {e, n} -> n == pos end)
@@ -182,7 +182,7 @@ defmodule Smee.Metadata do
   end
 
   def random_entity2(%Metadata{entity_count: max} = metadata) do
-    offset = :random.uniform(max) - 1
+    offset = :rand.uniform(max) - 1
     stream_entities(metadata)
     |> Stream.drop(offset)
     |> Stream.take(1)
@@ -191,13 +191,13 @@ defmodule Smee.Metadata do
   end
 
   def random_entity3(%Metadata{entity_count: max} = metadata) do
-    # offset = :random.uniform(max) - 1
+    # offset = :rand.uniform(max) - 1
     stream_entities(metadata)
     |> Enum.random()
   end
 
   def random_entity4(%Metadata{entity_count: max} = metadata) do
-    pos = :random.uniform(max)
+    pos = :rand.uniform(max)
     stream_entities(metadata)
     |> Enum.at(pos)
   end
