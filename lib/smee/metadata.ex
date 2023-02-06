@@ -235,6 +235,16 @@ defmodule Smee.Metadata do
     Extract.entity!(metadata, uri)
   end
 
+  def random_entity6(%Metadata{entity_count: max} = metadata) do
+    offset = :rand.uniform(max) - 1
+    xml = split_to_stream(metadata)
+    |> Stream.drop(offset)
+    |> Stream.take(1)
+    |> Enum.to_list()
+    |> List.first()
+    Entity.new(xml, metadata)
+  end
+  
   def entity_ids(%{type: :single} = metadata) do
     extract_id(metadata.data)
   end
