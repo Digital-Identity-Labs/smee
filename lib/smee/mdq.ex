@@ -10,6 +10,10 @@ defmodule Smee.MDQ do
     Source.new(url, options)
   end
 
+  def list(%Metadata{} = metadata) do
+    Metadata.entity_ids(metadata)
+  end
+
   def list(%{type: :mdq} = source) do
     source
     |> Fetch.remote!()
@@ -21,7 +25,7 @@ defmodule Smee.MDQ do
     |> Fetch.remote!()
     |> Metadata.entity_ids()
   end
-
+  
   def url(%{type: :mdq} = source, id) do
     String.trim_trailing(source.url, "/") <> "/#{transform_uri(id)}"
     |> URI.parse()
@@ -31,6 +35,14 @@ defmodule Smee.MDQ do
 
   def url(%{type: :aggregate} = source, id) do
     raise "Individual URLs cannot be used with aggregate metadata - a proper MDQ service is required"
+  end
+
+  def url(%Metadata{} = metadata, id) do
+    raise "Individual URLs cannot be used with aggregate metadata - a proper MDQ service is required"
+  end
+
+  def all(%Metadata{} = metadata) do
+    metadata
   end
 
   def all(%{type: :mdq} = source) do
@@ -43,6 +55,10 @@ defmodule Smee.MDQ do
     Fetch.remote!(source)
   end
 
+  def lookup(%Metadata{} = metadata, id) do
+    Metadata.entity(metadata, id)
+  end
+
   def lookup(%{type: :mdq} = source, id) do
     source = Map.merge(source, %{type: :single, url: url(source, id)})
     Fetch.remote!(source)
@@ -52,6 +68,8 @@ defmodule Smee.MDQ do
     all(source)
     |> Metadata.entity(id)
   end
+
+
 
   def transform_uri("{sha1}" <> _ = uri_id) do
     uri_id

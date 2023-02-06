@@ -95,7 +95,7 @@ defmodule Smee do
       false
 
   """
-  @spec lookup!(source :: binary() | %Source{}, entity_id :: binary()) :: Smee.Entity.t()
+  @spec lookup!(source :: binary() | %Source{} | %Metadata{}, entity_id :: binary()) :: Smee.Entity.t()
   def lookup!(source, entity_id) when is_binary(source) do
     source(source)
     |> lookup!(entity_id)
@@ -103,6 +103,10 @@ defmodule Smee do
 
   def lookup!(%Source{} = source, entity_id) do
     MDQ.lookup(source, entity_id)
+  end
+
+  def lookup!( %Metadata{} = metadata, entity_id) do
+    MDQ.lookup(metadata, entity_id)
   end
 
   @doc """
