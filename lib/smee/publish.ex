@@ -3,7 +3,7 @@ defmodule Smee.Publish do
   alias Smee.Metadata
   alias Smee.Entity
   alias Smee.Transform
-  alias Smee.Cfg
+  alias Smee.XmlCfg
 
   import SweetXml
 
@@ -88,9 +88,9 @@ defmodule Smee.Publish do
   end
 
   defp xml_namespace_declarations do
-    Cfg.namespaces()
+    XmlCfg.namespaces()
     |> Enum.map(fn {k, v} -> "    xmlns:#{k}=\"#{v}\"" end)
-    |> List.insert_at(0, "    xmlns=\"#{Cfg.namespaces()[Cfg.default_namespace]}\"")
+    |> List.insert_at(0, "    xmlns=\"#{XmlCfg.namespaces()[XmlCfg.default_namespace]}\"")
     |> Enum.join("\n")
   end
 

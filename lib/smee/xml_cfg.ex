@@ -1,4 +1,4 @@
-defmodule Smee.Cfg do
+defmodule Smee.XmlCfg do
 
   @moduledoc false
 

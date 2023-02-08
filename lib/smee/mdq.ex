@@ -25,7 +25,7 @@ defmodule Smee.MDQ do
     |> Fetch.remote!()
     |> Metadata.entity_ids()
   end
-  
+
   def url(%{type: :mdq} = source, id) do
     String.trim_trailing(source.url, "/") <> "/#{transform_uri(id)}"
     |> URI.parse()

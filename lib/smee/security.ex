@@ -33,7 +33,7 @@ defmodule Smee.Security do
 
 
   defp selected_backend(metadata) do
-    Application.get_env(:smee, :verifier, Smee.Security.Xmlsec1)
+    Smee.SysCfg.security_backend(metadata)
   end
 
 end
