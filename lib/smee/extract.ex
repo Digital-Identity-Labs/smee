@@ -28,7 +28,7 @@ defmodule Smee.Extract do
 
   def entity!(md, uri) do
     case XSLT.transform(md.data, @entity_s, [entityID: uri]) do
-      {:ok, xml} -> Entity.new(xml, md)
+      {:ok, xml} -> Entity.derive(xml, md)
       {:error, msg} -> raise "Cannot find #{uri} in metadata!"
       end
   end

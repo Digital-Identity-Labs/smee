@@ -181,9 +181,10 @@ defmodule Smee.Metadata do
     |> Enum.to_list
   end
 
-  def stream_entities(metadata) do
+  def stream_entities(metadata, options \\ []) do
+    options = Keyword.take(options, [:slim, :compress])
     split_to_stream(metadata)
-    |> Stream.map(fn xml -> Smee.Entity.new(xml, metadata)  end)
+    |> Stream.map(fn xml -> Smee.Entity.derive(xml, metadata, options)  end)
   end
 
   def random_entity(%Metadata{entity_count: max} = metadata) do
@@ -242,7 +243,7 @@ defmodule Smee.Metadata do
     |> Stream.take(1)
     |> Enum.to_list()
     |> List.first()
-    Entity.new(xml, metadata)
+    Entity.derive(xml, metadata)
   end
   
   def entity_ids(%{type: :single} = metadata) do

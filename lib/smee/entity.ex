@@ -45,7 +45,31 @@ defmodule Smee.Entity do
 
   ## Need another new that's more vanilla, based on options, like other
 
-  def new(data, metadata, options \\ []) do
+  def new(data, options \\ []) do
+
+    dlt = DateTime.utc_now()
+    until = dlt |> DateTime.add(14, :days)
+    dhash = Smee.Utils.sha1(data)
+    md_uri = Keyword.get(options, :metadata_uri, nil)
+
+    %Entity{
+      data: String.trim(data),
+      downloaded_at: dlt,
+      data_hash: dhash,
+      modified_at: Keyword.get(options, :modified_at, dlt),
+      valid_until: Keyword.get(options, :modified_at, until),
+      label: Keyword.get(options, :label, nil),
+      metadata_uri: md_uri,
+      metadata_uri_hash: if(md_uri, do: Smee.Utils.sha1(md_uri), else: nil),
+      priority: Keyword.get(options, :priority, 5),
+      trustiness: Keyword.get(options, :trustiness, 0.0),
+    }
+    |> parse_data()
+    |> extract_info()
+
+  end
+
+  def derive(data, metadata, options \\ []) do
 
     md_uri = metadata.uri
     dlt = metadata.modified_at
