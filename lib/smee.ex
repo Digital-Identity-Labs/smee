@@ -25,6 +25,7 @@ defmodule Smee do
 
 
 
+
   """
 
   alias Smee.Source
@@ -82,7 +83,7 @@ defmodule Smee do
   end
 
   @doc """
-    Retrieves informatiom for a single entity from an MDQ service (real or emulated)
+    Retrieves information for a single entity from an MDQ service (real or emulated)
 
     This will contact the remote backend and process the response. An authenticated OTP will produce `true`.
     Anything other than a success will be returned as `false`.

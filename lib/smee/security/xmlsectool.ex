@@ -2,7 +2,7 @@ defmodule Smee.Security.Xmlsectool do
 
   @moduledoc false
 
-  alias Smee.Certificate
+  alias Smee.SigningCertificate
 
   @base_command ~w(--verifySignature )
 
@@ -14,7 +14,7 @@ defmodule Smee.Security.Xmlsectool do
     IO.write(fh, metadata.data)
     File.close(fh)
 
-    cert_file = Certificate.prepare_file!(metadata)
+    cert_file = SigningCertificate.prepare_file!(metadata)
 
     command = build_command(xml_file, cert_file)
 

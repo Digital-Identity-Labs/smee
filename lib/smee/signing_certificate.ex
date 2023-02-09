@@ -1,4 +1,4 @@
-defmodule Smee.Certificate do
+defmodule Smee.SigningCertificate do
 
   @moduledoc false
 

@@ -2,13 +2,13 @@ defmodule Smee.Security.Xmlsec1 do
 
   @moduledoc false
 
-  alias Smee.Certificate
+  alias Smee.SigningCertificate
 
   @base_command ~w(verify --enabled-key-data rsa --id-attr:ID urn:oasis:names:tc:SAML:2.0:metadata:EntitiesDescriptor)
 
   def verify!(metadata) do
 
-    cert_file = Certificate.prepare_file!(metadata)
+    cert_file = SigningCertificate.prepare_file!(metadata)
 
     command = build_command(metadata, cert_file)
 

@@ -2,7 +2,7 @@ defmodule Smee.Security.Mdqt do
 
   @moduledoc false
 
-  alias Smee.Certificate
+  alias Smee.SigningCertificate
   alias Smee.Utils
 
   @base_command ~w(check )
@@ -16,7 +16,7 @@ defmodule Smee.Security.Mdqt do
     IO.write(fh, metadata.data)
     File.close(fh)
 
-    cert_file = Certificate.prepare_file!(metadata)
+    cert_file = SigningCertificate.prepare_file!(metadata)
 
     command = build_command(xml_file, cert_file)
 
