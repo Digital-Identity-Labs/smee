@@ -25,9 +25,8 @@ defmodule Smee do
 
 
 
-
   """
-
+  alias __MODULE__
   alias Smee.Source
   alias Smee.Metadata
   alias Smee.Entity
@@ -42,10 +41,7 @@ defmodule Smee do
 
   ## Example
 
-      iex> YubikeyOTP.verify?("ccccccclulvjihcchvujedikcndnbuttfutgvbcgblhk", service)
-      true
-      iex> YubikeyOTP.verify?("ccccccclulvjihcchvujedikcndnbuttfutgvbcgblhk", service)
-      false
+      iex> src = Smee.source("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
 
   """
   @spec source(url :: binary()) :: Smee.Source.t()
@@ -66,10 +62,12 @@ defmodule Smee do
 
   ## Example
 
-      iex> YubikeyOTP.verify?("ccccccclulvjihcchvujedikcndnbuttfutgvbcgblhk", service)
-      true
-      iex> YubikeyOTP.verify?("ccccccclulvjihcchvujedikcndnbuttfutgvbcgblhk", service)
-      false
+      iex> metadata = "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
+      iex> |> Smee.source()
+      iex> |> Smee.fetch!()
+
+      iex> metadata = Smee.fetch!("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+
 
   """
   @spec fetch!(source :: binary() | %Source{}) :: Smee.Metadata.t()
@@ -90,10 +88,10 @@ defmodule Smee do
 
   ## Example
 
-      iex> YubikeyOTP.verify?("ccccccclulvjihcchvujedikcndnbuttfutgvbcgblhk", service)
-      true
-      iex> YubikeyOTP.verify?("ccccccclulvjihcchvujedikcndnbuttfutgvbcgblhk", service)
-      false
+      iex> Smee.Source.new("http://mdq.ukfederation.org.uk/", type: :mdq)
+      iex> |> Smee.lookup!("https://cern.ch/login")
+
+      iex> Smee.lookup!("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml", "https://cern.ch/login")
 
   """
   @spec lookup!(source :: binary() | %Source{} | %Metadata{}, entity_id :: binary()) :: Smee.Entity.t()
@@ -118,10 +116,8 @@ defmodule Smee do
 
   ## Example
 
-      iex> YubikeyOTP.verify?("ccccccclulvjihcchvujedikcndnbuttfutgvbcgblhk", service)
-      true
-      iex> YubikeyOTP.verify?("ccccccclulvjihcchvujedikcndnbuttfutgvbcgblhk", service)
-      false
+      iex> Smee.source("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+      iex> |> Smee.entity_ids()
 
   """
   @spec entity_ids(source :: binary() | %Source{} | %Metadata{}) :: list(Smee.Entity.t())
@@ -148,10 +144,9 @@ defmodule Smee do
 
   ## Example
 
-      iex> YubikeyOTP.verify?("ccccccclulvjihcchvujedikcndnbuttfutgvbcgblhk", service)
-      true
-      iex> YubikeyOTP.verify?("ccccccclulvjihcchvujedikcndnbuttfutgvbcgblhk", service)
-      false
+      iex> Smee.stream_entities("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+      iex> |> Stream.take(1)
+      iex> |> Enum.to_list
 
   """
   @spec stream_entities(source :: binary() | %Source{} | %Metadata{}) :: %Stream{}
