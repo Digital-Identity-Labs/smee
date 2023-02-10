@@ -26,6 +26,8 @@ defmodule Smee.Fetch do
       retry_delay: &retry_jitter/1
     )
 
+    :ok = check_http_data_type!(source, response)
+
     Smee.Metadata.new(
       response.body,
       type: source.type,
@@ -77,6 +79,23 @@ defmodule Smee.Fetch do
   defp extract_http_etag(response, source) do
     Req.Response.get_header(response, "etag")
     |> List.first()
+  end
+
+  defp check_http_data_type!(source, response) do
+
+    type = Req.Response.get_header(response, "content-type")
+           |> List.first()
+
+    if type != "application/samlmetadata+xml" do
+      if source.strict do
+        raise "Data from #{source.url} is not described as SAML metadata (application/samlmetadata+xml)!\nYou can disable this check by setting strict to false."
+      else
+        IO.warn("Data from #{source.url} is not described as SAML metadata (application/samlmetadata+xml)", [])
+      end
+    end
+
+    :ok
+
   end
 
 end
