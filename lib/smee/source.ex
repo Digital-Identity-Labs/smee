@@ -17,7 +17,8 @@ defmodule Smee.Source do
                retries: integer(),
                label: nil | binary(),
                priority: integer(),
-               trustiness: float()
+               trustiness: float(),
+               strict: boolean(),
              }
 
   defstruct [
@@ -31,7 +32,8 @@ defmodule Smee.Source do
     retries: 5,
     label: nil,
     priority: 5,
-    trustiness: 0.5
+    trustiness: 0.5,
+    strict: false
   ]
 
   def new(url, options \\ []) do
