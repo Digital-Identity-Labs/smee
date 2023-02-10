@@ -70,15 +70,15 @@ defmodule SmeeUtilsTest do
     test "returns true when passed a Source or Metadata struct that contains a local cert URL" do
       assert Utils.local_cert?(Smee.Source.new("/var/x/fed.xml", cert_url: "./local.pem"))
       assert Utils.local_cert?(Smee.Source.new("/var/x/fed.xml", cert_url: "file:/local.pem"))
-      assert Utils.local_cert?(Smee.Metadata.new(@xml, :aggregate, cert_url: "./local.pem"))
-      assert Utils.local_cert?(Smee.Metadata.new(@xml, :aggregate, cert_url: "file:/local.pem"))
+      assert Utils.local_cert?(Smee.Metadata.new(@xml, cert_url: "./local.pem"))
+      assert Utils.local_cert?(Smee.Metadata.new(@xml, cert_url: "file:/local.pem"))
     end
 
     test "return false when passed a Source or Metadata struct that does not contain a local cert URL" do
       refute Utils.local_cert?(Smee.Source.new("/var/x/fed.xml", cert_url: nil))
       refute Utils.local_cert?(Smee.Source.new("/var/x/fed.xml", cert_url: "http://example.com/remote.pem"))
-      refute Utils.local_cert?(Smee.Metadata.new(@xml, :aggregate, cert_url: nil))
-      refute Utils.local_cert?(Smee.Metadata.new(@xml, :aggregate, cert_url: "http://example.com/remote.pem"))
+      refute Utils.local_cert?(Smee.Metadata.new(@xml, cert_url: nil))
+      refute Utils.local_cert?(Smee.Metadata.new(@xml, cert_url: "http://example.com/remote.pem"))
     end
 
   end
@@ -88,14 +88,14 @@ defmodule SmeeUtilsTest do
     test "returns true when passed a Source or Metadata struct that contains a local metadata URL" do
       assert Utils.local?(Smee.Source.new("/var/x/fed.xml", url: "./local.xml"))
       assert Utils.local?(Smee.Source.new("/var/x/fed.xml", url: "file:/local.xml"))
-      assert Utils.local?(Smee.Metadata.new(@xml, :aggregate, url: "./local.xml"))
-      assert Utils.local?(Smee.Metadata.new(@xml, :aggregate, url: "file:/local.xml"))
+      assert Utils.local?(Smee.Metadata.new(@xml, url: "./local.xml"))
+      assert Utils.local?(Smee.Metadata.new(@xml, url: "file:/local.xml"))
     end
 
     test "return false when passed a Source or Metadata struct that does not contain a local metadata URL" do
       refute Utils.local?(Smee.Source.new("http://example.com/metadata.xml"))
-      refute Utils.local?(Smee.Metadata.new(@xml, :aggregate, url: nil))
-      refute Utils.local?(Smee.Metadata.new(@xml, :aggregate, url: "http://example.com/remote.pem"))
+      refute Utils.local?(Smee.Metadata.new(@xml, url: nil))
+      refute Utils.local?(Smee.Metadata.new(@xml, url: "http://example.com/remote.pem"))
     end
 
   end
