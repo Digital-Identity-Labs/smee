@@ -46,7 +46,8 @@ defmodule Smee.Source do
       cert_fingerprint: Keyword.get(options, :cert_fingerprint, nil),
       label: Keyword.get(options, :label, nil),
       priority: Keyword.get(options, :priority, 5),
-      trustiness: Keyword.get(options, :trustiness, 0.5)
+      trustiness: Keyword.get(options, :trustiness, 0.5),
+      retries: Keyword.get(options, :retries, 5)
     }
     |> fix_type()
     |> fix_url()
