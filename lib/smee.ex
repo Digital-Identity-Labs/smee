@@ -77,8 +77,6 @@ defmodule Smee do
       iex> |> Smee.source()
       iex> |> Smee.fetch!()
 
-
-
   """
   @spec fetch!(source :: %Source{}) :: Smee.Metadata.t()
 
