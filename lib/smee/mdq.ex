@@ -56,7 +56,6 @@ defmodule Smee.MDQ do
   end
 
   def lookup(%Metadata{} = metadata, id) do
-    IO.puts "XHXHXHXHX"
     try do
       Metadata.entity(metadata, id)
     rescue
@@ -72,7 +71,6 @@ defmodule Smee.MDQ do
   end
 
   def lookup(%{type: :aggregate} = source, id) do
-    IO.puts "XHXHXHXHX"
     try do
       all(source)
       |> Metadata.entity(id)

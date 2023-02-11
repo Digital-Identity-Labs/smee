@@ -4,7 +4,12 @@ defmodule Smee do
 
   ## Requirements
 
+  Smee does not do all processing itself, using Elixir - it sometimes cheats (OK, it often cheats) by sending data to
+  external programs for processing. At the moment it requires:
 
+  * `xmlsec1`
+  * `xmllint`
+  * `xsltproc`
 
   ## Features
 
@@ -38,6 +43,7 @@ defmodule Smee do
     Defines a source of metadata
 
     Sources of metadata include online aggregate XML, local aggregate files, individual entities, and MDQ services.
+    This function will only define sources of aggregate XML.
 
   ## Example
 
@@ -52,11 +58,19 @@ defmodule Smee do
   @doc """
     Defines a source of metadata
 
-    Sources of metadata include online aggregate XML, local aggregate files, individual entities, and MDQ services.
+   Sources of metadata include online aggregate XML, local aggregate files, individual entities, and MDQ services.
+   This function allows a lot of customisation, particularly the *type*. Types are: :aggregate (a file containing a collection of
+   entityDescriptor fragments inside a entitiesDescriptor tag, as used by federations) :single (a file with a single entityDescriptor,
+   as used for individual metadata records) or :mdq (an online MDQ service)
+
+  URLs made be remote (http:// and https://) or local (file://). Local files can be specified as bare paths.
+
+  See `Smee.Source.new` for full details
 
   ## Example
 
-      iex> src = Smee.source("http://mdq.ukfederation.org.uk/", type: :mdq)
+      iex> src = Smee.source("http://mdq.ukfederation.org.uk/", type: :mdq, retries: 1, label: "UK MDQ Service")
+      iex> src = Smee.source("support/static/valid.xml", type: :single, retries: 1, label: "My IdP")
 
   """
 
@@ -67,9 +81,6 @@ defmodule Smee do
 
   @doc """
     Downloads a source of metadata and returns a %Metadata{} struct containing XML and information.
-
-    This will contact the remote backend and process the response. An authenticated OTP will produce `true`.
-    Anything other than a success will be returned as `false`.
 
   ## Example
 
@@ -85,10 +96,9 @@ defmodule Smee do
   end
 
   @doc """
-    Retrieves information for a single entity from an MDQ service (real or emulated)
+    Retrieves information for a single entity from an MDQ service (real or emulated) and return an Entity{} struct.
 
-    This will contact the remote backend and process the response. An authenticated OTP will produce `true`.
-    Anything other than a success will be returned as `false`.
+  This version of the function can
 
   ## Example
 
@@ -113,8 +123,7 @@ defmodule Smee do
   @doc """
     Lists the IDs of every entity in the metadata.
 
-    This will contact the remote backend and process the response. An authenticated OTP will produce `true`.
-    Anything other than a success will be returned as `false`.
+
 
   ## Example
 
@@ -135,8 +144,7 @@ defmodule Smee do
   @doc """
     Streams all entities in the specified metadata.
 
-    This will contact the remote backend and process the response. An authenticated OTP will produce `true`.
-    Anything other than a success will be returned as `false`.
+
 
   ## Example
 
