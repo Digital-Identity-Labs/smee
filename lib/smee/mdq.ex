@@ -62,6 +62,8 @@ defmodule Smee.MDQ do
   def lookup(%{type: :mdq} = source, id) do
     source = Map.merge(source, %{type: :single, url: url(source, id)})
     Fetch.remote!(source)
+    |> Metadata.entities()
+    |> List.first
   end
 
   def lookup(%{type: :aggregate} = source, id) do

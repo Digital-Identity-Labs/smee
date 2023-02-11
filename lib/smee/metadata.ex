@@ -355,7 +355,12 @@ defmodule Smee.Metadata do
     |> Stream.with_index()
     |> Stream.map(fn {fx, n} -> strip_leading(fx, n) end)
     |> Stream.reject(fn xf -> String.starts_with?(xf, ["</EntitiesDescriptor>", "</md:EntitiesDescriptor>"]) end)
-    #  |> Stream.drop(1)
+  end
+
+  defp split_to_stream(%{type: :single} = metadata) do
+    xml_without_xmlprefix = metadata.data
+                            |> String.replace(~r{<[?]xml.*[?]>}im, "")
+    Stream.concat([[xml_without_xmlprefix]])
   end
 
   defp strip_leading(fx, 0) do
@@ -369,11 +374,7 @@ defmodule Smee.Metadata do
     fx
   end
 
-  defp split_to_stream(%{type: :single} = metadata) do
-    xml_without_xmlprefix = metadata.data
-                            |> String.replace(~r{<[?]xml.*[?]>}im, "")
-    Stream.concat([xml_without_xmlprefix])
-  end
+
 
   defp extract_id(xml_fragment) do
     import SweetXml
