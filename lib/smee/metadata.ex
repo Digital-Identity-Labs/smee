@@ -339,6 +339,10 @@ defmodule Smee.Metadata do
 
   end
 
+  defp extract_info(metadata) do
+    raise "Smee cannot process metadata of type #{metadata.type}!"
+  end
+
   defp split_to_stream(%{type: :aggregate} = metadata) do
     metadata.data
     |> String.splitter("EntityDescriptor>", trim: true)
