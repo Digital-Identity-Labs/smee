@@ -49,6 +49,17 @@ defmodule Smee do
     source(url, type: :aggregate)
   end
 
+  @doc """
+    Defines a source of metadata
+
+    Sources of metadata include online aggregate XML, local aggregate files, individual entities, and MDQ services.
+
+  ## Example
+
+      iex> src = Smee.source("http://mdq.ukfederation.org.uk/", type: :mdq)
+
+  """
+
   @spec source(url :: binary(), options :: keyword()) :: Smee.Source.t()
   def source(url, options) do
     Source.new(url, options)
@@ -66,15 +77,10 @@ defmodule Smee do
       iex> |> Smee.source()
       iex> |> Smee.fetch!()
 
-      iex> metadata = Smee.fetch!("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
 
 
   """
-  @spec fetch!(source :: binary() | %Source{}) :: Smee.Metadata.t()
-  def fetch!(source) when is_binary(source) do
-    source(source)
-    |> fetch!()
-  end
+  @spec fetch!(source :: %Source{}) :: Smee.Metadata.t()
 
   def fetch!(%Source{} = source) do
     Fetch.fetch!(source)
@@ -88,23 +94,21 @@ defmodule Smee do
 
   ## Example
 
-      iex> Smee.Source.new("http://mdq.ukfederation.org.uk/", type: :mdq)
+      iex> "http://mdq.ukfederation.org.uk/"
+      iex> |> Smee.source(type: :mdq)
       iex> |> Smee.lookup!("https://cern.ch/login")
 
-      iex> Smee.lookup!("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml", "https://cern.ch/login")
+      iex> "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
+      iex> |> Smee.source(type: :aggregate)
+      iex> |> Smee.lookup!("https://cern.ch/login")
 
   """
-  @spec lookup!(source :: binary() | %Source{} | %Metadata{}, entity_id :: binary()) :: Smee.Entity.t()
-  def lookup!(source, entity_id) when is_binary(source) do
-    source(source)
-    |> lookup!(entity_id)
-  end
-
+  @spec lookup!(source :: %Source{} | %Metadata{}, entity_id :: binary()) :: Smee.Entity.t()
   def lookup!(%Source{} = source, entity_id) do
     MDQ.lookup(source, entity_id)
   end
 
-  def lookup!( %Metadata{} = metadata, entity_id) do
+  def lookup!(%Metadata{} = metadata, entity_id) do
     MDQ.lookup(metadata, entity_id)
   end
 
@@ -120,13 +124,7 @@ defmodule Smee do
       iex> |> Smee.entity_ids()
 
   """
-  @spec entity_ids(source :: binary() | %Source{} | %Metadata{}) :: list(Smee.Entity.t())
-  def entity_ids(source) when is_binary(source) do
-    source(source)
-    |> fetch!()
-    |> entity_ids()
-  end
-
+  @spec entity_ids(source :: %Source{} | %Metadata{}) :: list(Smee.Entity.t())
   def entity_ids(%Source{} = source) do
     fetch!(source)
     |> Metadata.entity_ids()
@@ -149,7 +147,7 @@ defmodule Smee do
       iex> |> Enum.to_list
 
   """
-  @spec stream_entities(source :: binary() | %Source{} | %Metadata{}) :: %Stream{}
+  @spec stream_entities(source :: %Source{} | %Metadata{}) :: %Stream{}
   def stream_entities(source) when is_binary(source) do
     source(source)
     |> fetch!()
