@@ -69,6 +69,10 @@ defmodule Smee.Entity do
 
   end
 
+  def derive(data, metadata, options) when is_nil(data) or data == "" do
+    raise "No data!"
+  end
+  
   def derive(data, metadata, options \\ []) do
 
     md_uri = metadata.uri

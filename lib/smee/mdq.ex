@@ -56,7 +56,12 @@ defmodule Smee.MDQ do
   end
 
   def lookup(%Metadata{} = metadata, id) do
-    Metadata.entity(metadata, id)
+    IO.puts "XHXHXHXHX"
+    try do
+      Metadata.entity(metadata, id)
+    rescue
+      e -> raise "No record could be found!"
+    end
   end
 
   def lookup(%{type: :mdq} = source, id) do
@@ -67,8 +72,13 @@ defmodule Smee.MDQ do
   end
 
   def lookup(%{type: :aggregate} = source, id) do
-    all(source)
-    |> Metadata.entity(id)
+    IO.puts "XHXHXHXHX"
+    try do
+      all(source)
+      |> Metadata.entity(id)
+    rescue
+      e -> raise "No record could be found!"
+    end
   end
 
   def transform_uri("{sha1}" <> _ = uri_id) do
