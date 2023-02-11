@@ -27,7 +27,7 @@ defmodule Smee.MDQ do
   end
 
   def url(%{type: :mdq} = source, id) do
-    String.trim_trailing(source.url, "/") <> "/#{transform_uri(id)}"
+    String.trim_trailing(Utils.fetchable_remote_xml(source), "/") <> "/#{transform_uri(id)}"
     |> URI.parse()
     |> URI.to_string()
     |> URI.encode()
@@ -69,8 +69,6 @@ defmodule Smee.MDQ do
     |> Metadata.entity(id)
   end
 
-
-
   def transform_uri("{sha1}" <> _ = uri_id) do
     uri_id
   end
@@ -81,6 +79,6 @@ defmodule Smee.MDQ do
                  |> Utils.sha1)
   end
 
-  ################################################################################
+
 
 end

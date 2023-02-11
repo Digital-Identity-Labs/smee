@@ -15,8 +15,12 @@ defmodule Smee.Fetch do
 
     if Utils.file_url?(source.url), do: raise "Source URL #{source.url} is not using HTTP!"
 
+    url = Utils.fetchable_remote_xml(source)
+
+    IO.puts url
+
     response = Req.get!(
-      source.url,
+      url,
       headers: [{"accept", "application/samlmetadata+xml"}, {"Accept-Charset", "utf-8"}],
       max_redirects: source.redirects,
       cache: source.cache,
@@ -31,7 +35,7 @@ defmodule Smee.Fetch do
     Smee.Metadata.new(
       response.body,
       type: source.type,
-      url: source.url,
+      url: url,
       type: source.type,
       cert_url: source.cert_url,
       cert_fingerprint: source.cert_fingerprint,
@@ -88,7 +92,9 @@ defmodule Smee.Fetch do
 
     if type != "application/samlmetadata+xml" do
       if source.strict do
-        raise "Data from #{source.url} is not described as SAML metadata (application/samlmetadata+xml)!\nYou can disable this check by setting strict to false."
+        raise "Data from #{
+          source.url
+        } is not described as SAML metadata (application/samlmetadata+xml)!\nYou can disable this check by setting strict to false."
       else
         IO.warn("Data from #{source.url} is not described as SAML metadata (application/samlmetadata+xml)", [])
       end
@@ -97,5 +103,6 @@ defmodule Smee.Fetch do
     :ok
 
   end
+
 
 end

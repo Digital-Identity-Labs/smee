@@ -84,14 +84,11 @@ defmodule Smee.Source do
     Map.merge(source, %{type: type})
   end
 
+  # Needs to actually d o  the reverse
   defp fix_url(source) do
     url = cond do
-      source.type == :mdq && String.ends_with?(source.url, ["entities"]) -> source.url
-      source.type == :mdq && String.ends_with?(source.url, ["entities/"]) -> String.trim_trailing(source.url, "/")
-      source.type == :mdq -> source.url
-                             |> URI.parse()
-                             |> URI.merge("entities") #BUG
-                             |> URI.to_string()
+      source.type == :mdq && String.ends_with?(source.url, ["entities"]) -> String.trim_trailing(source.url, "entities")
+      source.type == :mdq && String.ends_with?(source.url, ["entities/"]) -> String.trim_trailing(source.url, "entities/")
       true -> source.url
     end
     Map.merge(source, %{url: url})

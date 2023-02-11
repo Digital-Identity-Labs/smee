@@ -103,6 +103,17 @@ defmodule Smee.Utils do
     |> String.replace("\t", "    ")
   end
 
+
+  def fetchable_remote_xml(%{type: :mdq} = source) do
+    String.trim_trailing(source.url, "/") <> "/entities"
+    |> URI.parse()
+    |> URI.to_string()
+  end
+
+  def fetchable_remote_xml(source) do
+    source.url
+  end
+
   ################################################################################
 
 end
