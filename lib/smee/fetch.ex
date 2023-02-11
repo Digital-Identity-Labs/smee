@@ -16,8 +16,7 @@ defmodule Smee.Fetch do
     if Utils.file_url?(source.url), do: raise "Source URL #{source.url} is not using HTTP!"
 
     url = Utils.fetchable_remote_xml(source)
-
-    IO.puts url
+    md_type = derive_type(source)
 
     response = Req.get!(
       url,
@@ -34,9 +33,8 @@ defmodule Smee.Fetch do
 
     Smee.Metadata.new(
       response.body,
-      type: source.type,
       url: url,
-      type: source.type,
+      type: md_type,
       cert_url: source.cert_url,
       cert_fingerprint: source.cert_fingerprint,
       modified_at: Smee.Utils.parse_http_datetime(Req.Response.get_header(response, "last-modified")),
@@ -83,6 +81,14 @@ defmodule Smee.Fetch do
   defp extract_http_etag(response, source) do
     Req.Response.get_header(response, "etag")
     |> List.first()
+  end
+
+  defp derive_type(source) do
+    if source.type == :mdq do
+      :aggregate
+    else
+      source.type
+    end
   end
 
   defp check_http_data_type!(source, response) do
