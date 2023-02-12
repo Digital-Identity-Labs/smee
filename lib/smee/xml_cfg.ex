@@ -36,14 +36,17 @@ defmodule Smee.XmlCfg do
     https://www.apereo.org/cas/protocol/proxy
     https://www.apereo.org/cas/protocol/serviceValidate)
 
+  @spec default_namespace() :: atom()
   def default_namespace do
     @default_namespace
-  end
+  end ## Should this really return the namespace, not the alias? With another method for alias?
 
+  @spec namespaces() :: map()
   def namespaces() do
     Application.get_env(:smee, :namespaces, nil) || @namespaces
   end
 
+  @spec risky_entity_attributes() :: list(binary())
   def risky_entity_attributes() do
     Application.get_env(:smee, :risky_entity_attributes, nil) || @risky_eas
   end
