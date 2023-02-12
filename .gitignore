@@ -11,8 +11,8 @@ erl_crash.dump
 smee-*.tar
 /tmp/
 /*.xml*
-*.pem
-*.cer
+/*.pem
+/*.cer
 /test.exs
 /dev2.xsl
 /dev.xsl
