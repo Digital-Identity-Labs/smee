@@ -48,7 +48,8 @@ defmodule Smee.Entity do
   def new(data, options \\ []) do
 
     dlt = DateTime.utc_now()
-    until = dlt |> DateTime.add(14, :days)
+    until = dlt
+            |> DateTime.add(1_209_600, :second)
     dhash = Smee.Utils.sha1(data)
     md_uri = Keyword.get(options, :metadata_uri, nil)
 
