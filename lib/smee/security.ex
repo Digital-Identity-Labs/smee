@@ -3,7 +3,7 @@ defmodule Smee.Security do
   alias Smee.Metadata
 
   def verify!(metadata) do
-    apply(selected_backend(metadata), :verify!, [metadata])
+    apply(selected_backend(), :verify!, [metadata])
   end
 
   def verify(metadata) do
@@ -32,8 +32,8 @@ defmodule Smee.Security do
   ################################################################################
 
 
-  defp selected_backend(metadata) do
-    Smee.SysCfg.security_backend(metadata)
+  defp selected_backend() do
+    Smee.SysCfg.security_backend()
   end
 
 end
