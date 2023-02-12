@@ -90,7 +90,6 @@ defmodule Smee do
 
   """
   @spec fetch!(source :: %Source{}) :: Smee.Metadata.t()
-
   def fetch!(%Source{} = source) do
     Fetch.fetch!(source)
   end

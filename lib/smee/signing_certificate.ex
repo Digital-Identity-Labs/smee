@@ -6,32 +6,42 @@ defmodule Smee.SigningCertificate do
   alias Smee.Metadata
   alias Smee.Utils
 
-  def prepare_file!(input) do
-    case prepare_file(input) do
+  @spec prepare_file!(input :: struct(), fingerprint :: binary() | nil) :: binary()
+  def prepare_file!(input, override_fingerprint \\ nil) do
+    case prepare_file(input, override_fingerprint) do
       {:ok, path} -> path
       {:error, msg} -> raise "Cannot prepare certificate: #{msg}"
     end
   end
 
-  def prepare_file(nil) do
-    Smee.Resources.default_cert_file()
-    |> prepare_file()
+  @spec prepare_file(input :: struct(), fingerprint :: binary() | nil) :: {:ok, binary()} | {
+    :error,
+    binary()
+  }
+  def prepare_file(%{cert_url: nil, cert_fingerprint: _}, override_fingerprint \\ nil) do
+    Smee.Resources.default_cert_file_url()
+    |> prepare_file_url(override_fingerprint)
   end
 
-  def prepare_file(%{cert_url: nil}) do
-    Smee.Resources.default_cert_file()
-    |> prepare_file()
+  def prepare_file(%{cert_url: url, cert_fingerprint: fingerprint}, override_fingerprint) do
+    fp = select_fingerprint(fingerprint, override_fingerprint)
+    prepare_file_url(url, fp)
   end
 
-  def prepare_file(%{cert_url: url, cert_fingerprint: fingerprint}) do
-    prepare_file(url, fingerprint)
+  def prepare_file(%{cert_url: url}, override_fingerprint) do
+    prepare_file_url(url, override_fingerprint)
   end
 
-  def prepare_file(%{cert_url: url}) do
-    prepare_file(url, nil)
+  @spec prepare_file(binary() | nil, fingerprint :: binary() | nil) :: {:ok, binary()} | {
+    :error,
+    binary()
+  }
+  def prepare_file_url(nil, fingerprint \\ nil) do
+    Smee.Resources.default_cert_file_url()
+    |> prepare_file_url(fingerprint)
   end
 
-  def prepare_file(url, fingerprint) when is_binary(url) do
+  def prepare_file_url(url, fingerprint) when is_binary(url) do
     with {:ok, path} <- ensure_local_cert(url),
          {:ok, path} <- fingerprint_check(path, fingerprint) do
       {:ok, path}
@@ -40,6 +50,8 @@ defmodule Smee.SigningCertificate do
     end
 
   end
+
+
 
   #  def provided?(c) do
   #
@@ -59,6 +71,10 @@ defmodule Smee.SigningCertificate do
 
 
   ################################################################################
+
+  defp select_fingerprint(nil, nil),  do: nil
+  defp select_fingerprint(builtin, nil),  do: builtin
+  defp select_fingerprint(builtin, override),  do: override
 
   defp  ensure_local_cert("file:" <> _ = url) do
     path = Utils.file_url_to_path(url)
@@ -83,10 +99,12 @@ defmodule Smee.SigningCertificate do
         IO.write(fh, pem_data)
         File.close(fh)
 
+        {:ok, cert_file}
+
       rescue
         e -> {:error, "File #{url} cannot be downloaded!"}
       end
-      {:ok, cert_file}
+
     end
   end
 
