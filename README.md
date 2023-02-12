@@ -29,6 +29,14 @@ Smee contain more tools for handling SAML metadata, such as:
 
 ## Examples
 
+### Getting entity details from an MDQ service
+
+```elixir
+alias Smee.MDQ
+cern_idp = 
+  MDQ.new("http://mdq.ukfederation.org.uk/")
+  |> MDQ.lookup!("https://cern.ch/login")
+```
 
 ## Installation
 
