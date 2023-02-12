@@ -2,15 +2,18 @@ defmodule Smee.SysCfg do
 
   @moduledoc false
 
+  @spec strategies() :: list(atom())
   def strategies do
     [:pragmatic, :fast, :small, :standalone]
   end
 
-  def strategy(metadata_or_entity) do
+  @spec strategy() :: atom()
+  def strategy() do
     Application.get_env(:smee, :strategy, :pragmatic)
   end
 
-  def security_backend(metadata_or_entity) do
+  @spec security_backend() :: atom()
+  def security_backend() do
     Application.get_env(:smee, :verifier, Smee.Security.Xmlsec1)
   end
 
