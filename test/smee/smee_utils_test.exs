@@ -2,6 +2,7 @@ defmodule SmeeUtilsTest do
   use ExUnit.Case
 
   alias Smee.Utils
+  alias Smee.Source
 
   @xml File.read!("test/support/static/aggregate.xml")
 
@@ -11,6 +12,36 @@ defmodule SmeeUtilsTest do
       assert "77603e0cbda1e00d50373ca8ca20a375f5d1f171" = Utils.sha1("https://indiid.net/idp/shibboleth")
       assert "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12" = Utils.sha1("The quick brown fox jumps over the lazy dog")
       assert "da39a3ee5e6b4b0d3255bfef95601890afd80709" = Utils.sha1("")
+    end
+
+  end
+
+  describe "parse_http_datetime/1" do
+
+    test "returns nil when passed nil" do
+      assert is_nil(Utils.parse_http_datetime(nil))
+    end
+
+    test "returns nil when passed an empty string" do
+      assert is_nil(Utils.parse_http_datetime(""))
+    end
+
+    test "Actual datetimes pass through unchanged" do
+      dt = DateTime.utc_now()
+      assert dt = Utils.parse_http_datetime(dt)
+    end
+
+    test "parses a correct http datetime string" do
+      assert ~U[2023-02-12 20:52:35Z] = Utils.parse_http_datetime("Sun, 12 Feb 2023 20:52:35 GMT")
+    end
+
+    test "parses a correct http datetime string that's the first item in a list" do
+      assert ~U[2023-02-12 20:52:35Z] = Utils.parse_http_datetime(["Sun, 12 Feb 2023 20:52:35 GMT"])
+    end
+
+    test "raises an exception if the date cannot be parsed" do
+      assert_raise RuntimeError, fn -> Utils.parse_http_datetime("Sun, 1 Feb 2023 20:52:35 GMT") end
+      assert_raise RuntimeError, fn -> Utils.parse_http_datetime("baboons") end
     end
 
   end
@@ -126,6 +157,43 @@ defmodule SmeeUtilsTest do
     test "Raises an exception when passed something that is not a file: URL" do
       assert_raise RuntimeError, fn -> Utils.file_url_to_path("http://example.com/remote.pem", "/var/data") end
       assert_raise RuntimeError, fn -> Utils.file_url_to_path(nil, "/var/data") end
+    end
+
+  end
+
+  describe "http_agent_name/0" do
+
+    test "returns a string beginning with Smee " do
+      assert String.starts_with?(Utils.http_agent_name(), "Smee")
+    end
+
+    test "returns a string containing correct version" do
+      assert String.contains?(Utils.http_agent_name(), "#{Application.spec(:smee, :vsn)}")
+    end
+
+  end
+
+  describe "xdoc_to_string/1" do
+
+    test "Converts a parsed, Xmerl structure as a string matching the original" do
+      xml_string = ~s|<?xml version="1.0" encoding="UTF-8" ?>\n<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"></xs:schema>|
+      xmerl = SweetXml.parse(xml_string)
+
+      Apex.ap xmerl
+
+      assert xml_string = Utils.xdoc_to_string(xmerl)
+    end
+
+  end
+
+  describe "fetchable_remote_xml/1" do
+
+    test "returns aggregate source URLs as they are, because they should point directly to XML" do
+      assert "http://metadata.example.com/metadata.xml" = Utils.fetchable_remote_xml(Source.new("http://metadata.example.com/metadata.xml"))
+    end
+
+    test "returns MDQ *base* URLs adjusted to directly to the service's aggregate equivalent" do
+      assert "http://mdq.ukfederation.org.uk/entities" = Utils.fetchable_remote_xml(Smee.source("http://mdq.ukfederation.org.uk/", type: :mdq))
     end
 
   end

@@ -1,7 +1,12 @@
 defmodule Smee.Utils do
 
+  alias Smee.Source
+  alias Smee.Metadata
+  alias Smee.Entity
+
   @moduledoc false
 
+  @spec sha1(data :: binary()) :: binary()
   def sha1(data) do
     :crypto.hash(:sha, data)
     |> Base.encode16(case: :lower)
@@ -23,25 +28,36 @@ defmodule Smee.Utils do
     "Dec" => "12"
   }
 
+  @spec parse_http_datetime(datetime :: binary() | nil | list() | %DateTime{}) :: %DateTime{}
   def parse_http_datetime(""), do: nil
 
   def parse_http_datetime(nil), do: nil
 
   def parse_http_datetime(list) when is_list(list), do: parse_http_datetime(List.first(list))
 
-  def parse_http_datetime(datetime) do
-    [_day_of_week, day, month, year, time, "GMT"] = String.split(datetime, " ")
-    date = year <> "-" <> @month_numbers[month] <> "-" <> day
+  def parse_http_datetime(%DateTime{} = datetime), do: datetime
 
-    case DateTime.from_iso8601(date <> " " <> time <> "Z") do
-      {:ok, valid_datetime, 0} ->
-        valid_datetime
+  def parse_http_datetime(datetime_header) do
 
-      {:error, reason} ->
-        raise "could not parse HTTP header containing '#{datetime}': #{reason}"
+    try do
+      [_day_of_week, day, month, year, time, "GMT"] = String.split(datetime_header, " ")
+      date = year <> "-" <> @month_numbers[month] <> "-" <> day
+
+      case DateTime.from_iso8601(date <> " " <> time <> "Z") do
+        {:ok, valid_datetime, 0} ->
+          valid_datetime
+
+        {:error, reason} ->
+          raise "could not parse HTTP header containing '#{datetime_header}': #{reason}"
+      end
+
+    rescue
+      e -> raise "could not parse HTTP header containing '#{datetime_header}'"
     end
+
   end
 
+  @spec normalize_url(url :: binary() | nil | %URI{}) :: binary()
   def normalize_url(url) when is_nil(url) or url == "" do
     nil
   end
@@ -64,6 +80,7 @@ defmodule Smee.Utils do
     end
   end
 
+  @spec file_url?(url :: binary() | nil ) :: boolean()
   def file_url?(nil) do
     false
   end
@@ -76,34 +93,40 @@ defmodule Smee.Utils do
     String.starts_with?(url, "file")
   end
 
+  @spec local_cert?(source_or_metadata :: %Metadata{} | %Source{} ) :: boolean()
   def local_cert?(%{cert_url: url} = source_or_metadata) do
     file_url?(url)
   end
 
+  @spec local?(source_or_metadata :: %Metadata{} | %Source{} ) :: boolean()
   def local?(%{url: url} = source_or_metadata) do
     file_url?(url)
   end
 
+  @spec file_url_to_path(url :: binary() ) ::  binary()
   def file_url_to_path(url) do
     if file_url?(url), do: URI.parse(url).path, else: raise "Not a file:/ URL!"
   end
 
+  @spec file_url_to_path(url :: binary(), base_path :: binary() ) ::  binary()
   def file_url_to_path(url, base_path) do
     reqpath = Path.absname(file_url_to_path(url))
     if String.starts_with?(reqpath, base_path), do: reqpath, else: raise "Illegal path outside base directory!"
   end
 
+  @spec http_agent_name() :: binary()
   def http_agent_name do
     "Smee #{Application.spec(:smee, :vsn)}"
   end
 
+  @spec xdoc_to_string(xdoc :: tuple()) :: binary()
   def xdoc_to_string(xdoc) do
     :xmerl.export([xdoc], XmerlXmlIndent)
     |> to_string()
     |> String.replace("\t", "    ")
   end
 
-
+  @spec fetchable_remote_xml(source :: %Source{}) :: binary()
   def fetchable_remote_xml(%{type: :mdq} = source) do
     String.trim_trailing(source.url, "/") <> "/entities"
     |> URI.parse()
