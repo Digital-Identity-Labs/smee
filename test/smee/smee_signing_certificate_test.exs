@@ -20,6 +20,18 @@ defmodule SmeeSigningCertificateTest do
                             cert_url: "file:#{@local_cert}"
                           )
 
+  @source_with_local_cert_and_fp Source.new(
+                                   "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+                                   cert_url: "file:#{@local_cert}",
+                                   cert_fingerprint: @local_cert_fp
+                                 )
+
+  @source_with_local_cert_and_bad_fp Source.new(
+                                   "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+                                   cert_url: "file:#{@local_cert}",
+                                   cert_fingerprint: @local_cert_fp
+                                 )
+
   @source_with_no_cert Source.new(
                          "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
                        )
@@ -151,6 +163,23 @@ defmodule SmeeSigningCertificateTest do
     test "return an error tuple if a remote file is missing" do
       response = SigningCertificate.prepare_file(Smee.fetch!(@source_missing_remote_cert))
       assert {:error, msg} = response
+    end
+
+    test "verify the certificate fingerprint if a matching fingerprint is included in struct" do
+      response = SigningCertificate.prepare_file(Smee.fetch!(@source_with_local_cert))
+      assert {:ok, path} = response
+      {:ok, path} = response
+      assert String.ends_with?(path, ".pem")
+      assert File.exists?(path)
+      assert @local_cert = path
+    end
+
+    test "verify the certificate fingerprint and error if a mismatched fingerprint is included in struct" do
+
+    end
+
+    test "Use the optional override fingerprint instead of certificate fingerprint in struct" do
+
     end
 
   end
