@@ -4,6 +4,7 @@ defmodule Smee.Entity do
 
   alias __MODULE__
   alias Smee.Utils
+  alias Smee.Metadata
 
   @type t :: %__MODULE__{
                metadata_uri: nil | binary(),
@@ -43,8 +44,7 @@ defmodule Smee.Entity do
     trustiness: 0.5
   ]
 
-  ## Need another new that's more vanilla, based on options, like other
-
+  @spec new(data :: binary(), options :: keyword() ) :: %Entity{}
   def new(data, options \\ []) do
 
     dlt = DateTime.utc_now()
@@ -70,11 +70,12 @@ defmodule Smee.Entity do
 
   end
 
-  def derive(data, metadata, options) when is_nil(data) or data == "" do
+  @spec derive(data ::binary(), metadata :: %Metadata{}, options :: keyword() ) :: %Entity{}
+  def derive(data, metadata, options \\ []) when is_nil(data) or data == "" do
     raise "No data!"
   end
-  
-  def derive(data, metadata, options \\ []) do
+
+  def derive(data, metadata, options) do
 
     md_uri = metadata.uri
     dlt = metadata.modified_at
@@ -97,11 +98,13 @@ defmodule Smee.Entity do
 
   end
 
+  @spec update(entity :: %Entity{} ) :: %Entity{}
   def update(entity) do
     entity = decompress(entity)
     update(entity, entity.data)
   end
 
+  @spec update(entity :: %Entity{}, xml :: binary() ) :: %Entity{}
   def update(entity, xml) do
     changes = entity.changes + 1
     Map.merge(
@@ -111,14 +114,17 @@ defmodule Smee.Entity do
     |> parse_data()
   end
 
+  @spec slim(entity :: %Entity{}) :: %Entity{}
   def slim(entity) do
     Map.merge(entity, %{xdoc: nil})
   end
 
+  @spec compressed?(entity :: %Entity{}) :: boolean()
   def compressed?(entity) do
     entity.compressed || false
   end
 
+  @spec compress(entity :: %Entity{}) :: %Entity{}
   def compress(%{compressed: true} = entity) do
     entity
   end
@@ -129,6 +135,7 @@ defmodule Smee.Entity do
     |> Map.merge(%{data: :zlib.gzip(entity.data), compressed: true})
   end
 
+  @spec decompress(entity :: %Entity{}) :: %Entity{}
   def decompress(%{compressed: false} = entity) do
     entity
   end
@@ -138,10 +145,12 @@ defmodule Smee.Entity do
     |> Map.merge(%{data: :zlib.gunzip(entity.data), compressed: false})
   end
 
+  @spec xdoc(entity :: %Entity{}) :: tuple()
   def xdoc(entity) do
     entity.xdoc || parse_data(entity).xdoc
   end
 
+  @spec idp?(entity :: %Entity{}) :: boolean
   def idp?(entity) do
     case xdoc(entity)
          |> xpath(~x"//md:IDPSSODescriptor|IDPSSODescriptor"e) do
@@ -150,6 +159,7 @@ defmodule Smee.Entity do
     end
   end
 
+  @spec sp?(entity :: %Entity{}) :: boolean
   def sp?(entity) do
     case xdoc(entity)
          |> xpath(~x"//md:SPSSODescriptor|SPSSODescriptor"e) do
@@ -158,6 +168,7 @@ defmodule Smee.Entity do
     end
   end
 
+  @spec xml(entity :: %Entity{}) :: binary()
   def xml(%{compressed: true} = entity) do
     decompress(entity).data
   end
@@ -166,6 +177,7 @@ defmodule Smee.Entity do
     entity.data
   end
 
+  @spec filename(entity :: %Entity{}) :: binary()
   def filename(entity) do
     filename(entity, :sha1)
   end
@@ -181,6 +193,7 @@ defmodule Smee.Entity do
     "#{name}.xml"
   end
 
+  @spec trustiness(entity :: %Entity{}) :: float()
   def trustiness(entity) do
     trustiness = entity.trustiness
     cond do
@@ -192,6 +205,7 @@ defmodule Smee.Entity do
 
   ################################################################################
 
+  @spec parse_data(entity :: %Entity{}) :: %Entity{}
   defp parse_data(%{compressed: true} = entity) do
     entity
     |> decompress()
@@ -203,6 +217,7 @@ defmodule Smee.Entity do
     Map.merge(entity, %{xdoc: xdoc})
   end
 
+  @spec extract_info(entity :: %Entity{}) :: %Entity{}
   defp extract_info(entity) do
 
     info = entity.xdoc
