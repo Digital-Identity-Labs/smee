@@ -179,8 +179,6 @@ defmodule SmeeUtilsTest do
       xml_string = ~s|<?xml version="1.0" encoding="UTF-8" ?>\n<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"></xs:schema>|
       xmerl = SweetXml.parse(xml_string)
 
-      Apex.ap xmerl
-
       assert xml_string = Utils.xdoc_to_string(xmerl)
     end
 
