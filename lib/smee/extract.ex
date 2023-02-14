@@ -8,33 +8,37 @@ defmodule Smee.Extract do
   @list_entity_attrs_s File.read! "priv/xslt/list_entity_attrs.xsl"
   @entity_s File.read! "priv/xslt/extract_entity.xsl"
 
-  def list_ids(md)  do
-    case XSLT.transform(md.data, @list_ids_s, []) do
+  @spec list_ids(metadata :: %Metadata{}) :: list(binary())
+  def list_ids(metadata)  do
+    case XSLT.transform(metadata.data, @list_ids_s, []) do
       {:ok, txt} -> String.split(txt)
       {:error, msg} -> []
     end
   end
 
-  def list_entity_attrs(%Metadata{} = md)  do
-    case XSLT.transform(md.data, @list_entity_attrs_s, []) do
+  @spec list_entity_attrs(metadata :: %Metadata{}) :: map()
+  def list_entity_attrs(%Metadata{} = metadata)  do
+    case XSLT.transform(metadata.data, @list_entity_attrs_s, []) do
       {:ok, txt} -> build_ea_tree(txt)
       {:error, msg} -> %{}
     end
   end
 
-  def list_entity_attrs(md)  do
+  def list_entity_attrs(metadata)  do
    raise "Only works with Metadata structs!"
   end
 
-  def entity!(md, uri) do
-    case XSLT.transform(md.data, @entity_s, [entityID: uri]) do
-      {:ok, xml} -> Entity.derive(xml, md)
+  @spec entity!(metadata :: %Metadata{}, uri :: binary()) :: %Entity{}
+  def entity!(metadata, uri) do
+    case XSLT.transform(metadata.data, @entity_s, [entityID: uri]) do
+      {:ok, xml} -> Entity.derive(xml, metadata)
       {:error, msg} -> raise "Cannot find #{uri} in metadata!"
       end
   end
 
   ################################################################################
 
+  @spec wrap_results(results :: tuple()) :: any()
   defp wrap_results(results) do
     case results do
       {:ok, data} -> data
@@ -42,6 +46,7 @@ defmodule Smee.Extract do
     end
   end
 
+  @spec build_ea_tree(txt :: binary()) :: map()
   defp build_ea_tree(txt) do
     txt
     |> String.splitter("|")

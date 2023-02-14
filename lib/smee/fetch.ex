@@ -2,7 +2,10 @@ defmodule Smee.Fetch do
 
   alias __MODULE__
   alias Smee.Utils
+  alias Smee.Source
+  alias Smee.Metadata
 
+  @spec fetch!(source :: %Source{}) :: %Metadata{}
   def fetch!(%{url: "file:" <> _} = source, options \\ []) do
     local!(source, options)
   end
@@ -11,6 +14,7 @@ defmodule Smee.Fetch do
     remote!(source, options)
   end
 
+  @spec remote!(source :: %Source{}) :: %Metadata{}
   def remote!(source, options \\ []) do
 
     if Utils.file_url?(source.url), do: raise "Source URL #{source.url} is not using HTTP!"
@@ -47,6 +51,7 @@ defmodule Smee.Fetch do
 
   end
 
+  @spec local!(source :: %Source{}) :: %Metadata{}
   def local!(source, options \\ []) do
 
     if !Utils.file_url?(source.url), do: raise "Source URL #{source.url} is not a local file!"
@@ -74,15 +79,18 @@ defmodule Smee.Fetch do
 
   ################################################################################
 
+  @spec retry_jitter(n :: integer()) :: integer()
   defp retry_jitter(n) do
     trunc(Integer.pow(2, n) * 1000 * (1 - 0.1 * :rand.uniform()))
   end
 
+  @spec extract_http_etag(response :: struct(), source :: %Source{}) :: binary()
   defp extract_http_etag(response, source) do
     Req.Response.get_header(response, "etag")
     |> List.first()
   end
 
+  @spec derive_type(source :: %Source{}) :: atom()
   defp derive_type(source) do
     if source.type == :mdq do
       :aggregate
@@ -91,6 +99,7 @@ defmodule Smee.Fetch do
     end
   end
 
+  @spec check_http_data_type!(source :: %Source{}, response :: map()) :: :ok
   defp check_http_data_type!(source, response) do
 
     type = Req.Response.get_header(response, "content-type")
