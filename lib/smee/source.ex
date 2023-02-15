@@ -1,7 +1,6 @@
 defmodule Smee.Source do
 
   alias __MODULE__
-
   alias Smee.Metadata
   alias Smee.Utils
 
@@ -37,6 +36,7 @@ defmodule Smee.Source do
     strict: false
   ]
 
+  @spec new(url :: binary(), options :: keyword()) :: Source.t()
   def new(url, options \\ []) do
     %Source{
       url: Utils.normalize_url(url),
@@ -54,6 +54,7 @@ defmodule Smee.Source do
     |> fix_url()
   end
 
+  @spec check(source ::Source.t(), options :: keyword()) :: {:ok, Source.t()} | {:error, binary()}
   def check(source, options \\ []) do
     cond do
       !Enum.member?(@source_types, source.type) ->
@@ -68,6 +69,7 @@ defmodule Smee.Source do
 
   end
 
+  @spec check!(source ::Source.t(), options :: keyword()) :: Source.t()
   def check!(source, options \\ []) do
     case check(source, options) do
       {:ok, source} -> source
@@ -77,6 +79,7 @@ defmodule Smee.Source do
 
   ################################################################################
 
+  @spec fix_type(source ::Source.t()) :: Source.t()
   defp fix_type(source) do
     type = cond do
       String.ends_with?(source.url, ["entities", "entities/"]) -> :mdq
@@ -86,7 +89,7 @@ defmodule Smee.Source do
     Map.merge(source, %{type: type})
   end
 
-  # Needs to actually d o  the reverse
+  @spec fix_url(source ::Source.t()) :: Source.t()
   defp fix_url(source) do
     url = cond do
       source.type == :mdq && String.ends_with?(source.url, ["entities"]) -> String.trim_trailing(source.url, "entities")
