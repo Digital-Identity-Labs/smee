@@ -7,6 +7,7 @@ defmodule Smee.XSLT do
 
   @base_command ~w(--nowrite)
 
+  @spec transform(xml :: binary(), stylesheet :: binary(), params :: keyword(), options :: keyword()) :: {:ok, binary()} | {:error, binary()}
   def transform(xml, stylesheet, params \\ [], options \\ []) do
 
     {:ok, xml_stream} = StringIO.open(xml)
@@ -33,6 +34,7 @@ defmodule Smee.XSLT do
 
   end
 
+  @spec transform!(xml :: binary(), stylesheet :: binary(), params :: keyword(), options :: keyword()) :: binary()
   def transform!(xml, stylesheet, params \\ [], options \\ []) do
     case transform(xml, stylesheet, params, options) do
       {:ok, data} -> data
@@ -42,10 +44,12 @@ defmodule Smee.XSLT do
 
   ################################################################################
 
+  @spec build_command(stylesheet_file :: binary(), params :: keyword()) :: list()
   defp build_command(stylesheet_file, params) do
     @base_command ++ format_params(params) ++ [stylesheet_file] ++ ["-"]
   end
 
+  @spec format_params(params :: keyword()) :: list()
   defp format_params([])  do
     []
   end
@@ -56,10 +60,12 @@ defmodule Smee.XSLT do
     |> List.flatten
   end
 
+  @spec debug_command(command :: list()) :: binary()
   defp debug_command(command) do
     Enum.join(command, " ")
   end
 
+  @spec parse_error(status :: integer(), err :: binary()) :: binary()
   defp parse_error(status, err) do
     type = case status do
       1 -> "No argument"
