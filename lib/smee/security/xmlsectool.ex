@@ -2,10 +2,12 @@ defmodule Smee.Security.Xmlsectool do
 
   @moduledoc false
 
+  alias Smee.Metadata
   alias Smee.SigningCertificate
 
   @base_command ~w(--verifySignature )
 
+  @spec verify!(metadata :: Metadata.t()) :: Metadata.t()
   def verify!(metadata) do
 
     {:ok, xml_file} = Briefly.create()
@@ -36,6 +38,7 @@ defmodule Smee.Security.Xmlsectool do
     metadata.cert_file || Smee.Resources.default_cert_file()
   end
 
+  @spec build_command(xml_file :: binary(), cert_file :: binary()) :: list()
   defp build_command(xml_file, cert_file) do
     @base_command ++ [
       "--certificate",
@@ -45,11 +48,12 @@ defmodule Smee.Security.Xmlsectool do
     ]
   end
 
+  @spec debug_command(command :: list()) :: binary()
   defp debug_command(command) do
     Enum.join(command, " ")
   end
 
-
+  @spec parse_error(status :: integer(), err :: binary()) :: binary()
   defp parse_error(status, err) do
     type = case status do
       1 -> "Verification failed"

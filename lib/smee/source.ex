@@ -2,6 +2,7 @@ defmodule Smee.Source do
 
   alias __MODULE__
 
+  alias Smee.Metadata
   alias Smee.Utils
 
   @source_types [:aggregate, :single, :mdq, :ld]

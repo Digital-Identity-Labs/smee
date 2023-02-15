@@ -4,7 +4,7 @@ defmodule Smee.Stats do
 
   import SweetXml
 
-  @spec count(enum :: list() | %Stream{} ) :: integer()
+  @spec count(enum :: list() | Enumerable.t() ) :: integer()
   def count(enum) do
     Enum.count(enum)
   end

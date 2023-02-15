@@ -4,10 +4,12 @@ defmodule Smee.Security.Mdqt do
 
   alias Smee.SigningCertificate
   alias Smee.Utils
+  alias Smee.Metadata
 
   @base_command ~w(check )
   @mdqt_env %{"MDQT_STDIN" => "off"}
 
+  @spec verify!(metadata :: Metadata.t()) :: Metadata.t()
   def verify!(metadata) do
 
     {:ok, xml_file} = Briefly.create()
@@ -34,6 +36,7 @@ defmodule Smee.Security.Mdqt do
 
   end
 
+  @spec build_command(xml_file :: binary(), cert_file :: binary()) :: list()
   defp build_command(xml_file, cert_file) do
     @base_command ++ [
       xml_file,
@@ -42,10 +45,12 @@ defmodule Smee.Security.Mdqt do
     ]
   end
 
+  @spec debug_command(command :: list()) :: binary()
   defp debug_command(command) do
     Enum.join(command, " ")
   end
 
+  @spec parse_error(status :: integer(), err :: binary()) :: binary()
   defp parse_error(status, err) do
     type = case status do
       1 -> "Verification failed"

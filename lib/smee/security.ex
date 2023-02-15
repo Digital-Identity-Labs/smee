@@ -2,10 +2,12 @@ defmodule Smee.Security do
 
   alias Smee.Metadata
 
+  @spec verify!(metadata :: Metadata.t()) :: Metadata.t()
   def verify!(metadata) do
     apply(selected_backend(), :verify!, [metadata])
   end
 
+  @spec verify(metadata :: Metadata.t()) :: {:ok, Metadata.t()} | {:error, binary()}
   def verify(metadata) do
     try do
       {:ok, verify!(metadata)}
@@ -14,6 +16,7 @@ defmodule Smee.Security do
     end
   end
 
+  @spec verify?(metadata :: Metadata.t()) :: boolean()
   def verify?(%Metadata{verified: true}), do: true
 
   def verify?(metadata) do
@@ -31,7 +34,7 @@ defmodule Smee.Security do
 
   ################################################################################
 
-
+  @spec selected_backend() :: atom()
   defp selected_backend() do
     Smee.SysCfg.security_backend()
   end
