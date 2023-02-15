@@ -9,11 +9,13 @@ defmodule Smee.Publish do
 
   @top_tag ~r|<[md:]*EntityDescriptor.*>|im
 
+  @spec to_index_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
   def to_index_stream(entities, options \\ []) do
     entities
     |> Stream.map(fn e -> e.uri end)
   end
 
+  @spec to_index(entities :: Enumerable.t(), options :: keyword()) :: binary()
   def to_index(entities, options \\ []) do
     to_index_stream(entities, options)
     |> Enum.to_list
@@ -28,6 +30,8 @@ defmodule Smee.Publish do
 #
 #  end
 
+
+  @spec to_xml_stream(entities :: Entity.t() | Enumerable.t(), options :: keyword()) :: Enumerable.t()
   def to_xml_stream(%Entity{} = entity, options \\ []) do
     single(entity, options)
   end
@@ -36,12 +40,14 @@ defmodule Smee.Publish do
     aggregate_stream(entities, options)
   end
 
+  @spec to_xml_stream_size(entities :: Enumerable.t(), options :: keyword()) :: integer()
   def to_xml_stream_size(entities, options) do
     to_xml_stream(entities, options)
     |> Stream.map(fn x -> byte_size(x) end)
     |> Enum.reduce(0, fn x, acc -> x + acc end)
   end
-  
+
+  @spec to_xml(entities :: Enumerable.t(), options :: keyword()) :: binary()
   def to_xml(entities, options \\ []) do
     to_xml_stream(entities, options)
     |> Enum.join("\n")
@@ -49,11 +55,13 @@ defmodule Smee.Publish do
 
   ################################################################################
 
+  @spec single(entity :: Entity.t(), options :: keyword()) :: list(binary())
   defp single(entity, options \\ []) do
     xml = expand_single_top(entity, options)
     [xml]
   end
 
+  @spec aggregate_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
   defp aggregate_stream(entities, options \\ []) do
 
     options = Keyword.put(options, :now, DateTime.utc_now)
@@ -67,6 +75,7 @@ defmodule Smee.Publish do
     Stream.concat([header_stream, estream, footer_stream])
   end
 
+  @spec aggregate_header(options :: keyword()) :: binary()
   def aggregate_header(options \\ []) do
 
     """
@@ -83,10 +92,12 @@ defmodule Smee.Publish do
     """
   end
 
-  def aggregate_footer(metadata, options \\ []) do
+  @spec aggregate_footer(options :: keyword()) :: binary()
+  def aggregate_footer(options) do
     "\n</EntitiesDescriptor>"
   end
 
+  @spec xml_namespace_declarations() :: binary()
   defp xml_namespace_declarations do
     XmlCfg.namespaces()
     |> Enum.map(fn {k, v} -> "    xmlns:#{k}=\"#{v}\"" end)
@@ -94,6 +105,7 @@ defmodule Smee.Publish do
     |> Enum.join("\n")
   end
 
+  @spec id_attrblock(options :: keyword()) :: binary()
   defp id_attrblock(options) do
     id = Keyword.get(options, :id, "_")
     name = Keyword.get(options, :name, nil)
@@ -106,6 +118,7 @@ defmodule Smee.Publish do
 
   end
 
+  @spec cache_attrblock(options :: keyword()) :: binary()
   defp cache_attrblock(options) do
     later = Keyword.get(options, :now, DateTime.utc_now)
             |> DateTime.add(14, :day)
@@ -115,6 +128,7 @@ defmodule Smee.Publish do
 
   end
 
+  @spec publisher_block(options :: keyword()) :: binary()
   defp publisher_block(options) do
 
     pub_uri = Keyword.get(options, :publisher_uri, nil)
@@ -132,18 +146,22 @@ defmodule Smee.Publish do
 
   end
 
+  @spec aggregate_uri(options :: keyword()) :: binary() | nil
   defp aggregate_uri(options) do
     Keyword.get(options, :uri, nil)
   end
 
+  @spec aggregate_publisher_uri(options :: keyword()) :: binary() | nil
   defp aggregate_publisher_uri(options) do
     Keyword.get(options, :uri, aggregate_uri(options))
   end
 
+  @spec aggregate_description(options :: keyword()) :: binary() | nil
   defp aggregate_description(options) do
     Keyword.get(options, :description, "SAML Aggregate")
   end
 
+  @spec expand_single_top(entity :: Entity.t(), options :: keyword()) :: binary()
   defp expand_single_top(entity, options) do
 
     id = Keyword.get(options, :id, "_")
@@ -161,4 +179,3 @@ defmodule Smee.Publish do
   end
 
 end
-
