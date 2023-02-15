@@ -130,7 +130,7 @@ defmodule Smee do
       iex> |> Smee.entity_ids()
 
   """
-  @spec entity_ids(source :: %Source{} | %Metadata{}) :: list(Smee.Entity.t())
+  @spec entity_ids(source :: %Source{} | %Metadata{}) :: list(binary())
   def entity_ids(%Source{} = source) do
     fetch!(source)
     |> Metadata.entity_ids()
