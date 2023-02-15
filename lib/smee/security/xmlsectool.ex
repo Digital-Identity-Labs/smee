@@ -29,7 +29,7 @@ defmodule Smee.Security.Xmlsectool do
       end
 
     rescue
-      e -> raise "Verification of signed XML has failed! Command was: #{debug_command(command)}"
+      e -> reraise "Verification of signed XML has failed! Command was: #{debug_command(command)}", __STACKTRACE__
     end
 
   end

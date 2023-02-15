@@ -65,7 +65,7 @@ defmodule Smee.MDQ do
       all(source)
       |> Metadata.entity(entity_id)
     rescue
-      e -> raise "No record could be found!"
+      e -> reraise "No record could be found!", __STACKTRACE__
     end
   end
 

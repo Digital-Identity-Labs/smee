@@ -22,7 +22,7 @@ defmodule Smee.Security.Xmlsec1 do
         _ -> {:error, "Unknown XSLT parser error has occurred. Command was: #{debug_command(command)}"}
       end
     rescue
-      e -> raise "Verification of signed XML has failed! Command was: #{debug_command(command)} #{e.message}"
+      e -> reraise "Verification of signed XML has failed! Command was: #{debug_command(command)} #{e.message}", __STACKTRACE__
     end
 
   end
