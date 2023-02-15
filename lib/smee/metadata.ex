@@ -62,7 +62,7 @@ defmodule Smee.Metadata do
     trustiness: 0.5
   ]
 
-  @spec new(data :: %Stream{}, options :: keyword()) :: Metadata.t()
+  @spec new(data :: binary() | Enumerable.t() , options :: keyword()) :: Metadata.t()
   def new(%Stream{} = data, options \\ []) do
 
     url = Keyword.get(options, :url, nil)
@@ -95,7 +95,6 @@ defmodule Smee.Metadata do
     |> count_entities()
   end
 
-  @spec new(data :: binary(), options :: keyword()) :: Metadata.t()
   def new(data, options) when is_binary(data) do
 
     url = Keyword.get(options, :url, nil)
