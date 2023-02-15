@@ -1,19 +1,18 @@
 defmodule Smee.MDQ do
 
   alias Smee.Source
+  alias Smee.Metadata
+  alias Smee.Entity
   alias Smee.Utils
   alias Smee.Fetch
-  alias Smee.Metadata
 
+  @spec source(url :: binary(), options :: keyword() ) :: Source.t()
   def source(url, options \\ []) do
     options = Keyword.put(options, :type, :mdq)
     Source.new(url, options)
   end
 
-  def list(%Metadata{} = metadata) do
-    Metadata.entity_ids(metadata)
-  end
-
+  @spec list(source :: Source.t()) :: list(binary())
   def list(%{type: :mdq} = source) do
     source
     |> Fetch.remote!()
@@ -26,25 +25,19 @@ defmodule Smee.MDQ do
     |> Metadata.entity_ids()
   end
 
-  def url(%{type: :mdq} = source, id) do
-    String.trim_trailing(Utils.fetchable_remote_xml(source), "/") <> "/#{transform_uri(id)}"
+  @spec url(source :: Source.t(), entity_id :: binary()) :: binary()
+  def url(%{type: :mdq} = source, entity_id) do
+    String.trim_trailing(Utils.fetchable_remote_xml(source), "/") <> "/#{transform_uri(entity_id)}"
     |> URI.parse()
     |> URI.to_string()
     |> URI.encode()
   end
 
-  def url(%{type: :aggregate} = source, id) do
+  def url(%{type: :aggregate} = _source, entity_id) do
     raise "Individual URLs cannot be used with aggregate metadata - a proper MDQ service is required"
   end
 
-  def url(%Metadata{} = metadata, id) do
-    raise "Individual URLs cannot be used with aggregate metadata - a proper MDQ service is required"
-  end
-
-  def all(%Metadata{} = metadata) do
-    metadata
-  end
-
+  @spec all(source :: Source.t()) :: Metadata.t()
   def all(%{type: :mdq} = source) do
     source = Map.merge(source, %{type: :aggregate})
     Fetch.remote!(source)
@@ -55,36 +48,30 @@ defmodule Smee.MDQ do
     Fetch.remote!(source)
   end
 
-  def lookup(%Metadata{} = metadata, id) do
-    try do
-      Metadata.entity(metadata, id)
-    rescue
-      e -> raise "No record could be found!"
-    end
-  end
-
-  def lookup(%{type: :mdq} = source, id) do
-    source = Map.merge(source, %{type: :single, url: url(source, id)})
+  @spec lookup(source :: Source.t(), entity_id :: binary()) :: Entity.t()
+  def lookup(%{type: :mdq} = source, entity_id) do
+    source = Map.merge(source, %{type: :single, url: url(source, entity_id)})
     Fetch.remote!(source)
     |> Metadata.entities()
     |> List.first
   end
 
-  def lookup(%{type: :aggregate} = source, id) do
+  def lookup(%{type: :aggregate} = source, entity_id) do
     try do
       all(source)
-      |> Metadata.entity(id)
+      |> Metadata.entity(entity_id)
     rescue
       e -> raise "No record could be found!"
     end
   end
 
-  def transform_uri("{sha1}" <> _ = uri_id) do
-    uri_id
+  @spec transform_uri(entity_id :: binary()) :: binary()
+  def transform_uri("{sha1}" <> _ = entity_id) do
+    entity_id
   end
 
-  def transform_uri(uri_id) do
-    "{sha1}" <> (uri_id
+  def transform_uri(entity_id) do
+    "{sha1}" <> (entity_id
                  |> String.trim
                  |> Utils.sha1)
   end

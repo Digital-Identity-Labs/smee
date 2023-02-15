@@ -5,20 +5,24 @@ defmodule Smee.Lint do
 
   @base_command ~w(--nonet)
 
+  @spec validate(xml :: binary(), options :: keyword() ) :: {:ok, binary()} | {:error, binary()}
   def validate(xml, options \\ []) do
     lint(xml, :validate, options)
   end
 
+  @spec tidy(xml :: binary(), options :: keyword() ) :: {:ok, binary()} | {:error, binary()}
   def tidy(xml, options \\ []) do
     lint(xml, :tidy, options)
   end
 
+  @spec well_formed(xml :: binary(), options :: keyword() ) :: {:ok, binary()} | {:error, binary()}
   def well_formed(xml, options \\ []) do
     lint(xml, :well_formed, options)
   end
 
   ################################################################################
 
+  @spec lint(xml :: binary(), mode :: atom(), options :: keyword() ) :: {:ok, binary()} | {:error, binary()}
   defp lint(xml, mode \\ :tidy, options \\ []) do
 
     command = build_command(mode, options)
@@ -38,6 +42,7 @@ defmodule Smee.Lint do
 
   end
 
+  @spec build_command(mode :: atom(), options :: keyword() ) :: list()
   defp build_command(:validate, options) do
     @base_command ++ schema(options) ++ format_options(options) ++ ["--noout", "-"]
   end
@@ -50,10 +55,12 @@ defmodule Smee.Lint do
     @base_command ++ ["--format", "--nsclean"] ++ format_options(options) ++ ["-"]
   end
 
+  @spec schema(options :: keyword() ) :: list()
   defp schema(options) do
     ["--schema", Resources.saml_metadata_xml_schema_file()]
   end
 
+  @spec format_options(options :: keyword() ) :: list()
   defp format_options([])  do
     []
   end
@@ -62,10 +69,12 @@ defmodule Smee.Lint do
     []
   end
 
+  @spec debug_command(command :: list() ) :: binary()
   defp debug_command(command) do
     Enum.join(command, " ")
   end
 
+  @spec parse_error(status :: integer, err :: binary() ) :: binary()
   defp parse_error(status, err) do
     type = case status do
       0 -> "No error"
