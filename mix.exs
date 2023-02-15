@@ -36,7 +36,7 @@ defmodule Smxt.MixProject do
       {:castore, ">= 0.0.0"},
 
       {:apex, "~> 1.2", only: [:dev, :test], runtime: false},
-      {:credo, "~> 1.5.0", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.6.7", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.13.0", only: :test},
       {:benchee, "~> 1.0.1", only: [:dev, :test]},
       {:ex_doc, "~> 0.23.0", only: :dev, runtime: false},
@@ -46,4 +46,3 @@ defmodule Smxt.MixProject do
     ]
   end
 end
-
