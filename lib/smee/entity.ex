@@ -1,5 +1,9 @@
 defmodule Smee.Entity do
 
+  @moduledoc """
+X
+  """
+
   import SweetXml
 
   alias __MODULE__

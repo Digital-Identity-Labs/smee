@@ -65,6 +65,7 @@ defmodule Smee.XSLT do
     Enum.join(command, " ")
   end
 
+  # credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
   @spec parse_error(status :: integer(), err :: binary()) :: binary()
   defp parse_error(status, err) do
     type = case status do

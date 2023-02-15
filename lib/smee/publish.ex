@@ -1,5 +1,9 @@
 defmodule Smee.Publish do
 
+  @moduledoc """
+  X
+  """
+
   alias Smee.Metadata
   alias Smee.Entity
   alias Smee.Transform

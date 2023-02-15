@@ -1,5 +1,9 @@
 defmodule Smee.Metadata do
 
+  @moduledoc """
+X
+  """
+
   alias __MODULE__
   alias Smee.Utils
   alias Smee.Extract

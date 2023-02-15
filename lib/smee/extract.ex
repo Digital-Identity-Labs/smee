@@ -1,5 +1,9 @@
 defmodule Smee.Extract do
 
+  @moduledoc """
+  X
+  """
+
   alias Smee.XSLT
   alias Smee.Metadata
   alias Smee.Entity
@@ -53,7 +57,7 @@ defmodule Smee.Extract do
     |> Stream.uniq()
     |> Stream.map(fn line -> String.split(line) end)
     |> Stream.reject(fn list -> list == [] end)
-    |> Stream.map(fn [k,v] ->{k,v} end)
+    |> Stream.map(fn [k, v] -> {k, v} end)
     |> Enum.to_list
     |> Enum.group_by(&elem(&1, 0), &elem(&1, 1))
   end

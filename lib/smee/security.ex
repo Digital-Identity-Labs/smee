@@ -1,5 +1,9 @@
 defmodule Smee.Security do
 
+  @moduledoc """
+  X
+  """
+
   alias Smee.Metadata
 
   @spec verify!(metadata :: Metadata.t()) :: Metadata.t()

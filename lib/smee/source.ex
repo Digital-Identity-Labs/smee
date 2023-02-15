@@ -1,5 +1,9 @@
 defmodule Smee.Source do
 
+  @moduledoc """
+  X
+  """
+
   alias __MODULE__
   alias Smee.Metadata
   alias Smee.Utils

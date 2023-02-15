@@ -1,5 +1,9 @@
 defmodule Smee.Transform do
 
+  @moduledoc """
+  X
+  """
+
   alias Smee.XSLT
   alias Smee.Metadata
 

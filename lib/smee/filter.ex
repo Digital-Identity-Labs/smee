@@ -1,5 +1,9 @@
 defmodule Smee.Filter do
 
+  @moduledoc """
+  X
+  """
+
   alias Smee.Entity
 
   import SweetXml

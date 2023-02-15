@@ -1,5 +1,9 @@
 defmodule Smee.Stats do
 
+  @moduledoc """
+  X
+  """
+
   alias Smee.Entity
 
   import SweetXml

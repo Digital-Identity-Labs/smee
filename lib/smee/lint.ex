@@ -1,5 +1,9 @@
 defmodule Smee.Lint do
 
+  @moduledoc """
+  X
+  """
+
   alias Smee.Metadata
   alias Smee.Resources
 
@@ -74,6 +78,7 @@ defmodule Smee.Lint do
     Enum.join(command, " ")
   end
 
+  # credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
   @spec parse_error(status :: integer, err :: binary() ) :: binary()
   defp parse_error(status, err) do
     type = case status do

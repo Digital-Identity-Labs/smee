@@ -1,5 +1,9 @@
 defmodule Smee.MDQ do
 
+  @moduledoc """
+  X
+  """
+
   alias Smee.Source
   alias Smee.Metadata
   alias Smee.Entity

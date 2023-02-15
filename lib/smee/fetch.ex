@@ -1,5 +1,9 @@
 defmodule Smee.Fetch do
 
+  @moduledoc """
+  X
+  """
+
   alias __MODULE__
   alias Smee.Utils
   alias Smee.Source

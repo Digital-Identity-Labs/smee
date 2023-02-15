@@ -66,7 +66,7 @@ defmodule Smee.Utils do
     nil
   end
 
-  def normalize_url(url = %URI{}) do
+  def normalize_url(%URI{} = url) do
     URI.to_string(url)
   end
 
