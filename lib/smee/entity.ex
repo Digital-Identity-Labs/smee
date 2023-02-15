@@ -13,14 +13,14 @@ X
   @type t :: %__MODULE__{
                metadata_uri: nil | binary(),
                metadata_uri_hash: nil | binary(),
-               downloaded_at: nil | struct(),
-               modified_at: nil | struct(),
+               downloaded_at: nil | DateTime.t(),
+               modified_at: nil | DateTime.t(),
                uri: nil | binary(),
                uri_hash: nil | binary(),
                data: nil | binary(),
                xdoc: nil | binary(),
                data_hash: nil | binary(),
-               valid_until: nil | struct(),
+               valid_until: nil | DateTime.t(),
                label: nil | binary(),
                size: integer(),
                compressed: boolean(),
@@ -41,14 +41,14 @@ X
     :data_hash,
     :valid_until,
     :label,
-    :size,
+    size: 0,
     compressed: false,
     changes: 0,
     priority: 5,
     trustiness: 0.5
   ]
 
-  @spec new(data :: binary(), options :: keyword() ) :: %Entity{}
+  @spec new(data :: binary(), options :: keyword() ) :: Entity.t()
   def new(data, options \\ []) do
 
     dlt = DateTime.utc_now()
@@ -74,7 +74,7 @@ X
 
   end
 
-  @spec derive(data ::binary(), metadata :: %Metadata{}, options :: keyword() ) :: %Entity{}
+  @spec derive(data ::binary(), metadata :: Metadata.t(), options :: keyword() ) :: Entity.t()
   def derive(data, metadata, options \\ []) when is_nil(data) or data == "" do
     raise "No data!"
   end
@@ -102,13 +102,13 @@ X
 
   end
 
-  @spec update(entity :: %Entity{} ) :: %Entity{}
+  @spec update(entity :: Entity.t() ) :: Entity.t()
   def update(entity) do
     entity = decompress(entity)
     update(entity, entity.data)
   end
 
-  @spec update(entity :: %Entity{}, xml :: binary() ) :: %Entity{}
+  @spec update(entity :: Entity.t(), xml :: binary() ) :: Entity.t()
   def update(entity, xml) do
     changes = entity.changes + 1
     Map.merge(
@@ -118,17 +118,17 @@ X
     |> parse_data()
   end
 
-  @spec slim(entity :: %Entity{}) :: %Entity{}
+  @spec slim(entity :: Entity.t()) :: Entity.t()
   def slim(entity) do
-    Map.merge(entity, %{xdoc: nil})
+    struct(entity, %{xdoc: nil})
   end
 
-  @spec compressed?(entity :: %Entity{}) :: boolean()
+  @spec compressed?(entity :: Entity.t()) :: boolean()
   def compressed?(entity) do
     entity.compressed || false
   end
 
-  @spec compress(entity :: %Entity{}) :: %Entity{}
+  @spec compress(entity :: Entity.t()) :: Entity.t()
   def compress(%{compressed: true} = entity) do
     entity
   end
@@ -136,25 +136,25 @@ X
   def compress(entity) do
     entity
     |> slim()
-    |> Map.merge(%{data: :zlib.gzip(entity.data), compressed: true})
+    |> struct(%{data: :zlib.gzip(entity.data), compressed: true})
   end
 
-  @spec decompress(entity :: %Entity{}) :: %Entity{}
+  @spec decompress(entity :: Entity.t()) :: Entity.t()
   def decompress(%{compressed: false} = entity) do
     entity
   end
 
   def decompress(entity) do
     entity
-    |> Map.merge(%{data: :zlib.gunzip(entity.data), compressed: false})
+    |> struct(%{data: :zlib.gunzip(entity.data), compressed: false})
   end
 
-  @spec xdoc(entity :: %Entity{}) :: tuple()
+  @spec xdoc(entity :: Entity.t()) :: tuple()
   def xdoc(entity) do
     entity.xdoc || parse_data(entity).xdoc
   end
 
-  @spec idp?(entity :: %Entity{}) :: boolean
+  @spec idp?(entity :: Entity.t()) :: boolean
   def idp?(entity) do
     case xdoc(entity)
          |> xpath(~x"//md:IDPSSODescriptor|IDPSSODescriptor"e) do
@@ -163,7 +163,7 @@ X
     end
   end
 
-  @spec sp?(entity :: %Entity{}) :: boolean
+  @spec sp?(entity :: Entity.t()) :: boolean
   def sp?(entity) do
     case xdoc(entity)
          |> xpath(~x"//md:SPSSODescriptor|SPSSODescriptor"e) do
@@ -172,7 +172,7 @@ X
     end
   end
 
-  @spec xml(entity :: %Entity{}) :: binary()
+  @spec xml(entity :: Entity.t()) :: binary()
   def xml(%{compressed: true} = entity) do
     decompress(entity).data
   end
@@ -181,7 +181,7 @@ X
     entity.data
   end
 
-  @spec filename(entity :: %Entity{}) :: binary()
+  @spec filename(entity :: Entity.t()) :: binary()
   def filename(entity) do
     filename(entity, :sha1)
   end
@@ -197,7 +197,7 @@ X
     "#{name}.xml"
   end
 
-  @spec trustiness(entity :: %Entity{}) :: float()
+  @spec trustiness(entity :: Entity.t()) :: float()
   def trustiness(entity) do
     trustiness = entity.trustiness
     cond do
@@ -209,7 +209,7 @@ X
 
   ################################################################################
 
-  @spec parse_data(entity :: %Entity{}) :: %Entity{}
+  @spec parse_data(entity :: Entity.t()) :: Entity.t()
   defp parse_data(%{compressed: true} = entity) do
     entity
     |> decompress()
@@ -218,10 +218,10 @@ X
 
   defp parse_data(entity) do
     xdoc = SweetXml.parse(entity.data, namespace_conformant: false)
-    Map.merge(entity, %{xdoc: xdoc})
+    struct(entity, %{xdoc: xdoc})
   end
 
-  @spec extract_info(entity :: %Entity{}) :: %Entity{}
+  @spec extract_info(entity :: Entity.t()) :: Entity.t()
   defp extract_info(entity) do
 
     info = entity.xdoc
@@ -231,7 +231,7 @@ X
               )
 
     Map.merge(entity, info)
-    |> Map.merge(%{uri_hash: Utils.sha1(info[:uri])})
+    |> struct(%{uri_hash: Utils.sha1(info[:uri])})
 
   end
 

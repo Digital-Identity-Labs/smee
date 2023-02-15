@@ -12,7 +12,7 @@ defmodule Smee.Extract do
   @list_entity_attrs_s File.read! "priv/xslt/list_entity_attrs.xsl"
   @entity_s File.read! "priv/xslt/extract_entity.xsl"
 
-  @spec list_ids(metadata :: %Metadata{}) :: list(binary())
+  @spec list_ids(metadata :: Metadata.t()) :: list(binary())
   def list_ids(metadata)  do
     case XSLT.transform(metadata.data, @list_ids_s, []) do
       {:ok, txt} -> String.split(txt)
@@ -20,7 +20,7 @@ defmodule Smee.Extract do
     end
   end
 
-  @spec list_entity_attrs(metadata :: %Metadata{}) :: map()
+  @spec list_entity_attrs(metadata ::Metadata.t()) :: map()
   def list_entity_attrs(%Metadata{} = metadata)  do
     case XSLT.transform(metadata.data, @list_entity_attrs_s, []) do
       {:ok, txt} -> build_ea_tree(txt)
@@ -32,7 +32,7 @@ defmodule Smee.Extract do
    raise "Only works with Metadata structs!"
   end
 
-  @spec entity!(metadata :: %Metadata{}, uri :: binary()) :: %Entity{}
+  @spec entity!(metadata :: Metadata.t(), uri :: binary()) :: Entity.t()
   def entity!(metadata, uri) do
     case XSLT.transform(metadata.data, @entity_s, [entityID: uri]) do
       {:ok, xml} -> Entity.derive(xml, metadata)

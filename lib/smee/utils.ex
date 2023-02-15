@@ -28,7 +28,7 @@ defmodule Smee.Utils do
     "Dec" => "12"
   }
 
-  @spec parse_http_datetime(datetime :: binary() | nil | list() | %DateTime{}) :: %DateTime{}
+  @spec parse_http_datetime(datetime :: binary() | nil | list() | DateTime.t()) :: DateTime.t()
   def parse_http_datetime(""), do: nil
 
   def parse_http_datetime(nil), do: nil
@@ -52,12 +52,12 @@ defmodule Smee.Utils do
       end
 
     rescue
-      e -> raise "could not parse HTTP header containing '#{datetime_header}'"
+      e -> reraise "could not parse HTTP header containing '#{datetime_header}'", __STACKTRACE__
     end
 
   end
 
-  @spec normalize_url(url :: binary() | nil | %URI{}) :: binary()
+  @spec normalize_url(url :: binary() | nil | URI.t()) :: binary()
   def normalize_url(url) when is_nil(url) or url == "" do
     nil
   end
@@ -93,12 +93,12 @@ defmodule Smee.Utils do
     String.starts_with?(url, "file")
   end
 
-  @spec local_cert?(source_or_metadata :: %Metadata{} | %Source{} ) :: boolean()
+  @spec local_cert?(source_or_metadata :: Metadata.t() | Source.t() ) :: boolean()
   def local_cert?(%{cert_url: url} = source_or_metadata) do
     file_url?(url)
   end
 
-  @spec local?(source_or_metadata :: %Metadata{} | %Source{} ) :: boolean()
+  @spec local?(source_or_metadata :: Metadata.t() | Source.t() ) :: boolean()
   def local?(%{url: url} = source_or_metadata) do
     file_url?(url)
   end
@@ -126,7 +126,7 @@ defmodule Smee.Utils do
     |> String.replace("\t", "    ")
   end
 
-  @spec fetchable_remote_xml(source :: %Source{}) :: binary()
+  @spec fetchable_remote_xml(source :: Source.t()) :: binary()
   def fetchable_remote_xml(%{type: :mdq} = source) do
     String.trim_trailing(source.url, "/") <> "/entities"
     |> URI.parse()

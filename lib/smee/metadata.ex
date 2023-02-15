@@ -13,8 +13,8 @@ X
   @metadata_types [:aggregate, :single]
 
   @type t :: %__MODULE__{
-               downloaded_at: nil | struct(),
-               modified_at: nil | struct(),
+               downloaded_at: nil | DateTime.t(),
+               modified_at: nil | DateTime.t(),
                url: nil | binary(),
                id: nil | binary(),
                type: atom(),
@@ -28,7 +28,7 @@ X
                uri: nil | binary(),
                uri_hash: nil | binary(),
                file_uid: nil | binary(),
-               valid_until: nil | struct(),
+               valid_until: nil | DateTime.t(),
                cache_duration: nil | binary(),
                cert_url: nil | binary(),
                cert_fingerprint: nil | binary(),
@@ -67,7 +67,34 @@ X
   ]
 
   @spec new(data :: binary() | Enumerable.t() , options :: keyword()) :: Metadata.t()
-  def new(%Stream{} = data, options \\ []) do
+  def new(data, options) when is_binary(data) do
+
+    url = Keyword.get(options, :url, nil)
+    dlt = Keyword.get(options, :downloaded_at, DateTime.utc_now())
+    dhash = Smee.Utils.sha1(data)
+
+    %Metadata{
+      url: Utils.normalize_url(url),
+      data: data,
+      size: byte_size(data),
+      data_hash: dhash,
+      url_hash: if(url, do: Smee.Utils.sha1(url), else: nil),
+      type: Keyword.get(options, :type, :aggregate),
+      downloaded_at: dlt,
+      modified_at: Keyword.get(options, :modified_at, dlt),
+      etag: Keyword.get(options, :etag, dhash),
+      label: Keyword.get(options, :label, nil),
+      cert_url: Utils.normalize_url(Keyword.get(options, :cert_url, nil)),
+      cert_fingerprint: Keyword.get(options, :cert_fingerprint, nil),
+      verified: false
+    }
+    |> fix_type()
+    |> extract_info()
+    |> count_entities()
+
+  end
+
+  def new(data, options \\ []) do
 
     url = Keyword.get(options, :url, nil)
     dlt = DateTime.utc_now()
@@ -99,32 +126,7 @@ X
     |> count_entities()
   end
 
-  def new(data, options) when is_binary(data) do
 
-    url = Keyword.get(options, :url, nil)
-    dlt = Keyword.get(options, :downloaded_at, DateTime.utc_now())
-    dhash = Smee.Utils.sha1(data)
-
-    %Metadata{
-      url: Utils.normalize_url(url),
-      data: data,
-      size: byte_size(data),
-      data_hash: dhash,
-      url_hash: if(url, do: Smee.Utils.sha1(url), else: nil),
-      type: Keyword.get(options, :type, :aggregate),
-      downloaded_at: dlt,
-      modified_at: Keyword.get(options, :modified_at, dlt),
-      etag: Keyword.get(options, :etag, dhash),
-      label: Keyword.get(options, :label, nil),
-      cert_url: Utils.normalize_url(Keyword.get(options, :cert_url, nil)),
-      cert_fingerprint: Keyword.get(options, :cert_fingerprint, nil),
-      verified: false
-    }
-    |> fix_type()
-    |> extract_info()
-    |> count_entities()
-
-  end
 
   # @spec update(metadata :: Metadata.t()) :: Metadata.t()
   def update(metadata) do
@@ -192,7 +194,7 @@ X
     |> Enum.to_list
   end
 
-  @spec stream_entities(metadata :: Metadata.t(), options :: keyword()) :: %Stream{}
+  @spec stream_entities(metadata :: Metadata.t(), options :: keyword()) ::  Enumerable.t()
   def stream_entities(metadata, options \\ []) do
     options = Keyword.take(options, [:slim, :compress])
     split_to_stream(metadata)
@@ -322,7 +324,7 @@ X
     raise "Smee cannot process metadata of type #{metadata.type}!"
   end
 
-  @spec split_to_stream(metadata :: Metadata.t()) :: %Stream{}
+  @spec split_to_stream(metadata :: Metadata.t()) ::  Enumerable.t()
   defp split_to_stream(%{type: :aggregate} = metadata) do
     metadata.data
     |> String.splitter("EntityDescriptor>", trim: true)
