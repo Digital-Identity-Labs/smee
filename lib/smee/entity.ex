@@ -62,7 +62,7 @@ X
       downloaded_at: dlt,
       data_hash: dhash,
       modified_at: Keyword.get(options, :modified_at, dlt),
-      valid_until: Keyword.get(options, :modified_at, until),
+      valid_until: Keyword.get(options, :valid_until, until),
       label: Keyword.get(options, :label, nil),
       metadata_uri: md_uri,
       metadata_uri_hash: if(md_uri, do: Smee.Utils.sha1(md_uri), else: nil),
@@ -121,6 +121,11 @@ X
   @spec slim(entity :: Entity.t()) :: Entity.t()
   def slim(entity) do
     struct(entity, %{xdoc: nil})
+  end
+
+  @spec bulkup(entity :: Entity.t()) :: Entity.t()
+  def bulkup(entity) do
+    parse_data(entity)
   end
 
   @spec compressed?(entity :: Entity.t()) :: boolean()
