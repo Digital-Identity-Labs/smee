@@ -51,6 +51,7 @@ X
   @spec new(data :: binary(), options :: keyword() ) :: Entity.t()
   def new(data, options \\ []) do
 
+    data = String.trim(data)
     dlt = DateTime.utc_now()
     until = dlt
             |> DateTime.add(1_209_600, :second)
@@ -58,7 +59,7 @@ X
     md_uri = Keyword.get(options, :metadata_uri, nil)
 
     %Entity{
-      data: String.trim(data),
+      data: data,
       size: byte_size(data),
       downloaded_at: Keyword.get(options, :downloaded_at, dlt),
       data_hash: dhash,
@@ -82,12 +83,13 @@ X
 
   def derive(data, metadata, options) do
 
+    data = String.trim(data)
     md_uri = Keyword.get(options, :metadata_uri, metadata.uri)
     md_uri_hash = if(md_uri, do: Smee.Utils.sha1(md_uri), else: nil)
     dhash = Smee.Utils.sha1(data)
 
     %Entity{
-      data: String.trim(data),
+      data: data,
       size: byte_size(data),
       downloaded_at:  Keyword.get(options, :downloaded_at, metadata.downloaded_at),
       data_hash: dhash,
@@ -112,7 +114,7 @@ X
 
   @spec update(entity :: Entity.t(), xml :: binary() ) :: Entity.t()
   def update(entity, xml) do
-    changes = entity.changes + 1
+    changes = if xml == entity.data, do: entity.changes, else: entity.changes + 1
     Map.merge(
       entity,
       %{data: xml, changes: changes, data_hash: Utils.sha1(xml), size: byte_size(xml), compressed: false}
@@ -180,6 +182,10 @@ X
   end
 
   @spec xml(entity :: Entity.t()) :: binary()
+  def xml(%{data: problem} = entity) when is_nil(problem) or problem == "" do
+   raise "Missing data in entity!"
+  end
+
   def xml(%{compressed: true} = entity) do
     decompress(entity).data
   end
@@ -210,8 +216,20 @@ X
     cond do
       is_nil(trustiness) -> 0.0
       trustiness > 0.9 -> 0.9
-      trustiness == 0 -> 0.0
+      trustiness < 0.1 -> 0.0
+      true -> trustiness
     end
+  end
+
+  @spec priority(entity :: Entity.t()) :: integer()
+  def priority(entity) do
+    priority = entity.priority
+    cond do
+      is_nil(priority) -> 0
+      priority > 10 -> 10
+      priority < 1 -> 0
+      true -> priority
+      end
   end
 
   ################################################################################
