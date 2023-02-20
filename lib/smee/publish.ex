@@ -16,7 +16,14 @@ defmodule Smee.Publish do
   @spec to_index_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
   def to_index_stream(entities, options \\ []) do
     entities
-    |> Stream.map(fn e -> e.uri end)
+    |> Stream.map(fn e -> "#{e.uri}\n" end)
+  end
+
+  @spec to_index_stream_size(entities :: Enumerable.t(), options :: keyword()) :: integer()
+  def to_index_stream_size(entities, options) do
+    to_index_stream(entities, options)
+    |> Stream.map(fn x -> byte_size(x) end)
+    |> Enum.reduce(0, fn x, acc -> x + acc end)
   end
 
   @spec to_index(entities :: Enumerable.t(), options :: keyword()) :: binary()
