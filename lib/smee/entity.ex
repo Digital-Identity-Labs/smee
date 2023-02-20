@@ -59,7 +59,8 @@ X
 
     %Entity{
       data: String.trim(data),
-      downloaded_at: dlt,
+      size: byte_size(data),
+      downloaded_at: Keyword.get(options, :downloaded_at, dlt),
       data_hash: dhash,
       modified_at: Keyword.get(options, :modified_at, dlt),
       valid_until: Keyword.get(options, :valid_until, until),
@@ -67,7 +68,7 @@ X
       metadata_uri: md_uri,
       metadata_uri_hash: if(md_uri, do: Smee.Utils.sha1(md_uri), else: nil),
       priority: Keyword.get(options, :priority, 5),
-      trustiness: Keyword.get(options, :trustiness, 0.0),
+      trustiness: Keyword.get(options, :trustiness, 0.5),
     }
     |> parse_data()
     |> extract_info()
@@ -81,21 +82,22 @@ X
 
   def derive(data, metadata, options) do
 
-    md_uri = metadata.uri
-    dlt = metadata.modified_at
+    md_uri = Keyword.get(options, :metadata_uri, metadata.uri)
+    md_uri_hash = if(md_uri, do: Smee.Utils.sha1(md_uri), else: nil)
     dhash = Smee.Utils.sha1(data)
 
     %Entity{
       data: String.trim(data),
-      downloaded_at: dlt,
+      size: byte_size(data),
+      downloaded_at:  Keyword.get(options, :downloaded_at, metadata.downloaded_at),
       data_hash: dhash,
-      modified_at: Keyword.get(options, :modified_at, dlt),
-      valid_until: metadata.valid_until,
+      modified_at: Keyword.get(options, :modified_at, metadata.modified_at),
+      valid_until: Keyword.get(options, :valid_until, metadata.valid_until),
       label: Keyword.get(options, :label, nil),
-      metadata_uri: metadata.uri,
-      metadata_uri_hash: metadata.uri_hash,
-      priority: metadata.priority,
-      trustiness: metadata.trustiness,
+      metadata_uri: md_uri,
+      metadata_uri_hash: md_uri_hash,
+      priority: Keyword.get(options, :priority, metadata.priority),
+      trustiness: Keyword.get(options, :trustiness, metadata.trustiness),
     }
     |> parse_data()
     |> extract_info()
