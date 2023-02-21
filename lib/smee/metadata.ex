@@ -66,8 +66,8 @@ X
     trustiness: 0.5
   ]
 
-  @spec new(data :: binary() | Enumerable.t() , options :: keyword()) :: Metadata.t()
-  def new(data, options) when is_binary(data) do
+  @spec new(data :: binary() , options :: keyword()) :: Metadata.t()
+  def new(data, options \\ []) when is_binary(data) do
 
     url = Keyword.get(options, :url, nil)
     dlt = Keyword.get(options, :downloaded_at, DateTime.utc_now())
@@ -94,12 +94,13 @@ X
 
   end
 
-  def new(data, options \\ []) do
+  @spec derive(data :: Enumerable.t(), options :: keyword()) :: Metadata.t()
+  def derive(enum, options \\ []) do
 
     url = Keyword.get(options, :url, nil)
     dlt = DateTime.utc_now()
 
-    data = Smee.Publish.to_xml(data)
+    data = Smee.Publish.to_xml(enum)
     hash = Smee.Utils.sha1(data)
 
     %Metadata{
@@ -126,9 +127,7 @@ X
     |> count_entities()
   end
 
-
-
-  # @spec update(metadata :: Metadata.t()) :: Metadata.t()
+  @spec update(metadata :: Metadata.t()) :: Metadata.t()
   def update(metadata) do
     entity = decompress(metadata)
     update(metadata, metadata.data)
