@@ -1,7 +1,7 @@
 defmodule Smee.Metadata do
 
   @moduledoc """
-X
+  X
   """
 
   alias __MODULE__
@@ -66,7 +66,7 @@ X
     trustiness: 0.5
   ]
 
-  @spec new(data :: binary() , options :: keyword()) :: Metadata.t()
+  @spec new(data :: binary(), options :: keyword()) :: Metadata.t()
   def new(data, options \\ []) when is_binary(data) do
 
     url = Keyword.get(options, :url, nil)
@@ -193,7 +193,7 @@ X
     |> Enum.to_list
   end
 
-  @spec stream_entities(metadata :: Metadata.t(), options :: keyword()) ::  Enumerable.t()
+  @spec stream_entities(metadata :: Metadata.t(), options :: keyword()) :: Enumerable.t()
   def stream_entities(metadata, options \\ []) do
     options = Keyword.take(options, [:slim, :compress])
     split_to_stream(metadata)
@@ -294,6 +294,7 @@ X
                 file_uid: ~x"string(/*/@ID)"s,
                 valid_until: ~x"string(/*/@validUntil)"s
               )
+           |> Utils.nillify_map_empties()
 
     info = Map.merge(info, %{uri_hash: Smee.Utils.sha1(info.uri), valid_until: tweak_valid_until(info.valid_until)})
 
@@ -312,6 +313,7 @@ X
                 cache_duration: ~x"string(/*/@cacheDuration)"s,
                 valid_until: ~x"string(/*/@validUntil)"s
               )
+           |> Utils.nillify_map_empties()
 
     info = Map.merge(info, %{uri_hash: Smee.Utils.sha1(info.uri), valid_until: tweak_valid_until(info.valid_until)})
 
@@ -323,7 +325,7 @@ X
     raise "Smee cannot process metadata of type #{metadata.type}!"
   end
 
-  @spec split_to_stream(metadata :: Metadata.t()) ::  Enumerable.t()
+  @spec split_to_stream(metadata :: Metadata.t()) :: Enumerable.t()
   defp split_to_stream(%{type: :aggregate} = metadata) do
     metadata.data
     |> String.splitter("EntityDescriptor>", trim: true)
