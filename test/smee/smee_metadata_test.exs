@@ -517,7 +517,10 @@ defmodule SmeeMetadataTest do
     end
 
     test "updated metadata has the correct data hash" do
-      assert %Metadata{data_hash: "5aa7f95301cc69fe7161d954abd8ca551608791e"} = Metadata.update(@valid_metadata, @updated_xml)
+      assert %Metadata{data_hash: "5aa7f95301cc69fe7161d954abd8ca551608791e"} = Metadata.update(
+               @valid_metadata,
+               @updated_xml
+             )
     end
 
     test "updated metadata has its change count increased by 1" do
@@ -604,23 +607,54 @@ defmodule SmeeMetadataTest do
 
   describe "count/1" do
 
+    test "returns number of EntityIDs present in metadata" do
+      assert 2 = Metadata.count(@valid_metadata)
+    end
 
   end
 
-  describe "Metadata/2" do
+  describe "entity/2" do
+
+    test "returns entity record for the specified entityID if present in metadata" do
+      assert %Entity{uri: "https://test.ukfederation.org.uk/entity"} = Metadata.entity(
+               @valid_metadata,
+               "https://test.ukfederation.org.uk/entity"
+             )
+    end
+
   end
 
   describe "entities/1" do
+
+    assert [
+             %Entity{uri: "https://test.ukfederation.org.uk/entity"},
+             %Entity{uri: "https://indiid.net/idp/shibboleth"}
+           ] = Metadata.entities(@valid_metadata)
+
   end
 
   describe "stream_entities/2" do
+
+    assert %Stream{} = Metadata.stream_entities(@valid_metadata)
+    assert [
+             %Entity{uri: "https://test.ukfederation.org.uk/entity"},
+             %Entity{uri: "https://indiid.net/idp/shibboleth"}
+           ] = Metadata.stream_entities(@valid_metadata)
+               |> Enum.to_list
+
   end
 
-  describe "random_Metadata/1" do
+  describe "random_entity/1" do
+
+    assert %Entity{} = Metadata.random_entity(@valid_metadata)
+
   end
 
-  describe "Metadata_ids/1" do
-
+  describe "entity_ids/1" do
+    assert [
+             "https://test.ukfederation.org.uk/entity",
+             "https://indiid.net/idp/shibboleth"
+           ] = Metadata.entity_ids(@valid_metadata)
   end
 
   describe "filename/2" do
@@ -636,6 +670,7 @@ defmodule SmeeMetadataTest do
     test "return a suggested filename for the Metadata in uri format" do
       assert "http_example_com_federation.xml" = Metadata.filename(@valid_metadata, :uri)
     end
+
   end
 
 
