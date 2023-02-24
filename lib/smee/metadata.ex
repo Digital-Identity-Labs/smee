@@ -117,7 +117,7 @@ defmodule Smee.Metadata do
 
   @spec update(metadata :: Metadata.t(), xml :: binary()) :: Metadata.t()
   def update(metadata, xml) do
-    changes = metadata.changes + 1
+    changes = if xml == metadata.data, do: metadata.changes, else: metadata.changes + 1
     Map.merge(
       metadata,
       %{data: xml, changes: changes, data_hash: Utils.sha1(xml), size: byte_size(xml), compressed: false}
@@ -150,6 +150,10 @@ defmodule Smee.Metadata do
   end
 
   @spec xml(metadata :: Metadata.t()) :: binary()
+  def xml(%{data: problem} = entity) when is_nil(problem) or problem == "" do
+    raise "Missing XML data in Metadata!"
+  end
+
   def xml(%Metadata{compressed: true} = metadata) do
     decompress(metadata)
     |> xml()
