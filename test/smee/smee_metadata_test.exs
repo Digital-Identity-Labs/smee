@@ -21,6 +21,12 @@ defmodule SmeeMetadataTest do
                   |> Source.new()
                   |> Fetch.local!()
 
+  @updated_xml String.replace(
+                 @valid_metadata_xml,
+                 ~s|<mdui:DisplayName xml:lang="en">Indiid</mdui:DisplayName>|,
+                 ~s|<mdui:DisplayName xml:lang="en">Indiid IdP</mdui:DisplayName>|
+               )
+
   describe "new/2" do
 
     test "returns a Metadata struct when passed an XML string" do
@@ -476,30 +482,132 @@ defmodule SmeeMetadataTest do
 
   describe "update/1" do
 
+    test "updated metadata is decompressed" do
+      assert %Metadata{compressed: false} = Metadata.update(@valid_metadata)
+      assert %Metadata{compressed: false} = Metadata.update(Entity.compress(@valid_metadata))
+    end
+
+    test "updated metadata has the correct bytesize" do
+      bad_metadata = struct(@valid_metadata, %{size: 0})
+      assert %Metadata{size: 39363} = Metadata.update(bad_metadata)
+    end
+
+    test "updated metadata has the correct data hash" do
+      bad_entity = struct(@valid_metadata, %{data_hash: "LE SIGH..."})
+      assert %Metadata{data_hash: "7bb9e69f7b5490f679e70b9fc4e4b14d2022ab83"} = Metadata.update(bad_entity)
+    end
+
+    test "updated metadata without new XML does not change count value" do
+      assert %Metadata{changes: 0} = Metadata.update(@valid_metadata)
+    end
+
   end
 
   describe "update/2" do
+    test "new data passed during an update replaces the existing data" do
+      assert %Metadata{data: @updated_xml} = Metadata.update(@valid_metadata, @updated_xml)
+    end
+
+    test "updated metadata is decompressed" do
+      assert %Metadata{compressed: false} = Metadata.update(Metadata.compress(@valid_metadata), @updated_xml)
+    end
+
+    test "updated metadata has the correct bytesize" do
+      assert %Metadata{size: 39367} = Metadata.update(@valid_metadata, @updated_xml)
+    end
+
+    test "updated metadata has the correct data hash" do
+      assert %Metadata{data_hash: "5aa7f95301cc69fe7161d954abd8ca551608791e"} = Metadata.update(@valid_metadata, @updated_xml)
+    end
+
+    test "updated metadata has its change count increased by 1" do
+      assert %Metadata{changes: 1} = Metadata.update(@valid_metadata, @updated_xml)
+    end
 
   end
 
   describe "compressed?/1" do
+    test "returns true if Metadata is compressed" do
+      assert Metadata.compressed?(Metadata.compress(@valid_metadata))
+    end
+
+    test "returns false if Metadata is not compressed" do
+      refute Metadata.compressed?(@valid_metadata)
+    end
 
   end
 
   describe "compress/1" do
+
+    test "The Metadata is compressed: data is gzipped" do
+      compressed_Metadata = Metadata.compress(@valid_metadata)
+      original_data = @valid_metadata.data
+      assert original_data = :zlib.gunzip(compressed_Metadata.data)
+    end
+
+    test "nothing happens if already gzipped" do
+      compressed_Metadata = Metadata.compress(@valid_metadata)
+      assert compressed_Metadata = Metadata.compress(compressed_Metadata)
+    end
+
+    test "Bytesize remains the same, original size" do
+      compressed_Metadata = Metadata.compress(@valid_metadata)
+      assert %Metadata{size: 39363} = compressed_Metadata
+    end
+
+    test "The compressed flag is set" do
+      %Metadata{compressed: true} = Metadata.compress(@valid_metadata)
+    end
+
+
   end
 
   describe "decompress/1" do
 
+    test "The Metadata is decompressed: data is not gzipped" do
+      compressed_Metadata = Metadata.compress(@valid_metadata)
+      original_data = @valid_metadata.data
+      assert %Metadata{data: original_data} = Metadata.decompress(@valid_metadata)
+    end
+
+    test "nothing happens if not already gzipped" do
+      assert @valid_metadata = Metadata.decompress(@valid_metadata)
+    end
+
+    test "Bytesize remains the same, original size" do
+      assert %Metadata{size: 39363} = Metadata.decompress(@valid_metadata)
+    end
+
+    test "The compressed flag is unset" do
+      %Metadata{compressed: false} = Metadata.decompress(@valid_metadata)
+    end
+
   end
 
   describe "xml/1" do
+
+    test "returns xml data string for the Metadata" do
+      xml = String.trim(@valid_metadata_xml)
+      assert xml = Metadata.xml(@valid_metadata)
+    end
+
+    test "raises an exception if there is no data" do
+
+      assert_raise(
+        RuntimeError,
+        fn -> Metadata.xml(struct(@valid_metadata, %{data: nil})) end
+      )
+
+    end
+
   end
 
   describe "count/1" do
+
+
   end
 
-  describe "entity/2" do
+  describe "Metadata/2" do
   end
 
   describe "entities/1" do
@@ -508,15 +616,26 @@ defmodule SmeeMetadataTest do
   describe "stream_entities/2" do
   end
 
-  describe "random_entity/1" do
+  describe "random_Metadata/1" do
   end
 
-  describe "entity_ids/1" do
+  describe "Metadata_ids/1" do
 
   end
 
   describe "filename/2" do
 
+    test "return a suggested filename for the Metadata, even if no format specified" do
+      assert "797e00e36df8100d422bc6901b21ebf7f8bc58e1.xml" = Metadata.filename(@valid_metadata)
+    end
+
+    test "return a suggested filename for the Metadata in sha1 format" do
+      assert "797e00e36df8100d422bc6901b21ebf7f8bc58e1.xml" = Metadata.filename(@valid_metadata, :sha1)
+    end
+
+    test "return a suggested filename for the Metadata in uri format" do
+      assert "http_example_com_federation.xml" = Metadata.filename(@valid_metadata, :uri)
+    end
   end
 
 
