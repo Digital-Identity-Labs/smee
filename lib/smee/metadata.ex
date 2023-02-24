@@ -69,16 +69,16 @@ defmodule Smee.Metadata do
   @spec new(data :: binary(), options :: keyword()) :: Metadata.t()
   def new(data, options \\ []) when is_binary(data) do
 
-    url = Keyword.get(options, :url, nil)
+    url = Utils.normalize_url(Keyword.get(options, :url, nil))
     dlt = Keyword.get(options, :downloaded_at, DateTime.utc_now())
     dhash = Smee.Utils.sha1(data)
 
     %Metadata{
-      url: Utils.normalize_url(url),
+      url: url,
       data: data,
       size: byte_size(data),
       data_hash: dhash,
-      url_hash: if(url, do: Smee.Utils.sha1(url), else: nil),
+      url_hash: Smee.Utils.sha1(url),
       type: Keyword.get(options, :type, :aggregate),
       downloaded_at: dlt,
       modified_at: Keyword.get(options, :modified_at, dlt),
@@ -86,7 +86,10 @@ defmodule Smee.Metadata do
       label: Keyword.get(options, :label, nil),
       cert_url: Utils.normalize_url(Keyword.get(options, :cert_url, nil)),
       cert_fingerprint: Keyword.get(options, :cert_fingerprint, nil),
-      verified: false
+      verified: false,
+      id: Keyword.get(options, :id, nil),
+      priority: Keyword.get(options, :priority, 5),
+      trustiness: Keyword.get(options, :trustiness, 0.5)
     }
     |> fix_type()
     |> extract_info()
@@ -97,7 +100,7 @@ defmodule Smee.Metadata do
   @spec derive(data :: Enumerable.t(), options :: keyword()) :: Metadata.t()
   def derive(enum, options \\ []) do
 
-    url = Keyword.get(options, :url, nil)
+    url = Utils.normalize_url(Keyword.get(options, :url, nil))
     dlt = DateTime.utc_now()
 
     data = Smee.Publish.to_xml(enum)
@@ -110,7 +113,7 @@ defmodule Smee.Metadata do
       cache_duration: nil,
       valid_until: Keyword.get(options, :valid_until, nil),
       data: data,
-      url_hash: if(url, do: Smee.Utils.sha1(url), else: nil),
+      url_hash: Smee.Utils.sha1(url),
       type: :aggregate,
       downloaded_at: dlt,
       data_hash: hash,
