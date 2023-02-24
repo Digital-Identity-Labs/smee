@@ -29,6 +29,26 @@ defmodule SmeeSourceTest do
              } = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
     end
 
+    test "cert_url defaults to nil" do
+      assert %Source{cert_url: nil} = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+    end
+
+    test "priority defaults to 5" do
+      assert %Source{priority: 5} = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+    end
+
+    test "trustiness defaults to 0.5" do
+      assert %Source{trustiness: 0.5} = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+    end
+
+    test "cert_fingerprint defaults to nil" do
+      assert %Source{cert_fingerprint: nil} = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+    end
+
+    test "strict defaults to false" do
+      assert %Source{trustiness: 0.5} = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+    end
+    
     test "cache boolean can be set as an option" do
       assert %Source{
                cache: false,
@@ -72,8 +92,6 @@ defmodule SmeeSourceTest do
     end
 
   end
-
-
 
   describe "check/2" do
 
