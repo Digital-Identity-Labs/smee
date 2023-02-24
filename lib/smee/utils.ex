@@ -6,7 +6,15 @@ defmodule Smee.Utils do
 
   @moduledoc false
 
-  @spec sha1(data :: binary()) :: binary()
+  @spec sha1(data :: binary() | nil) :: binary()
+  def sha1(nil) do
+    nil
+  end
+
+  def sha1("") do
+    nil
+  end
+
   def sha1(data) do
     :crypto.hash(:sha, data)
     |> Base.encode16(case: :lower)
@@ -80,7 +88,7 @@ defmodule Smee.Utils do
     end
   end
 
-  @spec file_url?(url :: binary() | nil ) :: boolean()
+  @spec file_url?(url :: binary() | nil) :: boolean()
   def file_url?(nil) do
     false
   end
@@ -93,22 +101,22 @@ defmodule Smee.Utils do
     String.starts_with?(url, "file")
   end
 
-  @spec local_cert?(source_or_metadata :: Metadata.t() | Source.t() ) :: boolean()
+  @spec local_cert?(source_or_metadata :: Metadata.t() | Source.t()) :: boolean()
   def local_cert?(%{cert_url: url} = source_or_metadata) do
     file_url?(url)
   end
 
-  @spec local?(source_or_metadata :: Metadata.t() | Source.t() ) :: boolean()
+  @spec local?(source_or_metadata :: Metadata.t() | Source.t()) :: boolean()
   def local?(%{url: url} = source_or_metadata) do
     file_url?(url)
   end
 
-  @spec file_url_to_path(url :: binary() ) ::  binary()
+  @spec file_url_to_path(url :: binary()) :: binary()
   def file_url_to_path(url) do
     if file_url?(url), do: URI.parse(url).path, else: raise "Not a file:/ URL!"
   end
 
-  @spec file_url_to_path(url :: binary(), base_path :: binary() ) ::  binary()
+  @spec file_url_to_path(url :: binary(), base_path :: binary()) :: binary()
   def file_url_to_path(url, base_path) do
     reqpath = Path.absname(file_url_to_path(url))
     if String.starts_with?(reqpath, base_path), do: reqpath, else: raise "Illegal path outside base directory!"
@@ -135,6 +143,13 @@ defmodule Smee.Utils do
 
   def fetchable_remote_xml(source) do
     source.url
+  end
+
+  @spec nillify_map_empties(map :: map()) :: map()
+  def nillify_map_empties(map) do
+    map
+    |> Enum.map(fn {k, v} -> if(v == "", do: {k, nil}, else: {k, v}) end)
+    |> Map.new()
   end
 
   ################################################################################

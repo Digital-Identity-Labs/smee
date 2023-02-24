@@ -11,7 +11,14 @@ defmodule SmeeUtilsTest do
     test "returns the correct sha1 hash of the value passed to it" do
       assert "77603e0cbda1e00d50373ca8ca20a375f5d1f171" = Utils.sha1("https://indiid.net/idp/shibboleth")
       assert "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12" = Utils.sha1("The quick brown fox jumps over the lazy dog")
-      assert "da39a3ee5e6b4b0d3255bfef95601890afd80709" = Utils.sha1("")
+    end
+
+    test "returns nil if passed nil" do
+      assert nil == Utils.sha1(nil)
+    end
+
+    test "returns nil if passed an empty string" do
+      assert nil == Utils.sha1("")
     end
 
   end
@@ -187,16 +194,27 @@ defmodule SmeeUtilsTest do
   describe "fetchable_remote_xml/1" do
 
     test "returns aggregate source URLs as they are, because they should point directly to XML" do
-      assert "http://metadata.example.com/metadata.xml" = Utils.fetchable_remote_xml(Source.new("http://metadata.example.com/metadata.xml"))
+      assert "http://metadata.example.com/metadata.xml" = Utils.fetchable_remote_xml(
+               Source.new("http://metadata.example.com/metadata.xml")
+             )
     end
 
     test "returns MDQ *base* URLs adjusted to directly to the service's aggregate equivalent" do
-      assert "http://mdq.ukfederation.org.uk/entities" = Utils.fetchable_remote_xml(Smee.source("http://mdq.ukfederation.org.uk/", type: :mdq))
+      assert "http://mdq.ukfederation.org.uk/entities" = Utils.fetchable_remote_xml(
+               Smee.source("http://mdq.ukfederation.org.uk/", type: :mdq)
+             )
+    end
+
+  end
+
+  describe "nillify_map_empties/1" do
+
+    test "any values in a map that are empty strings are converted to nils" do
+      assert %{one: "One", two: nil, three: 3, four: nil} = Utils.nillify_map_empties(
+        %{one: "One", two: "", three: 3, four: ""}
+      )
     end
 
   end
 
 end
-
-
-
