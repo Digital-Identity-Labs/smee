@@ -87,7 +87,6 @@ defmodule Smee.Metadata do
       cert_url: Utils.normalize_url(Keyword.get(options, :cert_url, nil)),
       cert_fingerprint: Keyword.get(options, :cert_fingerprint, nil),
       verified: false,
-      id: Keyword.get(options, :id, nil),
       priority: Keyword.get(options, :priority, 5),
       trustiness: Keyword.get(options, :trustiness, 0.5)
     }
@@ -97,37 +96,17 @@ defmodule Smee.Metadata do
 
   end
 
-  @spec derive(data :: Enumerable.t(), options :: keyword()) :: Metadata.t()
+  @spec derive(data :: Enumerable.t() | Entity.t(), options :: keyword()) :: Metadata.t()
   def derive(enum, options \\ []) do
 
     url = Utils.normalize_url(Keyword.get(options, :url, nil))
     dlt = DateTime.utc_now()
 
-    data = Smee.Publish.to_xml(enum)
+    data = Smee.Publish.to_xml(enum, options)
     hash = Smee.Utils.sha1(data)
 
-    %Metadata{
-      url: Utils.normalize_url(url),
-      uri: Keyword.get(options, :uri, nil),
-      id: Keyword.get(options, :id, nil),
-      cache_duration: nil,
-      valid_until: Keyword.get(options, :valid_until, nil),
-      data: data,
-      url_hash: Smee.Utils.sha1(url),
-      type: :aggregate,
-      downloaded_at: dlt,
-      data_hash: hash,
-      size: byte_size(data),
-      etag: hash,
-      modified_at: Keyword.get(options, :modified_at, dlt),
-      label: Keyword.get(options, :label, nil),
-      cert_url: Utils.normalize_url(Keyword.get(options, :cert_url, nil)),
-      cert_fingerprint: Keyword.get(options, :cert_fingerprint, nil),
-      verified: false,
-      priority: Keyword.get(options, :priority, 5),
-      trustiness: Keyword.get(options, :trustiness, 0.5)
-    }
-    |> count_entities()
+    new(data, options)
+
   end
 
   @spec update(metadata :: Metadata.t()) :: Metadata.t()
