@@ -76,7 +76,7 @@ X
 
   end
 
-  @spec derive(data ::binary(), metadata :: Metadata.t(), options :: keyword() ) :: Entity.t()
+  @spec derive(data :: binary(), metadata :: Metadata.t(), options :: keyword() ) :: Entity.t()
   def derive(data, metadata, options \\ []) when is_nil(data) or data == "" do
     raise "No data!"
   end
