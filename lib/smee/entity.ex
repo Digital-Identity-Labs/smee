@@ -10,6 +10,8 @@ X
   alias Smee.Utils
   alias Smee.Metadata
 
+  @enforce_keys [:data]
+
   @type t :: %__MODULE__{
                metadata_uri: nil | binary(),
                metadata_uri_hash: nil | binary(),

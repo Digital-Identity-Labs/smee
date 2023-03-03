@@ -25,6 +25,8 @@ defmodule Smee.Source do
                strict: boolean(),
              }
 
+  @enforce_keys [:url]
+
   defstruct [
     url: nil,
     type: :aggregate,

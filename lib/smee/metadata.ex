@@ -39,6 +39,8 @@ defmodule Smee.Metadata do
                trustiness: float()
              }
 
+  @enforce_keys [:data]
+
   defstruct [
     :downloaded_at,
     :modified_at,
