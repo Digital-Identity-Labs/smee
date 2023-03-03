@@ -9,6 +9,8 @@ defmodule Smee.Transform do
 
   @valid_until_s File.read! "priv/xslt/valid_until.xsl"
   @strip_comments_s File.read! "priv/xslt/strip_comments.xsl"
+  @strip_idp_s File.read! "priv/xslt/strip_adfs_idp.xsl"
+  @strip_sp_s File.read! "priv/xslt/strip_adfs_sp.xsl"
 
   @spec transform(metadata :: Metadata.t(), stylesheet :: binary, params :: keyword()) :: {:ok, Metadata.t()} | {:error, binary()}
   def transform(metadata, stylesheet, params \\ []) do
@@ -30,6 +32,16 @@ defmodule Smee.Transform do
 
   @spec valid_until!(metadata :: Metadata.t(), date :: DateTime.t()) :: Metadata.t()
   def valid_until!(metadata, date), do: unwrap_results(valid_until(metadata, date))
+
+  @spec decruft_idp(metadata :: Metadata.t()) :: {:ok, Metadata.t()} | {:error, binary()}
+  def strip_adfs(metadata) do
+    transform(metadata, @strip_idp_s, [])
+  end
+
+  @spec decruft_sp(metadata :: Metadata.t()) :: {:ok, Metadata.t()} | {:error, binary()}
+  def strip_adfs(metadata) do
+    transform(metadata, @strip_sp_s, [])
+  end
 
   ################################################################################
 
