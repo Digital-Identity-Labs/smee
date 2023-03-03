@@ -34,12 +34,12 @@ defmodule Smee.Transform do
   def valid_until!(metadata, date), do: unwrap_results(valid_until(metadata, date))
 
   @spec decruft_idp(metadata :: Metadata.t()) :: {:ok, Metadata.t()} | {:error, binary()}
-  def strip_adfs(metadata) do
+  def decruft_idp(metadata) do
     transform(metadata, @strip_idp_s, [])
   end
 
   @spec decruft_sp(metadata :: Metadata.t()) :: {:ok, Metadata.t()} | {:error, binary()}
-  def strip_adfs(metadata) do
+  def decruft_sp(metadata) do
     transform(metadata, @strip_sp_s, [])
   end
 
