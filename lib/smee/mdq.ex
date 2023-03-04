@@ -72,13 +72,12 @@ defmodule Smee.MDQ do
   end
 
   def lookup(%{type: :aggregate} = source, entity_id) do
-
     try do
       entity = aggregate!(source)
                |> Metadata.entity(entity_id)
-      {:ok, entity}
+      if entity, do: {:ok, entity}, else: {:error, :http_404}
     rescue
-      e -> {:ok, nil}
+      e -> {:ok, e.message}
     end
 
   end
