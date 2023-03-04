@@ -97,7 +97,7 @@ defmodule Smee.Fetch do
   end
 
   @spec check_http_data_type!(source :: Source.t(), response :: map()) :: :ok
-  defp check_http_data_type!(source, response) do
+  defp check_http_data_type!(source, %{status: 200} = response) do
 
     type = Req.Response.get_header(response, "content-type")
            |> List.first()
@@ -115,6 +115,8 @@ defmodule Smee.Fetch do
     :ok
 
   end
+
+  defp check_http_data_type!(_source, _response), do: :ok
 
   @spec metadata_from_response(url :: binary(), response :: struct, source :: Source.t()) :: {:ok, Metadata.t()} | {:error, atom()}
   defp metadata_from_response(url, response, source) do
