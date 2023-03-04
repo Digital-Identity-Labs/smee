@@ -116,7 +116,7 @@ defmodule Smee do
   end
 
   def lookup!(%Metadata{} = metadata, entity_id) do
-   Metadata.entity(metadata, entity_id)
+   Metadata.entity!(metadata, entity_id)
   end
 
   @doc """
