@@ -79,19 +79,18 @@ defmodule SmeeTest do
                                                      |> Smee.lookup!("https://cern.ch/login")
     end
 
-    # Actual bug to fix here
-        test "Raises an exception if entity cannot be found" do
-          assert_raise(
-            RuntimeError,
-            fn -> Smee.source(
-                    "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
-                  )
-                  |> Smee.fetch!()
-                  |> Smee.lookup!("https://example.com/not_a_service")
-            end
-          )
-
+    test "Raises an exception if entity cannot be found" do
+      assert_raise(
+        RuntimeError,
+        fn -> Smee.source(
+                "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
+              )
+              |> Smee.fetch!()
+              |> Smee.lookup!("https://example.com/not_a_service")
         end
+      )
+
+    end
 
   end
 
