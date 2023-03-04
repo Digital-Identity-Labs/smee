@@ -18,40 +18,33 @@ defmodule Smee.Fetch do
     remote!(source, options)
   end
 
-  @spec remote!(source :: Source.t()) :: Metadata.t()
-  def remote!(source, options \\ []) do
+  @spec remote(source :: Source.t()) :: Metadata.t()
+  def remote(source, options \\ []) do
 
     if Utils.file_url?(source.url), do: raise "Source URL #{source.url} is not using HTTP!"
 
     url = Utils.fetchable_remote_xml(source)
-    md_type = derive_type(source)
 
-    response = Req.get!(
-      url,
-      headers: [{"accept", "application/samlmetadata+xml"}, {"Accept-Charset", "utf-8"}],
-      max_redirects: source.redirects,
-      cache: source.cache,
-      user_agent: Utils.http_agent_name,
-      http_errors: :raise,
-      max_retries: source.retries,
-      retry_delay: &retry_jitter/1
-    )
+    case Req.get(url, http_options(source)) do
+      {:ok, response} -> metadata_from_response(url, response, source)
+      {:error, msg} -> {:error, msg}
+    end
 
-    :ok = check_http_data_type!(source, response)
+  end
 
-    Smee.Metadata.new(
-      response.body,
-      url: url,
-      type: md_type,
-      cert_url: source.cert_url,
-      cert_fingerprint: source.cert_fingerprint,
-      modified_at: Smee.Utils.parse_http_datetime(Req.Response.get_header(response, "last-modified")),
-      downloaded_at: Smee.Utils.parse_http_datetime(Req.Response.get_header(response, "date")),
-      etag: extract_http_etag(response, source),
-      label: source.label,
-      priority: source.priority,
-      trustiness: source.trustiness
-    )
+  @spec remote!(source :: Source.t()) :: Metadata.t()
+  def remote!(source, options \\ []) do
+
+    if Utils.file_url?(source.url), do: raise "Source URL #{source.url} is not using HTTP!"
+    url = Utils.fetchable_remote_xml(source)
+
+    response = Req.get!(url, http_options(source, http_errors: :raise))
+
+    case metadata_from_response(url, response, source) do
+      {:ok, metadata} -> metadata
+      {:error, code} -> [_, code] = String.split("#{code}", "_")
+                        raise "HTTP error status #{code}"
+    end
 
   end
 
@@ -115,7 +108,7 @@ defmodule Smee.Fetch do
           source.url
         } is not described as SAML metadata (application/samlmetadata+xml)!\nYou can disable this check by setting strict to false."
       else
-        IO.warn("Data from #{source.url} is not described as SAML metadata (application/samlmetadata+xml)", [])
+        IO.warn("Data from #{source.url} is not described as SAML metadata (application/samlmetadata+xml) - type is actually #{type}", [])
       end
     end
 
@@ -123,5 +116,50 @@ defmodule Smee.Fetch do
 
   end
 
+  @spec metadata_from_response(url :: binary(), response :: struct, source :: Source.t()) :: {:ok, Metadata.t()} | {:error, atom()}
+  defp metadata_from_response(url, response, source) do
+
+    md_type = derive_type(source)
+
+    :ok = check_http_data_type!(source, response)
+
+    case response.status do
+      200 ->
+        {
+          :ok,
+          Smee.Metadata.new(
+            response.body,
+            url: url,
+            type: md_type,
+            cert_url: source.cert_url,
+            cert_fingerprint: source.cert_fingerprint,
+            modified_at: Smee.Utils.parse_http_datetime(Req.Response.get_header(response, "last-modified")),
+            downloaded_at: Smee.Utils.parse_http_datetime(Req.Response.get_header(response, "date")),
+            etag: extract_http_etag(response, source),
+            label: source.label,
+            priority: source.priority,
+            trustiness: source.trustiness
+          )
+        }
+      other_status when other_status in 100..999 -> {:error, :"http_#{other_status}"}
+    end
+
+  end
+
+  @spec http_options(source :: Source.t(), extra_options :: keyword()) :: keyword()
+  defp http_options(source, extra_options \\ []) do
+    Keyword.merge(
+      [
+        headers: [{"accept", "application/samlmetadata+xml"}, {"Accept-Charset", "utf-8"}],
+        max_redirects: source.redirects,
+        cache: source.cache,
+        user_agent: Utils.http_agent_name,
+        # http_errors: :raise,
+        max_retries: source.retries,
+        retry_delay: &retry_jitter/1
+      ],
+      extra_options
+    )
+  end
 
 end
