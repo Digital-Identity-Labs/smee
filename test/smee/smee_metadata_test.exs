@@ -622,25 +622,63 @@ defmodule SmeeMetadataTest do
              )
     end
 
+    test "returns nil if the specified entityID is not present in metadata" do
+      assert is_nil(
+               Metadata.entity(
+                 @valid_metadata,
+                 "http://example.com/missing"
+               )
+             )
+    end
+
+  end
+
+  describe "entity!/2" do
+
+    test "returns entity record for the specified entityID if present in metadata" do
+      assert %Entity{uri: "https://test.ukfederation.org.uk/entity"} = Metadata.entity!(
+               @valid_metadata,
+               "https://test.ukfederation.org.uk/entity"
+             )
+    end
+
+    test "raises an exception if the entity is not present in metadata" do
+
+      assert_raise(
+        RuntimeError,
+        fn -> Metadata.entity!(
+                @valid_metadata,
+                "http://example.com/missing"
+              )
+        end
+      )
+    end
+
   end
 
   describe "entities/1" do
 
-    assert [
-             %Entity{uri: "https://test.ukfederation.org.uk/entity"},
-             %Entity{uri: "https://indiid.net/idp/shibboleth"}
-           ] = Metadata.entities(@valid_metadata)
+    test "returns a list of all entities in the metadata" do
+      assert [
+               %Entity{uri: "https://test.ukfederation.org.uk/entity"},
+               %Entity{uri: "https://indiid.net/idp/shibboleth"}
+             ] = Metadata.entities(@valid_metadata)
+    end
+
 
   end
 
   describe "stream_entities/2" do
 
-    assert %Stream{} = Metadata.stream_entities(@valid_metadata)
-    assert [
-             %Entity{uri: "https://test.ukfederation.org.uk/entity"},
-             %Entity{uri: "https://indiid.net/idp/shibboleth"}
-           ] = Metadata.stream_entities(@valid_metadata)
-               |> Enum.to_list
+    test "returns a stream of all entities in the metadata" do
+      assert %Stream{} = Metadata.stream_entities(@valid_metadata)
+      assert [
+               %Entity{uri: "https://test.ukfederation.org.uk/entity"},
+               %Entity{uri: "https://indiid.net/idp/shibboleth"}
+             ] = Metadata.stream_entities(@valid_metadata)
+                 |> Enum.to_list
+
+    end
 
   end
 

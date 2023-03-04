@@ -170,8 +170,17 @@ defmodule Smee.Metadata do
     count || 0
   end
 
-  @spec entity(metadata :: Metadata.t(), uri :: binary()) :: Entity.t()
+  @spec entity(metadata :: Metadata.t(), uri :: binary()) :: Entity.t() | nil
   def entity(metadata, uri) do
+    try do
+      Extract.entity!(metadata, uri)
+    rescue
+      e -> nil
+    end
+  end
+
+  @spec entity!(metadata :: Metadata.t(), uri :: binary()) :: Entity.t()
+  def entity!(metadata, uri) do
     Extract.entity!(metadata, uri)
   end
 
