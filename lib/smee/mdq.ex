@@ -46,13 +46,26 @@ defmodule Smee.MDQ do
     Fetch.remote!(source)
   end
 
+  @spec get(source :: Source.t(), entity_id :: binary()) :: Entity.t() | nil
+  def get(source, entity_id) do
+    case lookup(source, entity_id) do
+      {:ok, metadata} -> metadata
+      {:error, :http_404} -> nil
+      {:error, code} -> raise :"http_#{code}"
+    end
+  end
+
+  @spec get!(source :: Source.t(), entity_id :: binary()) :: Entity.t()
+  def get!(source, entity_id) do
+    lookup!(source, entity_id)
+  end
+
   @spec lookup(source :: Source.t(), entity_id :: binary()) :: {:ok, Entity.t()} | {:error, any()}
   def lookup(%{type: :mdq} = source, entity_id) do
     source = Map.merge(source, %{type: :single, url: url(source, entity_id)})
 
     case Fetch.remote(source) do
       {:ok, metadata} -> {:ok, List.first(Metadata.entities(metadata))}
-      {:error, :http_404} -> {:ok, nil}
       {:error, code} -> {:error, code}
     end
 
@@ -92,10 +105,12 @@ defmodule Smee.MDQ do
 
   end
 
+  @spec stream(source :: Source.t(), options :: keyword()) :: Enumerable.t()
   def stream(source) do
     stream(source, list!(source))
   end
 
+  @spec stream(source :: Source.t(), ids :: list()) :: Enumerable.t()
   def stream(source, ids) do
     ids
     |> Stream.map(

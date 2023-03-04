@@ -112,7 +112,7 @@ defmodule Smee do
   """
   @spec lookup!(source :: Source.t() | Metadata.t(), entity_id :: binary()) :: Entity.t()
   def lookup!(%Source{} = source, entity_id) do
-    MDQ.lookup(source, entity_id)
+    MDQ.lookup!(source, entity_id)
   end
 
   def lookup!(%Metadata{} = metadata, entity_id) do
