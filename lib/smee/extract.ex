@@ -36,8 +36,9 @@ defmodule Smee.Extract do
   @spec entity!(metadata :: Metadata.t(), uri :: binary()) :: Entity.t()
   def entity!(metadata, uri) do
     case XSLT.transform(metadata.data, @entity_s, [entityID: uri]) do
+      {:ok, ""} -> raise "Cannot find #{uri} in metadata!"
       {:ok, xml} -> Entity.derive(xml, metadata)
-      {:error, msg} -> raise "Cannot find #{uri} in metadata!"
+      {:error, msg} -> raise "Cannot find #{uri} in metadata, error occurred! #{msg}"
       end
   end
 
