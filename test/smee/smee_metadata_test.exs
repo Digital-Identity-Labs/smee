@@ -74,7 +74,7 @@ defmodule SmeeMetadataTest do
     end
 
     test "size is set automatically to the bytesize of the data" do
-      assert %Metadata{size: 39363} = Metadata.new(@valid_metadata_xml)
+      assert %Metadata{size: 39_363} = Metadata.new(@valid_metadata_xml)
     end
 
     test "data_hash is set automatically to the sha1 hash of the data" do
@@ -231,7 +231,7 @@ defmodule SmeeMetadataTest do
     end
 
     test "size cannot be set using an option" do
-      assert %Metadata{size: 39363} = Metadata.new(@valid_metadata_xml, size: 100)
+      assert %Metadata{size: 39_363} = Metadata.new(@valid_metadata_xml, size: 100)
     end
 
     test "verified cannot be set using an option" do
@@ -301,7 +301,7 @@ defmodule SmeeMetadataTest do
     end
 
     test "size is set automatically to the bytesize of the data" do
-      assert %Metadata{size: 39396} = Metadata.derive(Metadata.entities(@valid_metadata))
+      assert %Metadata{size: 39_396} = Metadata.derive(Metadata.entities(@valid_metadata))
     end
 
     test "data_hash is set automatically to the sha1 hash of the data" do
@@ -466,7 +466,7 @@ defmodule SmeeMetadataTest do
     end
 
     test "size cannot be set using an option" do
-      assert %Metadata{size: 39396} = Metadata.derive(Metadata.entities(@valid_metadata), size: 100)
+      assert %Metadata{size: 39_396} = Metadata.derive(Metadata.entities(@valid_metadata), size: 100)
     end
 
     test "verified cannot be set using an option" do
@@ -489,7 +489,7 @@ defmodule SmeeMetadataTest do
 
     test "updated metadata has the correct bytesize" do
       bad_metadata = struct(@valid_metadata, %{size: 0})
-      assert %Metadata{size: 39363} = Metadata.update(bad_metadata)
+      assert %Metadata{size: 39_363} = Metadata.update(bad_metadata)
     end
 
     test "updated metadata has the correct data hash" do
@@ -513,7 +513,7 @@ defmodule SmeeMetadataTest do
     end
 
     test "updated metadata has the correct bytesize" do
-      assert %Metadata{size: 39367} = Metadata.update(@valid_metadata, @updated_xml)
+      assert %Metadata{size: 39_367} = Metadata.update(@valid_metadata, @updated_xml)
     end
 
     test "updated metadata has the correct data hash" do
@@ -543,19 +543,19 @@ defmodule SmeeMetadataTest do
   describe "compress/1" do
 
     test "The Metadata is compressed: data is gzipped" do
-      compressed_Metadata = Metadata.compress(@valid_metadata)
+      compressed_metadata = Metadata.compress(@valid_metadata)
       original_data = @valid_metadata.data
-      assert original_data = :zlib.gunzip(compressed_Metadata.data)
+      assert original_data = :zlib.gunzip(compressed_metadata.data)
     end
 
     test "nothing happens if already gzipped" do
-      compressed_Metadata = Metadata.compress(@valid_metadata)
-      assert compressed_Metadata = Metadata.compress(compressed_Metadata)
+      compressed_metadata = Metadata.compress(@valid_metadata)
+      assert compressed_metadata = Metadata.compress(compressed_metadata)
     end
 
     test "Bytesize remains the same, original size" do
-      compressed_Metadata = Metadata.compress(@valid_metadata)
-      assert %Metadata{size: 39363} = compressed_Metadata
+      compressed_metadata = Metadata.compress(@valid_metadata)
+      assert %Metadata{size: 39_363} = compressed_metadata
     end
 
     test "The compressed flag is set" do
@@ -568,7 +568,7 @@ defmodule SmeeMetadataTest do
   describe "decompress/1" do
 
     test "The Metadata is decompressed: data is not gzipped" do
-      compressed_Metadata = Metadata.compress(@valid_metadata)
+      compressed_metadata = Metadata.compress(@valid_metadata)
       original_data = @valid_metadata.data
       assert %Metadata{data: original_data} = Metadata.decompress(@valid_metadata)
     end
@@ -578,7 +578,7 @@ defmodule SmeeMetadataTest do
     end
 
     test "Bytesize remains the same, original size" do
-      assert %Metadata{size: 39363} = Metadata.decompress(@valid_metadata)
+      assert %Metadata{size: 39_363} = Metadata.decompress(@valid_metadata)
     end
 
     test "The compressed flag is unset" do

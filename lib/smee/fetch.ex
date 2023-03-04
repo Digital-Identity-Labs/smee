@@ -18,7 +18,7 @@ defmodule Smee.Fetch do
     remote!(source, options)
   end
 
-  @spec remote(source :: Source.t()) :: Metadata.t()
+  @spec remote(source :: Source.t(), options :: keyword()) :: {:ok, Metadata.t()} | {:error, binary()}
   def remote(source, options \\ []) do
 
     if Utils.file_url?(source.url), do: raise "Source URL #{source.url} is not using HTTP!"
@@ -32,7 +32,7 @@ defmodule Smee.Fetch do
 
   end
 
-  @spec remote!(source :: Source.t()) :: Metadata.t()
+  @spec remote!(source :: Source.t(), options :: keyword()) :: Metadata.t()
   def remote!(source, options \\ []) do
 
     if Utils.file_url?(source.url), do: raise "Source URL #{source.url} is not using HTTP!"
@@ -48,7 +48,7 @@ defmodule Smee.Fetch do
 
   end
 
-  @spec local!(source :: Source.t()) :: Metadata.t()
+  @spec local!(source :: Source.t(), options :: keyword()) :: Metadata.t()
   def local!(source, options \\ []) do
 
     if !Utils.file_url?(source.url), do: raise "Source URL #{source.url} is not a local file!"

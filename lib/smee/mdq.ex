@@ -51,7 +51,7 @@ defmodule Smee.MDQ do
     case lookup(source, entity_id) do
       {:ok, metadata} -> metadata
       {:error, :http_404} -> nil
-      {:error, code} -> raise :"http_#{code}"
+      {:error, code} -> raise code
     end
   end
 
@@ -99,12 +99,12 @@ defmodule Smee.MDQ do
                |> Metadata.entity(entity_id)
       if entity, do: entity, else: raise "Cannot lookup #{entity_id} in source"
     rescue
-      e -> raise "Cannot lookup #{entity_id} in source"
+      e -> reraise "Cannot lookup #{entity_id} in source #{e.message}", __STACKTRACE__
     end
 
   end
 
-  @spec stream(source :: Source.t(), options :: keyword()) :: Enumerable.t()
+  @spec stream(source :: Source.t()) :: Enumerable.t()
   def stream(source) do
     stream(source, list!(source))
   end
