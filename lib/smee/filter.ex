@@ -12,14 +12,13 @@ defmodule Smee.Filter do
 #    enum |> Stream.filter(fn e -> xpath(e.xdoc, xpath) == value end)
 #  end
 
-  @spec uri(enum :: Enumerable.t(), uris :: list(), bool :: boolean() ) :: Enumerable.t()
+  @spec uri(enum :: Enumerable.t(), uris :: list() | binary(), bool :: boolean() ) :: Enumerable.t()
   def uri(enum, uris, bool \\ true) when is_list(uris) do
     enum |> Stream.filter(fn e -> (Enum.member?(uris, e.uri)) == bool end)
   end
 
-  @spec uri(enum :: Enumerable.t(), uri :: binary(), bool :: boolean() ) :: Enumerable.t()
-  def uri(enum, uri, bool ) do
-    enum |> Stream.filter(fn e -> (e.uri == uri) == bool end)
+  def uri(enum, uris, bool) do
+    enum |> Stream.filter(fn e -> (e.uri == uris) == bool end)
   end
 
   @spec idp(enum :: Enumerable.t(), bool :: boolean() ) :: Enumerable.t()
