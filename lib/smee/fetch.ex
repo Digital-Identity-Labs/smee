@@ -9,7 +9,7 @@ defmodule Smee.Fetch do
   alias Smee.Source
   alias Smee.Metadata
 
-  @spec fetch!(source :: Source.t()) :: Metadata.t()
+  @spec fetch!(source :: Source.t(), options :: keyword()) :: Metadata.t()
   def fetch!(%{url: "file:" <> _} = source, options \\ []) do
     local!(source, options)
   end
@@ -27,7 +27,7 @@ defmodule Smee.Fetch do
 
     case Req.get(url, http_options(source)) do
       {:ok, response} -> metadata_from_response(url, response, source)
-      {:error, msg} -> {:error, msg}
+      {:error, msg} -> {:error, msg} ## Second type of errors here
     end
 
   end
