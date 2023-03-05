@@ -20,7 +20,7 @@ defmodule Smee.Publish do
   end
 
   @spec to_index_stream_size(entities :: Enumerable.t(), options :: keyword()) :: integer()
-  def to_index_stream_size(entities, options) do
+  def to_index_stream_size(entities, options \\ []) do
     to_index_stream(entities, options)
     |> Stream.map(fn x -> byte_size(x) end)
     |> Enum.reduce(0, fn x, acc -> x + acc end)
@@ -47,12 +47,12 @@ defmodule Smee.Publish do
     single(entity, options)
   end
 
-  def to_xml_stream(entities, options) do
+  def to_xml_stream(entities, options ) do
     aggregate_stream(entities, options)
   end
 
   @spec to_xml_stream_size(entities :: Enumerable.t(), options :: keyword()) :: integer()
-  def to_xml_stream_size(entities, options) do
+  def to_xml_stream_size(entities, options \\ []) do
     to_xml_stream(entities, options)
     |> Stream.map(fn x -> byte_size(x) end)
     |> Enum.reduce(0, fn x, acc -> x + acc end)
@@ -84,6 +84,7 @@ defmodule Smee.Publish do
               |> Stream.map(fn e -> Entity.xml(e) end)
 
     Stream.concat([header_stream, estream, footer_stream])
+    |> Stream.map(fn e -> e end)
   end
 
   @spec aggregate_header(options :: keyword()) :: binary()
