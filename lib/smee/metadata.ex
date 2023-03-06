@@ -113,20 +113,23 @@ defmodule Smee.Metadata do
 
   @spec update(metadata :: Metadata.t()) :: Metadata.t()
   def update(metadata) do
-    entity = decompress(metadata)
-    update(metadata, metadata.data)
+    update(metadata, Metadata.xml(metadata))
   end
 
   @spec update(metadata :: Metadata.t(), xml :: binary()) :: Metadata.t()
   def update(metadata, xml) do
-    changes = if xml == metadata.data, do: metadata.changes, else: metadata.changes + 1
-    Map.merge(
-      metadata,
-      %{data: xml, changes: changes, data_hash: Utils.sha1(xml), size: byte_size(xml), compressed: false}
-    )
+    xml_has_changed = (xml != Metadata.xml(metadata))
+    changes = if xml_has_changed, do: metadata.changes + 1, else: metadata.changes
+
+    metadata
+    |> Metadata.decompress()
+    |> Map.merge(
+         %{data: xml, changes: changes, data_hash: Utils.sha1(xml), size: byte_size(xml)}
+       )
     |> fix_type()
     |> extract_info()
     |> count_entities()
+
   end
 
   @spec compressed?(metadata :: Metadata.t()) :: boolean()
@@ -274,7 +277,7 @@ defmodule Smee.Metadata do
 
   @spec count_entities(metadata :: Metadata.t()) :: Metadata.t()
   defp count_entities(metadata) do
-    count = length(String.split(metadata.data, "entityID=\"")) - 1
+    count = length(String.split(Metadata.xml(metadata), "entityID=\"")) - 1
     Map.merge(metadata, %{entity_count: count})
   end
 
