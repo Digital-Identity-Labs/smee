@@ -124,6 +124,9 @@ defmodule Smee.Metadata do
       metadata,
       %{data: xml, changes: changes, data_hash: Utils.sha1(xml), size: byte_size(xml), compressed: false}
     )
+    |> fix_type()
+    |> extract_info()
+    |> count_entities()
   end
 
   @spec compressed?(metadata :: Metadata.t()) :: boolean()
