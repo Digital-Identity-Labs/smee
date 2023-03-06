@@ -27,7 +27,7 @@ defmodule Smee.Transform do
 
   @spec valid_until(metadata :: Metadata.t(), date :: DateTime.t()) :: {:ok,  Metadata.t()} | {:error, binary()}
   def valid_until(metadata, date) do
-    transform(metadata, @valid_until_s, [validUntil: date])
+    transform(metadata, @valid_until_s, [validUntil: DateTime.to_iso8601(date)])
   end
 
   @spec valid_until!(metadata :: Metadata.t(), date :: DateTime.t()) :: Metadata.t()
