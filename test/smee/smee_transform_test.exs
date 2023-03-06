@@ -6,8 +6,6 @@ defmodule SmeeTransformTest do
 
   @small_agg_md Smee.Source.new("test/support/static/aggregate.xml")
                 |> Smee.fetch!()
-  @small_agg_md Smee.Source.new("test/support/static/aggregate.xml")
-                |> Smee.fetch!()
   @adfs_single_md Smee.Source.new("test/support/static/adfs.xml", type: :single)
                   |> Smee.fetch!()
   @example_xslt_stylesheet File.read!("test/support/static/valid_until.xsl")
@@ -18,10 +16,8 @@ defmodule SmeeTransformTest do
   describe "transform/3" do
 
     test "applies the XSLT stylesheet to the metadata, with params, returning an update metadata struct in a tuple" do
-
-      date_string = DateTime.to_iso8601(@now)
-      {:ok, updated_metadata} = Transform.transform(@small_agg_md, @example_xslt_stylesheet, [validUntil: date_string])
-      assert String.contains?(updated_metadata.data, "validUntil=\"#{date_string}\">")
+      {:ok, updated_metadata} = Transform.transform(@small_agg_md, @example_xslt_stylesheet, [validUntil: @xml_now])
+      assert String.contains?(updated_metadata.data, "validUntil=\"#{@xml_now}\">")
 
     end
 
