@@ -3,7 +3,6 @@ defmodule Smee.Security.Mdqt do
   @moduledoc false
 
   alias Smee.SigningCertificate
-  alias Smee.Utils
   alias Smee.Metadata
 
   @base_command ~w(check )
@@ -25,7 +24,7 @@ defmodule Smee.Security.Mdqt do
     try do
 
       case Rambo.run("mdqt", command, env: @mdqt_env ) do
-        {:ok, %Rambo{status: 0, out: out}} -> Map.merge(metadata, %{verified: true})
+        {:ok, %Rambo{status: 0, out: _out}} -> Map.merge(metadata, %{verified: true})
         {:error, %Rambo{status: status, err: err}} -> raise parse_error(status, err)
         _ -> {:error, "Unknown XSLT parser error has occurred"}
       end

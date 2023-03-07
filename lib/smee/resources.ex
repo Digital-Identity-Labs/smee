@@ -14,7 +14,7 @@ defmodule Smee.Resources do
 
   @spec default_cert_file_url() :: binary()
   def default_cert_file_url do
-    "file:" <> default_cert_file
+    "file:" <> default_cert_file()
   end
 
 

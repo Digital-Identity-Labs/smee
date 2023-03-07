@@ -1,7 +1,7 @@
 defmodule Smee.Entity do
 
   @moduledoc """
-X
+      X
   """
 
   import SweetXml
@@ -79,7 +79,8 @@ X
   end
 
   @spec derive(data :: binary(), metadata :: Metadata.t(), options :: keyword() ) :: Entity.t()
-  def derive(data, metadata, options \\ []) when is_nil(data) or data == "" do
+  def derive(data, metadata, options \\ [])
+  def derive(data, _metadata, _options) when is_nil(data) or data == "" do
     raise "No data!"
   end
 
@@ -184,7 +185,7 @@ X
   end
 
   @spec xml(entity :: Entity.t()) :: binary()
-  def xml(%{data: problem} = entity) when is_nil(problem) or problem == "" do
+  def xml(%{data: problem}) when is_nil(problem) or problem == "" do
    raise "Missing data in entity!"
   end
 
@@ -254,7 +255,7 @@ X
     info = entity.xdoc
            |> xmap(
                 uri: ~x"string(/*/@entityID)"s,
-                id: ~x"string(/*/@ID)"s,
+                id: ~x"string(/*/@ID)"s
               )
 
     Map.merge(entity, info)

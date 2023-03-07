@@ -10,14 +10,14 @@ defmodule Smee.Extract do
 
   @list_ids_s File.read! "priv/xslt/list_ids.xsl"
   @list_entity_attrs_s File.read! "priv/xslt/list_entity_attrs.xsl"
-  @list_mdui_s File.read! "priv/xslt/list_mdui.xsl"
+ # @list_mdui_s File.read! "priv/xslt/list_mdui.xsl"
   @entity_s File.read! "priv/xslt/extract_entity.xsl"
 
   @spec list_ids(metadata :: Metadata.t()) :: list(binary())
   def list_ids(metadata)  do
     case XSLT.transform(metadata.data, @list_ids_s, []) do
       {:ok, txt} -> String.split(txt)
-      {:error, msg} -> []
+      {:error, _msg} -> []
     end
   end
 
@@ -25,11 +25,11 @@ defmodule Smee.Extract do
   def list_entity_attrs(%Metadata{} = metadata)  do
     case XSLT.transform(metadata.data, @list_entity_attrs_s, []) do
       {:ok, txt} -> build_ea_tree(txt)
-      {:error, msg} -> %{}
+      {:error, _msg} -> %{}
     end
   end
 
-  def list_entity_attrs(metadata)  do
+  def list_entity_attrs(_metadata)  do
    raise "Only works with Metadata structs!"
   end
 
@@ -46,19 +46,19 @@ defmodule Smee.Extract do
   def mdui_info(%Metadata{} = metadata)  do
     case XSLT.transform(metadata.data, File.read!("priv/xslt/list_mdui.xsl"), []) do
       {:ok, txt} -> build_mdui_records(txt)
-      {:error, msg} -> %{}
+      {:error, _msg} -> %{}
     end
   end
 
   ################################################################################
 
-  @spec wrap_results(results :: tuple()) :: any()
-  defp wrap_results(results) do
-    case results do
-      {:ok, data} -> data
-      {:error, msg} -> raise msg
-    end
-  end
+#  @spec wrap_results(results :: tuple()) :: any()
+#  defp wrap_results(results) do
+#    case results do
+#      {:ok, data} -> data
+#      {:error, msg} -> raise msg
+#    end
+#  end
 
   @spec build_ea_tree(txt :: binary()) :: map()
   defp build_ea_tree(txt) do

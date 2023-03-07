@@ -2,15 +2,13 @@ defmodule Smee.XSLT do
 
   @moduledoc false
 
-  alias Smee.Metadata
-
 
   @base_command ~w(--nowrite)
 
   @spec transform(xml :: binary(), stylesheet :: binary(), params :: keyword(), options :: keyword()) :: {:ok, binary()} | {:error, binary()}
-  def transform(xml, stylesheet, params \\ [], options \\ []) do
+  def transform(xml, stylesheet, params \\ [], _options \\ []) do
 
-    {:ok, xml_stream} = StringIO.open(xml)
+   # {:ok, xml_stream} = StringIO.open(xml)
 
     {:ok, stylesheet_file} = Briefly.create()
 
@@ -29,7 +27,7 @@ defmodule Smee.XSLT do
       end
 
     rescue
-      e -> msg = {:error, "Unknown XSLT exception has occurred #{e.message}"}
+      e -> {:error, "Unknown XSLT exception has occurred #{e.message}"}
     end
 
   end
@@ -60,10 +58,10 @@ defmodule Smee.XSLT do
     |> List.flatten
   end
 
-  @spec debug_command(command :: list()) :: binary()
-  defp debug_command(command) do
-    Enum.join(command, " ")
-  end
+#  @spec debug_command(command :: list()) :: binary()
+#  defp debug_command(command) do
+#    Enum.join(command, " ")
+#  end
 
   # credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
   @spec parse_error(status :: integer(), err :: binary()) :: binary()

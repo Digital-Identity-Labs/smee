@@ -23,13 +23,13 @@ defmodule Smee.Security.Xmlsectool do
     try do
 
       case Rambo.run("xmlsectool", command) do
-        {:ok, %Rambo{status: 0, out: out}} -> Map.merge(metadata, %{verified: true})
+        {:ok, %Rambo{status: 0, out: _out}} -> Map.merge(metadata, %{verified: true})
         {:error, %Rambo{status: status, err: err}} -> raise parse_error(status, err)
         _ -> {:error, "Unknown XSLT parser error has occurred"}
       end
 
     rescue
-      e -> reraise "Verification of signed XML has failed! Command was: #{debug_command(command)}", __STACKTRACE__
+      _ -> reraise "Verification of signed XML has failed! Command was: #{debug_command(command)}", __STACKTRACE__
     end
 
   end

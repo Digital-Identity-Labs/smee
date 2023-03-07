@@ -4,7 +4,6 @@ defmodule Smee.Lint do
   X
   """
 
-  alias Smee.Metadata
   alias Smee.Resources
 
   @base_command ~w(--nonet)
@@ -27,7 +26,7 @@ defmodule Smee.Lint do
   ################################################################################
 
   @spec lint(xml :: binary(), mode :: atom(), options :: keyword() ) :: {:ok, binary()} | {:error, binary()}
-  defp lint(xml, mode \\ :tidy, options \\ []) do
+  defp lint(xml, mode, options) do
 
     command = build_command(mode, options)
 
@@ -41,7 +40,7 @@ defmodule Smee.Lint do
       end
 
     rescue
-      e -> msg = {:error, "Unknown XML linter exception has occurred #{e.message}"}
+      e -> {:error, "Unknown XML linter exception has occurred #{e.message}"}
     end
 
   end
@@ -51,7 +50,7 @@ defmodule Smee.Lint do
     @base_command ++ schema(options) ++ format_options(options) ++ ["--noout", "-"]
   end
 
-  defp build_command(:well_formed, options) do
+  defp build_command(:well_formed, _options) do
     @base_command ++ ["--noout", "-"]
   end
 
@@ -60,7 +59,7 @@ defmodule Smee.Lint do
   end
 
   @spec schema(options :: keyword() ) :: list()
-  defp schema(options) do
+  defp schema(_options) do
     ["--schema", Resources.saml_metadata_xml_schema_file()]
   end
 
@@ -69,14 +68,14 @@ defmodule Smee.Lint do
     []
   end
 
-  defp format_options(options) do
+  defp format_options(_options) do
     []
   end
 
-  @spec debug_command(command :: list() ) :: binary()
-  defp debug_command(command) do
-    Enum.join(command, " ")
-  end
+#  @spec debug_command(command :: list() ) :: binary()
+#  defp debug_command(command) do
+#    Enum.join(command, " ")
+#  end
 
   # credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
   @spec parse_error(status :: integer, err :: binary() ) :: binary()

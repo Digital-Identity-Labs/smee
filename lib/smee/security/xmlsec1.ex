@@ -17,7 +17,7 @@ defmodule Smee.Security.Xmlsec1 do
     try do
 
       case Rambo.run("xmlsec1", command, in: metadata.data) do
-        {:ok, %Rambo{status: 0, out: out}} -> Map.merge(metadata, %{verified: true})
+        {:ok, %Rambo{status: 0, out: _out}} -> Map.merge(metadata, %{verified: true})
         {:error, %Rambo{status: status, err: err}} -> raise(parse_error(status, err))
         _ -> {:error, "Unknown XSLT parser error has occurred. Command was: #{debug_command(command)}"}
       end
@@ -28,7 +28,7 @@ defmodule Smee.Security.Xmlsec1 do
   end
 
   @spec build_command(metadata ::Metadata.t(), cert_file :: binary()) :: list()
-  defp build_command(metadata, cert_file) do
+  defp build_command(_metadata, cert_file) do
     @base_command ++ [
       "--pubkey-cert-pem",
       cert_file,

@@ -5,7 +5,6 @@ defmodule Smee.Source do
   """
 
   alias __MODULE__
-  alias Smee.Metadata
   alias Smee.Utils
 
   @source_types [:aggregate, :single, :mdq, :ld]
@@ -61,7 +60,7 @@ defmodule Smee.Source do
   end
 
   @spec check(source ::Source.t(), options :: keyword()) :: {:ok, Source.t()} | {:error, binary()}
-  def check(source, options \\ []) do
+  def check(source, _options \\ []) do
     cond do
       !Enum.member?(@source_types, source.type) ->
         {:error, "Source type #{source.type} is unknown!"}

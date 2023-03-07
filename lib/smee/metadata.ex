@@ -10,7 +10,7 @@ defmodule Smee.Metadata do
   alias Smee.Entity
   alias Smee.Metadata
 
-  @metadata_types [:aggregate, :single]
+  #@metadata_types [:aggregate, :single]
 
   @type t :: %__MODULE__{
                downloaded_at: nil | DateTime.t(),
@@ -101,15 +101,8 @@ defmodule Smee.Metadata do
 
   @spec derive(data :: Enumerable.t() | Entity.t(), options :: keyword()) :: Metadata.t()
   def derive(enum, options \\ []) do
-
-    url = Utils.normalize_url(Keyword.get(options, :url, nil))
-    dlt = DateTime.utc_now()
-
     data = Smee.Publish.to_xml(enum, options)
-    hash = Smee.Utils.sha1(data)
-
     new(data, options)
-
   end
 
   @spec update(metadata :: Metadata.t()) :: Metadata.t()
@@ -159,7 +152,7 @@ defmodule Smee.Metadata do
   end
 
   @spec xml(metadata :: Metadata.t()) :: binary()
-  def xml(%{data: problem} = entity) when is_nil(problem) or problem == "" do
+  def xml(%{data: problem}) when is_nil(problem) or problem == "" do
     raise "Missing XML data in Metadata!"
   end
 
@@ -173,7 +166,7 @@ defmodule Smee.Metadata do
   end
 
   @spec count(metadata :: Metadata.t()) :: integer()
-  def count(%Metadata{entity_count: count} = metadata) do
+  def count(%Metadata{entity_count: count}) do
     count || 0
   end
 
@@ -182,7 +175,7 @@ defmodule Smee.Metadata do
     try do
       Extract.entity!(metadata, uri)
     rescue
-      e -> nil
+      _ -> nil
     end
   end
 
@@ -212,12 +205,12 @@ defmodule Smee.Metadata do
       Extract.entity!(metadata, uri)
     else
       offset = :rand.uniform(max) - 1
-      xml = split_to_stream(metadata)
-            |> Stream.drop(offset)
-            |> Stream.take(1)
-            |> Enum.to_list()
-            |> List.first()
-            |> Entity.derive(metadata)
+      split_to_stream(metadata)
+      |> Stream.drop(offset)
+      |> Stream.take(1)
+      |> Enum.to_list()
+      |> List.first()
+      |> Entity.derive(metadata)
     end
   end
 
@@ -243,7 +236,7 @@ defmodule Smee.Metadata do
     filename(metadata, :url)
   end
 
-  def filename(metadata) do
+  def filename(_metadata) do
     raise "No Name/URI or download URI to identify and name the metadata!"
   end
 
@@ -251,7 +244,7 @@ defmodule Smee.Metadata do
     "#{metadata.uri_hash}.xml"
   end
 
-  def filename(%{uri: nil} = metadata, :uri) do
+  def filename(%{uri: nil}, :uri) do
     raise "No URI/name in metadata to base file name on!"
   end
 
@@ -262,7 +255,7 @@ defmodule Smee.Metadata do
     "#{name}.xml"
   end
 
-  def filename(%{url: nil} = metadata, :url) do
+  def filename(%{url: nil}, :url) do
     raise "No download URL in metadata to base file name on!"
   end
 
@@ -358,7 +351,7 @@ defmodule Smee.Metadata do
     |> Enum.join()
   end
 
-  defp strip_leading(fx, n) do
+  defp strip_leading(fx, _n) do
     fx
   end
 

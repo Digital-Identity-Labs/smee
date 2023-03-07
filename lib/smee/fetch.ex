@@ -4,13 +4,13 @@ defmodule Smee.Fetch do
   X
   """
 
-  alias __MODULE__
   alias Smee.Utils
   alias Smee.Source
   alias Smee.Metadata
 
   @spec fetch!(source :: Source.t(), options :: keyword()) :: Metadata.t()
-  def fetch!(%{url: "file:" <> _} = source, options \\ []) do
+  def fetch!(source, options \\ [])
+  def fetch!(%{url: "file:" <> _} = source, options) do
     local!(source, options)
   end
 
@@ -19,7 +19,7 @@ defmodule Smee.Fetch do
   end
 
   @spec remote(source :: Source.t(), options :: keyword()) :: {:ok, Metadata.t()} | {:error, binary()}
-  def remote(source, options \\ []) do
+  def remote(source, _options \\ []) do
 
     if Utils.file_url?(source.url), do: raise "Source URL #{source.url} is not using HTTP!"
 
@@ -33,7 +33,7 @@ defmodule Smee.Fetch do
   end
 
   @spec remote!(source :: Source.t(), options :: keyword()) :: Metadata.t()
-  def remote!(source, options \\ []) do
+  def remote!(source, _options \\ []) do
 
     if Utils.file_url?(source.url), do: raise "Source URL #{source.url} is not using HTTP!"
     url = Utils.fetchable_remote_xml(source)
@@ -49,7 +49,7 @@ defmodule Smee.Fetch do
   end
 
   @spec local!(source :: Source.t(), options :: keyword()) :: Metadata.t()
-  def local!(source, options \\ []) do
+  def local!(source, _options \\ []) do
 
     if !Utils.file_url?(source.url), do: raise "Source URL #{source.url} is not a local file!"
 
@@ -82,7 +82,7 @@ defmodule Smee.Fetch do
   end
 
   @spec extract_http_etag(response :: struct(), source :: Source.t()) :: binary()
-  defp extract_http_etag(response, source) do
+  defp extract_http_etag(response, _source) do
     Req.Response.get_header(response, "etag")
     |> List.first()
   end

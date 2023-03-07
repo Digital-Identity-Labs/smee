@@ -4,17 +4,13 @@ defmodule Smee.Publish do
   X
   """
 
-  alias Smee.Metadata
   alias Smee.Entity
-  alias Smee.Transform
   alias Smee.XmlCfg
-
-  import SweetXml
 
   @top_tag ~r|<[md:]*EntityDescriptor.*>|im
 
   @spec to_index_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
-  def to_index_stream(entities, options \\ []) do
+  def to_index_stream(entities, _options \\ []) do
     entities
     |> Stream.map(fn e -> "#{e.uri}\n" end)
   end
@@ -43,11 +39,12 @@ defmodule Smee.Publish do
 
 
   @spec to_xml_stream(entities :: Entity.t() | Enumerable.t(), options :: keyword()) :: Enumerable.t()
-  def to_xml_stream(%Entity{} = entity, options \\ []) do
+  def to_xml_stream(entity, options \\ [])
+  def to_xml_stream(%Entity{} = entity, options) do
     single(entity, options)
   end
 
-  def to_xml_stream(entities, options ) do
+  def to_xml_stream(entities, options) do
     aggregate_stream(entities, options)
   end
 
@@ -67,13 +64,13 @@ defmodule Smee.Publish do
   ################################################################################
 
   @spec single(entity :: Entity.t(), options :: keyword()) :: list(binary())
-  defp single(entity, options \\ []) do
+  defp single(entity, options) do
     xml = expand_single_top(entity, options)
     [xml]
   end
 
   @spec aggregate_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
-  defp aggregate_stream(entities, options \\ []) do
+  defp aggregate_stream(entities, options) do
 
     options = Keyword.put(options, :now, DateTime.utc_now)
 
@@ -105,7 +102,7 @@ defmodule Smee.Publish do
   end
 
   @spec aggregate_footer(options :: keyword()) :: binary()
-  def aggregate_footer(options) do
+  def aggregate_footer(_options) do
     "\n</EntitiesDescriptor>"
   end
 
@@ -181,7 +178,7 @@ defmodule Smee.Publish do
     replacement_top = """
     <?xml version="1.0" encoding="UTF-8"?>
     <EntityDescriptor
-    #{xml_namespace_declarations}
+    #{xml_namespace_declarations()}
         ID="#{id}" cacheDuration="P0Y0M0DT6H0M0.000S"
         entityID="#{entity.uri}" validUntil="#{DateTime.to_iso8601(entity.valid_until)}">
     """

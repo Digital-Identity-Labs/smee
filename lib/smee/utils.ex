@@ -2,7 +2,6 @@ defmodule Smee.Utils do
 
   alias Smee.Source
   alias Smee.Metadata
-  alias Smee.Entity
 
   @moduledoc false
 
@@ -60,7 +59,7 @@ defmodule Smee.Utils do
       end
 
     rescue
-      e -> reraise "could not parse HTTP header containing '#{datetime_header}'", __STACKTRACE__
+      _ -> reraise "could not parse HTTP header containing '#{datetime_header}'", __STACKTRACE__
     end
 
   end
@@ -102,12 +101,12 @@ defmodule Smee.Utils do
   end
 
   @spec local_cert?(source_or_metadata :: Metadata.t() | Source.t()) :: boolean()
-  def local_cert?(%{cert_url: url} = source_or_metadata) do
+  def local_cert?(%{cert_url: url}) do
     file_url?(url)
   end
 
   @spec local?(source_or_metadata :: Metadata.t() | Source.t()) :: boolean()
-  def local?(%{url: url} = source_or_metadata) do
+  def local?(%{url: url}) do
     file_url?(url)
   end
 

@@ -28,7 +28,7 @@ defmodule Smee.Security do
       %Metadata{verified: value} = verify!(metadata)
       value
     rescue
-      e -> false
+      _ -> false
     end
   end
 

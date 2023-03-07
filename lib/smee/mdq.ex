@@ -37,7 +37,7 @@ defmodule Smee.MDQ do
     |> URI.encode()
   end
 
-  def url(%{type: :aggregate} = _source, entity_id) do
+  def url(%{type: :aggregate} = _source, _entity_id) do
     raise "Individual URLs cannot be used with aggregate metadata - a proper MDQ service is required"
   end
 
@@ -116,7 +116,7 @@ defmodule Smee.MDQ do
          fn id ->
            case lookup(source, id) do
              {:ok, entity_or_nil} -> entity_or_nil
-             {:error, entity_or_nil} -> nil
+             {:error, _} -> nil
            end
          end
        )

@@ -4,9 +4,7 @@ defmodule Smee.Stats do
   X
   """
 
-  alias Smee.Entity
-
-  import SweetXml
+  #import SweetXml
 
   @spec count(enum :: list() | Enumerable.t() ) :: integer()
   def count(enum) do
