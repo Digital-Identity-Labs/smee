@@ -35,10 +35,9 @@ defmodule SmeeResourcesTest do
     test "returns the same path as default_cert_file/0, but as a URL" do
       path = Resources.default_cert_file()
       url_path = "file:" <> path
-      assert url_path = Resources.default_cert_file_url()
+      assert ^url_path = Resources.default_cert_file_url()
     end
 
   end
 
 end
-

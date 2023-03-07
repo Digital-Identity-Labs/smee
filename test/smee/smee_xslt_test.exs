@@ -8,9 +8,9 @@ defmodule SmeeXSLTTest do
   @small_agg_xml Smee.Source.new("test/support/static/aggregate.xml")
                  |> Smee.fetch!()
                  |> Metadata.xml()
-  @adfs_single_xml Smee.Source.new("test/support/static/adfs.xml", type: :single)
-                   |> Smee.fetch!()
-                   |> Metadata.xml()
+  #@adfs_single_xml Smee.Source.new("test/support/static/adfs.xml", type: :single)
+  #                 |> Smee.fetch!()
+  #                 |> Metadata.xml()
   @example_xslt_stylesheet1 File.read!("test/support/static/valid_until.xsl")
   @example_xslt_stylesheet2 File.read!("test/support/static/strip_comments.xsl")
 

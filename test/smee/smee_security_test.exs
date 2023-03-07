@@ -5,20 +5,12 @@ defmodule SmeeSecurityTest do
   alias Smee.Metadata
   alias Smee.Source
 
-  @invalid_metadata_file "test/support/static/bad.xml"
-  @valid_metadata_file "test/support/static/aggregate.xml"
-  @valid_single_metadata_file "test/support/static/indiid.xml"
-  @valid_metadata_xml File.read! @valid_metadata_file
-  @invalid_metadata_xml File.read! @invalid_metadata_file
-  @valid_single_metadata_xml File.read! @valid_single_metadata_file
-
-
   describe "verify!/1" do
 
     test "returns a verified metadata record if passed a signed metadata struct, with certificate" do
       assert %Metadata{verified: true} = Source.new(
                                            "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
-                                           cert_url: "test/support/static/ukfederation.pem",
+                                           cert_url: "test/support/static/ukfederation.pem"
                                          )
                                          |> Smee.fetch!()
                                          |> Security.verify!()
@@ -51,7 +43,7 @@ defmodule SmeeSecurityTest do
     test "will use a local certificate if one is specified in the source" do
       assert %Metadata{verified: true} = Source.new(
                                            "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
-                                           cert_url: "test/support/static/ukfederation.pem",
+                                           cert_url: "test/support/static/ukfederation.pem"
                                          )
                                          |> Smee.fetch!()
                                          |> Security.verify!()
@@ -60,7 +52,7 @@ defmodule SmeeSecurityTest do
     test "will use a remote certificate if one is specified in the source" do
       assert %Metadata{verified: true} = Source.new(
                                            "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
-                                           cert_url: "http://metadata.ukfederation.org.uk/ukfederation.pem",
+                                           cert_url: "http://metadata.ukfederation.org.uk/ukfederation.pem"
                                          )
                                          |> Smee.fetch!()
                                          |> Security.verify!()
@@ -71,7 +63,7 @@ defmodule SmeeSecurityTest do
                    fn ->
                      Source.new(
                        "test/support/static/tampered.xml",
-                       cert_url: "test/support/static/ukfederation.pem",
+                       cert_url: "test/support/static/ukfederation.pem"
                      )
                      |> Smee.fetch!()
                      |> Security.verify!()
@@ -85,7 +77,7 @@ defmodule SmeeSecurityTest do
     test "returns a verified metadata record in an :ok tuple if passed a signed metadata struct, with certificate" do
       assert {:ok, %Metadata{verified: true}} = Source.new(
                                                   "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
-                                                  cert_url: "test/support/static/ukfederation.pem",
+                                                  cert_url: "test/support/static/ukfederation.pem"
                                                 )
                                                 |> Smee.fetch!()
                                                 |> Security.verify()
@@ -116,7 +108,7 @@ defmodule SmeeSecurityTest do
     test "will use a local certificate if one is specified in the source" do
       assert {:ok, %Metadata{verified: true}} = Source.new(
                                                   "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
-                                                  cert_url: "test/support/static/ukfederation.pem",
+                                                  cert_url: "test/support/static/ukfederation.pem"
                                                 )
                                                 |> Smee.fetch!()
                                                 |> Security.verify()
@@ -125,7 +117,7 @@ defmodule SmeeSecurityTest do
     test "will use a remote certificate if one is specified in the source" do
       assert {:ok, %Metadata{verified: true}} = Source.new(
                                                   "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
-                                                  cert_url: "http://metadata.ukfederation.org.uk/ukfederation.pem",
+                                                  cert_url: "http://metadata.ukfederation.org.uk/ukfederation.pem"
                                                 )
                                                 |> Smee.fetch!()
                                                 |> Security.verify()
@@ -135,7 +127,7 @@ defmodule SmeeSecurityTest do
       assert {:error, _message} = Source.new(
                                     "test/support/static/tampered.xml",
                                     cert_url: "test/support/static/ukfederation.pem",
-                                    type: :single,
+                                    type: :single
                                   )
                                   |> Smee.Fetch.local!()
                                   |> Security.verify()
@@ -148,7 +140,7 @@ defmodule SmeeSecurityTest do
     test "returns true if passed a signed metadata struct, with certificate" do
       assert true = Source.new(
                       "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
-                      cert_url: "test/support/static/ukfederation.pem",
+                      cert_url: "test/support/static/ukfederation.pem"
                     )
                     |> Smee.fetch!()
                     |> Security.verify?()
@@ -179,7 +171,7 @@ defmodule SmeeSecurityTest do
     test "will use a local certificate if one is specified in the source" do
       assert true = Source.new(
                       "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
-                      cert_url: "test/support/static/ukfederation.pem",
+                      cert_url: "test/support/static/ukfederation.pem"
                     )
                     |> Smee.fetch!()
                     |> Security.verify?()
@@ -188,7 +180,7 @@ defmodule SmeeSecurityTest do
     test "will use a remote certificate if one is specified in the source" do
       assert true = Source.new(
                       "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
-                      cert_url: "http://metadata.ukfederation.org.uk/ukfederation.pem",
+                      cert_url: "http://metadata.ukfederation.org.uk/ukfederation.pem"
                     )
                     |> Smee.fetch!()
                     |> Security.verify?()
@@ -198,7 +190,7 @@ defmodule SmeeSecurityTest do
       refute Source.new(
                "test/support/static/tampered.xml",
                cert_url: "test/support/static/ukfederation.pem",
-               type: :single,
+               type: :single
              )
              |> Smee.Fetch.local!()
              |> Security.verify?()

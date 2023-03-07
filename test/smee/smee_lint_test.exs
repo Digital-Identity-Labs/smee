@@ -19,7 +19,7 @@ defmodule SmeeLintTest do
   describe "validate/2" do
 
     test "returns an :ok tuple with validated XML if the XML is actually valid" do
-      assert {:ok, xml} = Lint.validate(@valid_metadata_xml)
+      assert {:ok, _xml} = Lint.validate(@valid_metadata_xml)
     end
 
     test "returns an :error tuple with message from validation backend if XML is invalid" do
@@ -27,11 +27,11 @@ defmodule SmeeLintTest do
     end
 
     test "returns an :ok tuple for single entity XML" do
-      assert {:ok, xml} = Lint.validate(@valid_single_metadata_xml)
+      assert {:ok, _xml} = Lint.validate(@valid_single_metadata_xml)
     end
 
     test "returns an :ok tuple for large and live UKAMF metadata" do
-      assert {:ok, xml} = Lint.validate(@ukamf_xml)
+      assert {:ok, _xml} = Lint.validate(@ukamf_xml)
     end
 
   end

@@ -1,7 +1,7 @@
 defmodule SmeeSecurityXmlsectoolTest do
   use ExUnit.Case
 
-  alias Smee.Security.Xmlsectool
+  #alias Smee.Security.Xmlsectool
 
 
 end

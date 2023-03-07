@@ -71,6 +71,7 @@ defmodule Smee.Metadata do
   @spec new(data :: binary(), options :: keyword()) :: Metadata.t()
   def new(data, options \\ []) when is_binary(data) do
 
+    data = String.trim(data)
     url = Utils.normalize_url(Keyword.get(options, :url, nil))
     dlt = Keyword.get(options, :downloaded_at, DateTime.utc_now())
     dhash = Smee.Utils.sha1(data)

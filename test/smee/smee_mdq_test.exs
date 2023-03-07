@@ -6,13 +6,9 @@ defmodule SmeeMDQTest do
   alias Smee.Entity
   alias Smee.Metadata
   alias Smee.Source
-  alias Smee.Fetch
-  alias Smee.Utils
-
-  import SweetXml
 
   @mdq_service_url "http://mdq.ukfederation.org.uk/"
-  @mdq_service MDQ.source(@mdq_service_url)
+ # @mdq_service MDQ.source(@mdq_service_url)
 
   describe "source/2" do
 

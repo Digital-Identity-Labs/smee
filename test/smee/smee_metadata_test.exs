@@ -8,9 +8,7 @@ defmodule SmeeMetadataTest do
   alias Smee.Fetch
   alias Smee.Utils
 
-  import SweetXml
-
-  @arbitrary_dt DateTime.new!(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
+  # @arbitrary_dt DateTime.new!(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
   @valid_metadata_file "test/support/static/aggregate.xml"
   @valid_noname_metadata_file "test/support/static/aggregate_no_name.xml"
   @valid_single_metadata_file "test/support/static/indiid.xml"
@@ -70,7 +68,7 @@ defmodule SmeeMetadataTest do
 
     test "data defaults to a trimmed version of passed data param" do
       data = String.trim(@valid_metadata_xml)
-      assert %Metadata{data: data} = Metadata.new(@valid_metadata_xml)
+      assert %Metadata{data: ^data} = Metadata.new(@valid_metadata_xml)
     end
 
     test "size is set automatically to the bytesize of the data" do
@@ -155,12 +153,12 @@ defmodule SmeeMetadataTest do
 
     test "downloaded_at can be set using an option" do
       now = DateTime.utc_now()
-      assert  %Metadata{downloaded_at: now} = Metadata.new(@valid_metadata_xml, downloaded_at: now)
+      assert  %Metadata{downloaded_at: ^now} = Metadata.new(@valid_metadata_xml, downloaded_at: now)
     end
 
     test "modified_at can be set using an option" do
       now = DateTime.utc_now()
-      assert  %Metadata{modified_at: now} = Metadata.new(@valid_metadata_xml, modified_at: now)
+      assert  %Metadata{modified_at: ^now} = Metadata.new(@valid_metadata_xml, modified_at: now)
     end
 
     test "url can be set using an option" do
@@ -216,7 +214,7 @@ defmodule SmeeMetadataTest do
 
     test "data cannot be set using an option" do
       data = String.trim(@valid_metadata_xml)
-      assert %Metadata{data: data} = Metadata.new(@valid_metadata_xml, data: "This shouldn't be set")
+      assert %Metadata{data: ^data} = Metadata.new(@valid_metadata_xml, data: "This shouldn't be set")
     end
 
     test "hashes cannot be set using an option" do
@@ -297,7 +295,10 @@ defmodule SmeeMetadataTest do
     test "data defaults to a trimmed version of passed data param" do
       data = Metadata.entities(@valid_metadata)
              |> Smee.Publish.to_xml()
+      # assert %Metadata{data: ^data} = Metadata.derive(Metadata.entities(@valid_metadata))
       assert %Metadata{data: data} = Metadata.derive(Metadata.entities(@valid_metadata))
+      ## Test can't work because comparison data will have different datetime strings in it!
+      ## Leaving as a compile error to nag me to allow options in publish so date can be set
     end
 
     test "size is set automatically to the bytesize of the data" do
@@ -310,7 +311,10 @@ defmodule SmeeMetadataTest do
         |> Smee.Publish.to_xml
       )
       sha1 = Utils.sha1(data)
+      #assert %Metadata{data_hash: ^sha1} = Metadata.derive(Metadata.entities(@valid_metadata))
       assert %Metadata{data_hash: sha1} = Metadata.derive(Metadata.entities(@valid_metadata))
+      ## Test can't work because comparison data will have different datetime strings in it!
+      ## Leaving as a compile error to nag me to allow options in publish so date can be set
     end
 
     test "type defaults to :aggregate" do
@@ -340,7 +344,7 @@ defmodule SmeeMetadataTest do
     test "etag defaults to the data hash" do
       md = Metadata.derive(Metadata.entities(@valid_metadata))
       etag = md.etag
-      assert %Metadata{etag: etag} = md
+      assert %Metadata{etag: ^etag} = md
     end
 
     test "label defaults to nil" do
@@ -389,12 +393,12 @@ defmodule SmeeMetadataTest do
 
     test "downloaded_at can be set using an option" do
       now = DateTime.utc_now()
-      assert  %Metadata{downloaded_at: now} = Metadata.derive(Metadata.entities(@valid_metadata), downloaded_at: now)
+      assert  %Metadata{downloaded_at: ^now} = Metadata.derive(Metadata.entities(@valid_metadata), downloaded_at: now)
     end
 
     test "modified_at can be set using an option" do
       now = DateTime.utc_now()
-      assert  %Metadata{modified_at: now} = Metadata.derive(Metadata.entities(@valid_metadata), modified_at: now)
+      assert  %Metadata{modified_at: ^now} = Metadata.derive(Metadata.entities(@valid_metadata), modified_at: now)
     end
 
     test "url can be set using an option" do
@@ -448,11 +452,8 @@ defmodule SmeeMetadataTest do
     end
 
     test "data cannot be set using an option" do
-      data = String.trim(
-        Metadata.entities(@valid_metadata)
-        |> Smee.Publish.to_xml
-      )
-      assert %Metadata{data: data} = Metadata.derive(Metadata.entities(@valid_metadata), data: "This shouldn't be set")
+      %Metadata{data: data} = Metadata.derive(Metadata.entities(@valid_metadata), data: "This shouldn't be set")
+      refute data == "This shouldn't be set"
     end
 
     test "hashes cannot be set using an option" do
@@ -483,7 +484,7 @@ defmodule SmeeMetadataTest do
   describe "update/1" do
 
     test "updated metadata is decompressed" do
-    #  assert %Metadata{compressed: false} = Metadata.update(@valid_metadata)
+      #  assert %Metadata{compressed: false} = Metadata.update(@valid_metadata)
       assert %Metadata{compressed: false} = Metadata.update(Metadata.compress(@valid_metadata))
     end
 
@@ -545,12 +546,12 @@ defmodule SmeeMetadataTest do
     test "The Metadata is compressed: data is gzipped" do
       compressed_metadata = Metadata.compress(@valid_metadata)
       original_data = @valid_metadata.data
-      assert original_data = :zlib.gunzip(compressed_metadata.data)
+      assert ^original_data = :zlib.gunzip(compressed_metadata.data)
     end
 
     test "nothing happens if already gzipped" do
       compressed_metadata = Metadata.compress(@valid_metadata)
-      assert compressed_metadata = Metadata.compress(compressed_metadata)
+      assert ^compressed_metadata = Metadata.compress(compressed_metadata)
     end
 
     test "Bytesize remains the same, original size" do
@@ -559,7 +560,8 @@ defmodule SmeeMetadataTest do
     end
 
     test "The compressed flag is set" do
-      %Metadata{compressed: true} = Metadata.compress(@valid_metadata)
+      assert %Metadata{compressed: false} = @valid_metadata
+      assert %Metadata{compressed: true} = Metadata.compress(@valid_metadata)
     end
 
 
@@ -570,7 +572,7 @@ defmodule SmeeMetadataTest do
     test "The Metadata is decompressed: data is not gzipped" do
       compressed_metadata = Metadata.compress(@valid_metadata)
       original_data = @valid_metadata.data
-      assert %Metadata{data: original_data} = Metadata.decompress(@valid_metadata)
+      assert %Metadata{data: ^original_data} = Metadata.decompress(compressed_metadata)
     end
 
     test "nothing happens if not already gzipped" do
@@ -578,11 +580,14 @@ defmodule SmeeMetadataTest do
     end
 
     test "Bytesize remains the same, original size" do
-      assert %Metadata{size: 39_363} = Metadata.decompress(@valid_metadata)
+      compressed_metadata = Metadata.compress(@valid_metadata)
+      assert %Metadata{size: 39_363} = Metadata.decompress(compressed_metadata)
     end
 
     test "The compressed flag is unset" do
-      %Metadata{compressed: false} = Metadata.decompress(@valid_metadata)
+      compressed_metadata = Metadata.compress(@valid_metadata)
+      assert %Metadata{compressed: true} = compressed_metadata
+      assert %Metadata{compressed: false} = Metadata.decompress(compressed_metadata)
     end
 
   end
@@ -591,7 +596,7 @@ defmodule SmeeMetadataTest do
 
     test "returns xml data string for the Metadata" do
       xml = String.trim(@valid_metadata_xml)
-      assert xml = Metadata.xml(@valid_metadata)
+      assert ^xml = Metadata.xml(@valid_metadata)
     end
 
     test "raises an exception if there is no data" do

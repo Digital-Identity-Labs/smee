@@ -2,14 +2,13 @@ defmodule SmeeEntityTest do
   use ExUnit.Case
 
   alias Smee.Entity
-  alias Smee.Metadata
   alias Smee.Source
   alias Smee.Fetch
 
   import SweetXml
 
   @valid_xml File.read! "test/support/static/valid.xml"
-  @invalid_xml File.read! "test/support/static/bad.xml"
+  #@invalid_xml File.read! "test/support/static/bad.xml"
   @arbitrary_dt DateTime.new!(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
   @valid_metadata "test/support/static/aggregate.xml"
                   |> Source.new()
@@ -124,7 +123,7 @@ defmodule SmeeEntityTest do
       assert is_tuple(xdoc)
       assert %{uri: "https://indiid.net/idp/shibboleth"} = xdoc
                                                            |> xmap(
-                                                                uri: ~x"string(/*/@entityID)"s,
+                                                                uri: ~x"string(/*/@entityID)"s
                                                               )
     end
 
@@ -138,13 +137,13 @@ defmodule SmeeEntityTest do
 
     test "modified_at uses the modified_at datetime of the metadata by default" do
       dt = @valid_metadata.modified_at
-      %{modified_at: dt} = Entity.derive(@valid_xml, @valid_metadata)
+      %{modified_at: ^dt} = Entity.derive(@valid_xml, @valid_metadata)
 
     end
 
     test "downloaded_at uses the downloaded_at datetime of the metadata by default" do
       dt = @valid_metadata.downloaded_at
-      %{downloaded_at: dt} = Entity.derive(@valid_xml, @valid_metadata)
+      %{downloaded_at: ^dt} = Entity.derive(@valid_xml, @valid_metadata)
     end
 
     test "entity_id is only set automatically and cannot be set with options" do
@@ -236,7 +235,7 @@ defmodule SmeeEntityTest do
       assert is_tuple(xdoc)
       assert %{uri: "https://indiid.net/idp/shibboleth"} = xdoc
                                                            |> xmap(
-                                                                uri: ~x"string(/*/@entityID)"s,
+                                                                uri: ~x"string(/*/@entityID)"s
                                                               )
     end
 
@@ -326,12 +325,12 @@ defmodule SmeeEntityTest do
     test "The entity is compressed: data is gzipped" do
       compressed_entity = Entity.compress(@valid_entity)
       original_data = @valid_entity.data
-      assert original_data = :zlib.gunzip(compressed_entity.data)
+      assert ^original_data = :zlib.gunzip(compressed_entity.data)
     end
 
     test "nothing happens if already gzipped" do
       compressed_entity = Entity.compress(@valid_entity)
-      assert compressed_entity = Entity.compress(compressed_entity)
+      assert ^compressed_entity = Entity.compress(compressed_entity)
     end
 
     test "Bytesize remains the same, original size" do
@@ -350,7 +349,7 @@ defmodule SmeeEntityTest do
     test "The entity is decompressed: data is not gzipped" do
       compressed_entity = Entity.compress(@valid_entity)
       original_data = @valid_entity.data
-      assert %Entity{data: original_data} = Entity.decompress(@valid_entity)
+      assert %Entity{data: ^original_data} = Entity.decompress(compressed_entity)
     end
 
     test "nothing happens if not already gzipped" do
@@ -358,11 +357,14 @@ defmodule SmeeEntityTest do
     end
 
     test "Bytesize remains the same, original size" do
-      assert %Entity{size: 8007} = Entity.decompress(@valid_entity)
+      compressed_entity = Entity.compress(@valid_entity)
+      assert %Entity{size: 8007} = Entity.decompress(compressed_entity)
     end
 
     test "The compressed flag is unset" do
-      %Entity{compressed: false} = Entity.decompress(@valid_entity)
+      compressed_entity = Entity.compress(@valid_entity)
+      assert %Entity{compressed: true} = compressed_entity
+      assert %Entity{compressed: false} = Entity.decompress(compressed_entity)
     end
 
   end
@@ -414,7 +416,7 @@ defmodule SmeeEntityTest do
 
     test "returns xml data string for the entity" do
        xml = String.trim(@valid_xml)
-      assert xml = Entity.xml(@valid_entity)
+      assert ^xml = Entity.xml(@valid_entity)
     end
 
     test "raises an exception if there is no data" do

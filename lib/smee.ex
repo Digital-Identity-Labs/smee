@@ -35,7 +35,6 @@ defmodule Smee do
   alias Smee.Source
   alias Smee.Metadata
   alias Smee.Entity
-  alias Smee.Extract
   alias Smee.Fetch
   alias Smee.MDQ
 
@@ -47,7 +46,9 @@ defmodule Smee do
 
   ## Example
 
-      iex> src = Smee.source("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+      iex> Smee.source("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+      iex>
+
 
   """
   @spec source(url :: binary()) :: Source.t()
@@ -69,8 +70,8 @@ defmodule Smee do
 
   ## Example
 
-      iex> src = Smee.source("http://mdq.ukfederation.org.uk/", type: :mdq, retries: 1, label: "UK MDQ Service")
-      iex> src = Smee.source("support/static/valid.xml", type: :single, retries: 1, label: "My IdP")
+      iex> Smee.source("http://mdq.ukfederation.org.uk/", type: :mdq, retries: 1, label: "UK MDQ Service")
+      iex> Smee.source("support/static/valid.xml", type: :single, retries: 1, label: "My IdP")
 
   """
 
@@ -84,9 +85,10 @@ defmodule Smee do
 
   ## Example
 
-      iex> metadata = "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
+      iex> "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
       iex> |> Smee.source()
       iex> |> Smee.fetch!()
+
 
   """
   @spec fetch!(source :: Source.t()) :: Metadata.t()

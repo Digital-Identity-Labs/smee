@@ -34,9 +34,11 @@ defmodule SmeePublishTest do
       assert 74 = Publish.to_index_stream_size(Metadata.stream_entities(@valid_metadata))
     end
 
-    test "should be the same size as a compiled binary output" do
-      text_size = byte_size(Publish.to_index(Metadata.stream_entities(@valid_metadata)))
-      assert text_size = Publish.to_index_stream_size(Metadata.stream_entities(@valid_metadata))
+    test "should be about the same size as a compiled binary output" do
+      actual_size = byte_size(Publish.to_index(Metadata.stream_entities(@valid_metadata)))
+      estimated_size = Publish.to_index_stream_size(Metadata.stream_entities(@valid_metadata))
+      assert (actual_size - estimated_size) in -3..3
+
     end
 
   end
@@ -80,9 +82,10 @@ defmodule SmeePublishTest do
       assert 39_393 = Publish.to_xml_stream_size(Metadata.stream_entities(@valid_metadata))
     end
 
-    test "should be the same size as a compiled binary output" do
-      text_size = byte_size(Publish.to_xml(Metadata.stream_entities(@valid_metadata)))
-      assert text_size = Publish.to_xml_stream_size(Metadata.stream_entities(@valid_metadata))
+    test "should be the about the same size as a compiled binary output" do
+      actual_size = byte_size(Publish.to_xml(Metadata.stream_entities(@valid_metadata)))
+      estimated_size = Publish.to_xml_stream_size(Metadata.stream_entities(@valid_metadata))
+      assert (actual_size - estimated_size) in -8..8
     end
   end
 
@@ -105,7 +108,7 @@ defmodule SmeePublishTest do
         Metadata.stream_entities(@valid_metadata)
       )
 
-      assert {:ok, xml} = Lint.validate(xml)
+      assert {:ok, ^xml} = Lint.validate(xml)
     end
 
   end

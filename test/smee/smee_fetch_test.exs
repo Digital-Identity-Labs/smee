@@ -6,10 +6,9 @@ defmodule SmeeFetchTest do
   alias Smee.Source
   alias Smee.MDQ
 
-  @arbitrary_dt DateTime.new!(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
+  #@arbitrary_dt DateTime.new!(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
   @valid_metadata_file "test/support/static/aggregate.xml"
-  @valid_single_metadata_file "test/support/static/indiid.xml"
-  @local_single_source1 Source.new(@valid_single_metadata_file, type: :single)
+  #@valid_single_metadata_file "test/support/static/indiid.xml"
   @local_aggmd_source1 Source.new(@valid_metadata_file)
   @local_aggmd_source2 Source.new("file:#{@valid_metadata_file}")
   @local_bad_source1 Source.new("this_file_does_not_exist.xml")
