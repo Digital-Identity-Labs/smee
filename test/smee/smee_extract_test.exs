@@ -42,7 +42,7 @@ defmodule SmeeExtractTest do
     test "returns an empty map of if none are present in the metadata" do
       ea_map = Extract.list_entity_attrs(@small_agg_md)
       ea_keys = Map.keys(ea_map)
-      assert Enum.count(ea_keys) == 0
+      assert Enum.empty?(ea_keys)
     end
 
   end
@@ -72,15 +72,15 @@ defmodule SmeeExtractTest do
     test "returns a list of maps, each listing the MDUI information for each entity" do
       mdui = Extract.mdui_info(@small_agg_md)
 
-      assert Enum.at(mdui,0)[:entity_id] == "https://test.ukfederation.org.uk/entity"
-      assert Enum.at(mdui,0)[:org_name] == "Jisc Services Limited"
-      assert Enum.at(mdui,0)[:org_displayname] == "UK federation Test SP"
-      assert Enum.at(mdui,0)[:sp_description] == "This test service provider allows you to see the attributes your identity provider is releasing."
-      assert Enum.at(mdui,0)[:sp_displayname] == "UK federation Test SP"
-      assert Enum.at(mdui,1)[:entity_id] == "https://indiid.net/idp/shibboleth"
-      assert Enum.at(mdui,1)[:idp_displayname] == "Indiid"
-      assert Enum.at(mdui,1)[:org_displayname] == "Indiid"
-      assert Enum.at(mdui,1)[:org_name] == "Digital Identity Ltd"
+      assert Enum.at(mdui, 0)[:entity_id] == "https://test.ukfederation.org.uk/entity"
+      assert Enum.at(mdui, 0)[:org_name] == "Jisc Services Limited"
+      assert Enum.at(mdui, 0)[:org_displayname] == "UK federation Test SP"
+      assert Enum.at(mdui, 0)[:sp_description] == "This test service provider allows you to see the attributes your identity provider is releasing."
+      assert Enum.at(mdui, 0)[:sp_displayname] == "UK federation Test SP"
+      assert Enum.at(mdui, 1)[:entity_id] == "https://indiid.net/idp/shibboleth"
+      assert Enum.at(mdui, 1)[:idp_displayname] == "Indiid"
+      assert Enum.at(mdui, 1)[:org_displayname] == "Indiid"
+      assert Enum.at(mdui, 1)[:org_name] == "Digital Identity Ltd"
 
     end
 
