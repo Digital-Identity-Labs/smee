@@ -1,7 +1,7 @@
 defmodule SmeeStatsTest do
   use ExUnit.Case
 
-  alias Smee.Stats
+ # alias Smee.Stats
 
 
 

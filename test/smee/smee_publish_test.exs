@@ -4,7 +4,6 @@ defmodule SmeePublishTest do
   alias Smee.Publish
   alias Smee.Source
   alias Smee.Metadata
-  alias Smee.Entity
   alias Smee.Lint
 
 
