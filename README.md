@@ -9,7 +9,6 @@ projects. Smee can be used within applications or in simpler scripts for process
 [![Hex pm](http://img.shields.io/hexpm/v/smee.svg?style=flat)](https://hex.pm/packages/smee)
 [![API Docs](https://img.shields.io/badge/api-docs-yellow.svg?style=flat)](http://hexdocs.pm/smee/)
 ![Github Elixir CI](https://github.com/Digital-Identity-Labs/smee/workflows/Elixir%20CI/badge.svg)
-[![License](https://img.shields.io/hexpm/l/smee.svg)](LICENSE)
 
 ## Features
 
