@@ -1,36 +1,38 @@
 defmodule Smee do
   @moduledoc """
-  Smee is a pragmatic library for handling SAML metadata.
-
-  ## Requirements
-
-  Smee does not do all processing itself, using Elixir - it sometimes cheats (OK, it often cheats) by sending data to
-  external programs for processing. At the moment it requires:
-
-  * `xmlsec1`
-  * `xmllint`
-  * `xsltproc`
+  `Smee` is a pragmatic library for handling SAML metadata with Elixir, Erlang or any other BEAM language.
 
   ## Features
 
-  The top level Smee module contains simplified, top level functions better suited to simpler scripts. Other modules in
+  * Download remote SAML metadata or load local files, with effective caching
+  * Manage and compare metadata files and individual entity metadata
+  * MDQ API (which can also emulate MDQ style lookups with aggregate files)
+  * A focus on streaming with reliable and surprisingly low memory usage
+  * Filter entity streams by various criteria
+  * Validate XML signatures, automatically download and confirm signing certificates
+  * Transform metadata using XSLT, or extract data
+  * Access XML using Erlang's Xmerl library (sweetened by SweetXML)
+  * Recombine entity streams into aggregates or other data formats
+  * Can be used with applications or in simple .exs scripts
+
+  ## Modules
+
+  The top level `Smee` module contains a few simplified, top level functions better suited to simpler scripts. Other modules in
   Smee contain more tools for handling SAML metadata, such as:
-    
-    * `Smee.Source` - define sources of metadata
-    * `Smee.Metadata` - functions for handling metadata aggregates
-    * `Smee.Entity` - individual SAML entity definitions
-    * `Smee.Extract` - processing metadata to extract information
-    * `Smee.Fetch` - downloading metadata sources
-    * `Smee.MDQ` - functions for MDQ clients (and emulating MDQ clients)
-    * `Smee.Filter` - filtering streams of entity records
-    * `Smee.Transform` - processing and editing entity XML
-    * `Smee.Publish` - Formatting and outputting metadata in various formats
 
-  ## Examples
-
-
-
+  * `Smee.Source` - define sources of metadata
+  * `Smee.Metadata` - functions for handling metadata aggregates
+  * `Smee.Entity` - individual SAML entity definitions
+  * `Smee.Extract` - processing metadata to extract information
+  * `Smee.Fetch` - downloading metadata sources
+  * `Smee.MDQ` - functions for MDQ clients (and emulating MDQ clients)
+  * `Smee.Filter` - filtering streams of entity records
+  * `Smee.Transform` - processing and editing entity XML
+  * `Smee.Publish` - Formatting and outputting metadata in various formats
+  * `Smee.Stats` - Simple stats for entity streams
+  * `Smee.Lint` - XML validation and reformatting
   """
+
   alias __MODULE__
   alias Smee.Source
   alias Smee.Metadata
@@ -43,6 +45,7 @@ defmodule Smee do
 
     Sources of metadata include online aggregate XML, local aggregate files, individual entities, and MDQ services.
     This function will only define sources of aggregate XML.
+
 
   ## Example
 
@@ -60,11 +63,14 @@ defmodule Smee do
     Defines a source of metadata
 
    Sources of metadata include online aggregate XML, local aggregate files, individual entities, and MDQ services.
-   This function allows a lot of customisation, particularly the *type*. Types are: :aggregate (a file containing a collection of
-   entityDescriptor fragments inside a entitiesDescriptor tag, as used by federations) :single (a file with a single entityDescriptor,
-   as used for individual metadata records) or :mdq (an online MDQ service)
+   This function allows a lot of customisation, particularly the *type*. Types are:
+   * :aggregate (a file containing a collection of
+   entityDescriptor fragments inside a entitiesDescriptor tag, as used by federations)
+   * :single (a file with a single entityDescriptor,
+   as used for individual metadata records)
+   *  :mdq (an online MDQ service)
 
-  URLs made be remote (http:// and https://) or local (file://). Local files can be specified as bare paths.
+  URLs may be remote (http:// and https://) or local (file://). Local files can be specified as bare paths.
 
   See `Smee.Source.new` for full details
 
@@ -81,7 +87,7 @@ defmodule Smee do
   end
 
   @doc """
-    Downloads a source of metadata and returns a %Metadata{} struct containing XML and information.
+    Downloads a source of metadata (local or remote) and returns a %Metadata{} struct containing XML and information.
 
   ## Example
 
@@ -97,9 +103,9 @@ defmodule Smee do
   end
 
   @doc """
-    Retrieves information for a single entity from an MDQ service (real or emulated) and return an Entity{} struct.
+  Retrieves information for a single entity from an MDQ service (real or emulated) and returns an %Entity{} struct.
 
-  This version of the function can
+  This version of the function can accept either a %Source{} or a %Metadata{} struct containing already-loaded Metadata.
 
   ## Example
 
@@ -118,13 +124,13 @@ defmodule Smee do
   end
 
   def lookup!(%Metadata{} = metadata, entity_id) do
-   Metadata.entity!(metadata, entity_id)
+    Metadata.entity!(metadata, entity_id)
   end
 
   @doc """
-    Lists the IDs of every entity in the metadata.
+  Lists the IDs of every entity in the metadata.
 
-
+  This version of the function can accept either a %Source{} or a %Metadata{} struct containing already-loaded Metadata.
 
   ## Example
 
@@ -143,9 +149,9 @@ defmodule Smee do
   end
 
   @doc """
-    Streams all entities in the specified metadata.
+  Streams all entities in the specified metadata or source.
 
-
+  This version of the function can accept either a %Source{} or a %Metadata{} struct containing already-loaded Metadata.
 
   ## Example
 
@@ -154,7 +160,7 @@ defmodule Smee do
       iex> |> Enum.to_list
 
   """
-  @spec stream_entities(source :: Source.t() | Metadata.t()) ::  Enumerable.t()
+  @spec stream_entities(source :: Source.t() | Metadata.t()) :: Enumerable.t()
   def stream_entities(source) when is_binary(source) do
     source(source)
     |> fetch!()

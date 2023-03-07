@@ -1,7 +1,12 @@
 defmodule Smee.Source do
 
   @moduledoc """
-  X
+  Defines sources for metadata, which can then be `Fetch`ed and prodoce Metadata structs. Source structs are the
+    usual starting-place for Smee tasks.
+
+   Source structs act as the configuration for metadata creation. They require a URL but various other options can be
+     set and their effect will propagate down to Entity records.
+
   """
 
   alias __MODULE__
@@ -41,6 +46,31 @@ defmodule Smee.Source do
     strict: false
   ]
 
+  @doc """
+  Creates a new source struct, describing where and how to find metadata.
+
+  The only essential parameter is a URL for the metadata. URLs can have `file:`, `http://`, or `https://` schemes.
+  Bare filesystem paths can also be passed and will be converted to `file:` URLs.
+
+  MDQ service clients should be configured with the *base URL* of the service, not the `/entity/` endpoint, and a
+   type of :mdq. Alternatively the `Smee.MDQ.source/2` function can be used as a shortcut.
+
+  Available options include:
+
+    * type: determines the general type of metadata - :aggregate (the default), :single and :mdq
+    * cert_url: location of certificate to use when verifying signed metadata
+    * cert_fingerprint: SHA1 fingerprint of the signing certificate
+    * cache: should HTTP caching be enabled for downloads. true or false, defaults to true.
+    * redirects: maximum number of 302 redirects to follow
+    * retries: number of retries to attempt
+    * label: a relatively useless label for the metadata
+    * priority: integer between 0 and 9, used for comparing metadata
+    * trustiness: float between 0.0 and 0.9, for comparing metadata
+    * strict: defaults to false. If enabled some stricter checks are enabled
+
+  MDQ sources are intended for use with the `Smee.MDQ` API but will also support normal fetch requests.
+
+  """
   @spec new(url :: binary(), options :: keyword()) :: Source.t()
   def new(url, options \\ []) do
     %Source{
@@ -59,7 +89,10 @@ defmodule Smee.Source do
     |> fix_url()
   end
 
-  @spec check(source ::Source.t(), options :: keyword()) :: {:ok, Source.t()} | {:error, binary()}
+  @doc """
+  Attempts to validate a source struct, and will return an :ok/:error tuple containing the Source if it passes checks.
+  """
+  @spec check(source :: Source.t(), options :: keyword()) :: {:ok, Source.t()} | {:error, binary()}
   def check(source, _options \\ []) do
     cond do
       !Enum.member?(@source_types, source.type) ->
@@ -74,7 +107,10 @@ defmodule Smee.Source do
 
   end
 
-  @spec check!(source ::Source.t(), options :: keyword()) :: Source.t()
+  @doc """
+  Attempts to validate a source struct, and will return the Source if it passes checks, or raise an exception.
+  """
+  @spec check!(source :: Source.t(), options :: keyword()) :: Source.t()
   def check!(source, options \\ []) do
     case check(source, options) do
       {:ok, source} -> source
@@ -84,7 +120,7 @@ defmodule Smee.Source do
 
   ################################################################################
 
-  @spec fix_type(source ::Source.t()) :: Source.t()
+  @spec fix_type(source :: Source.t()) :: Source.t()
   defp fix_type(source) do
     type = cond do
       String.ends_with?(source.url, ["entities", "entities/"]) -> :mdq
@@ -94,12 +130,15 @@ defmodule Smee.Source do
     Map.merge(source, %{type: type})
   end
 
-  @spec fix_url(source ::Source.t()) :: Source.t()
+  @spec fix_url(source :: Source.t()) :: Source.t()
   defp fix_url(source) do
     url = cond do
-      source.type == :mdq && String.ends_with?(source.url, ["entities"]) -> String.trim_trailing(source.url, "entities")
-      source.type == :mdq && String.ends_with?(source.url, ["entities/"]) -> String.trim_trailing(source.url, "entities/")
-      true -> source.url
+      source.type == :mdq && String.ends_with?(source.url, ["entities"]) ->
+        String.trim_trailing(source.url, "entities")
+      source.type == :mdq && String.ends_with?(source.url, ["entities/"]) ->
+        String.trim_trailing(source.url, "entities/")
+      true ->
+        source.url
     end
     Map.merge(source, %{url: url})
   end

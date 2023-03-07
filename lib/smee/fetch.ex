@@ -1,13 +1,28 @@
 defmodule Smee.Fetch do
 
   @moduledoc """
-  X
+  Downloads or loads the metadata specified in a `%Smee.Source{}` struct and returns a `%Smee.Metadata{}` struct.
+
+  The `fetch!/2` and `fetch/2` functions can handle both remote and local sources, but sometimes it can be
+    reassuring to prevent unexpected behaviour (perhaps if using a source defined by a user) so `Smee.Fetch` also
+  contains `local!/2` and `remote!/2` which will each only accept certain types of sources.
+
+  This module will do the work of creating suitable Metadata structs for you, so you should not normally need to
+    create Metadata structs directly yourself.
+
   """
 
   alias Smee.Utils
   alias Smee.Source
   alias Smee.Metadata
 
+  @doc """
+  Uses the passed Source struct to load or download the requested metadata XML, and returns a Metadata struct containing the XML.
+
+  Works with all types of Source, even MDQ services.
+
+  Will raise an exception on any errors.
+  """
   @spec fetch!(source :: Source.t(), options :: keyword()) :: Metadata.t()
   def fetch!(source, options \\ [])
   def fetch!(%{url: "file:" <> _} = source, options) do
@@ -18,6 +33,13 @@ defmodule Smee.Fetch do
     remote!(source, options)
   end
 
+  @doc """
+  Uses the passed Source struct to download the requested metadata XML, and returns a Metadata struct containing
+   the XML in an :ok/:error tuple.
+
+     Works with remote Sources including MDQ services but will not accept metadata in a local file.
+
+  """
   @spec remote(source :: Source.t(), options :: keyword()) :: {:ok, Metadata.t()} | {:error, binary()}
   def remote(source, _options \\ []) do
 
@@ -32,6 +54,14 @@ defmodule Smee.Fetch do
 
   end
 
+  @doc """
+  Uses the passed Source struct to download the requested metadata XML, and returns a Metadata struct containing
+   the XML
+
+   Works with remote Sources including MDQ services but will not accept metadata in a local file.
+
+   Will raise an exception on any errors.
+  """
   @spec remote!(source :: Source.t(), options :: keyword()) :: Metadata.t()
   def remote!(source, _options \\ []) do
 
@@ -48,6 +78,14 @@ defmodule Smee.Fetch do
 
   end
 
+  @doc """
+  Uses the passed Source struct to load the requested metadata XML, and returns a Metadata struct containing
+   the XML
+
+   Works with local Sources including MDQ services but will not accept metadata at a remote URL.
+
+   Will raise an exception on any errors.
+  """
   @spec local!(source :: Source.t(), options :: keyword()) :: Metadata.t()
   def local!(source, _options \\ []) do
 

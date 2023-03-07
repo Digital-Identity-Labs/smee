@@ -1,23 +1,29 @@
 defmodule Smee.Lint do
 
   @moduledoc """
-  X
+  Lint runs basic XML quality checks against XML strings
   """
 
   alias Smee.Resources
 
   @base_command ~w(--nonet)
 
+  @doc """
+  Validates XML - checks that it is well-formed and complies with SAML metadata schema. It does **not* check
+    signatures or expiry.
+  """
   @spec validate(xml :: binary(), options :: keyword() ) :: {:ok, binary()} | {:error, binary()}
   def validate(xml, options \\ []) do
     lint(xml, :validate, options)
   end
 
+  @doc false
   @spec tidy(xml :: binary(), options :: keyword() ) :: {:ok, binary()} | {:error, binary()}
   def tidy(xml, options \\ []) do
     lint(xml, :tidy, options)
   end
 
+  @doc false
   @spec well_formed(xml :: binary(), options :: keyword() ) :: {:ok, binary()} | {:error, binary()}
   def well_formed(xml, options \\ []) do
     lint(xml, :well_formed, options)

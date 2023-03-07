@@ -1,7 +1,22 @@
 defmodule Smee.Metadata do
 
   @moduledoc """
-  X
+  The Metadata module wraps up Metadata XML into a struct and contains functions that may be helpful when working with
+    them. The metadata is either an aggregate (as used by federations to contain many entity records) or a single entity.
+
+    Many of the functions mirror those in the `Smee.Entity` module - the same actions but on larger source XML rather
+  than on fragments.
+
+  The XML in metadata structs can be compressed or decompressed, but unlike Entities there is no cached, parsed xmlerl record
+    by default - this is to save time and memory.
+
+     Wherever possible use `Metadata.update/2` to make changes, do not write to the Entity struct directly. If you must write directly
+    you can use `Metadata.update/1` to resync the state of the record.
+
+  Methods in `Smee.Metadata` can be used to extract individual entity records each containing a fragment of XML. It's
+    strongly recommended to stream these using `stream_entities\2` to save on memory, or select a particular entity using
+  `entity\2`.
+
   """
 
   alias __MODULE__
@@ -68,6 +83,26 @@ defmodule Smee.Metadata do
     trustiness: 0.5
   ]
 
+  @doc """
+  Returns a new metadata struct based on the XML data passed as the first parameter.
+
+  You can set or override various parts of the struct by passing options:
+
+  * url - the original location of the metadata
+  * uri - a URI that identifies the metadata (Name)
+  * downloaded_at - A DateTime to record when the record was downloaded
+  * modified_at - A DateTime to record when the record was updated *upstream*
+  * valid_until - A DateTime to indicate when an entity expires
+  * priority - An integer between 0 and 9 to show priority
+  * trustiness - a Float between 0.0 and 0.9 to indicate, well, trustiness.
+  * etag - a string to use as an etag (unique content identifier).
+  * cert_url - location of a certificate to use for signature verification
+  * cert_fingerprint - fingerprint of the certificate to use for certificate verification
+  * label - a description for the metadata
+
+  In most cases it is better to use `Smee.Source` and then `Smee.Fetch` to generate a metadata struct.
+
+  """
   @spec new(data :: binary(), options :: keyword()) :: Metadata.t()
   def new(data, options \\ []) when is_binary(data) do
 
@@ -99,17 +134,47 @@ defmodule Smee.Metadata do
 
   end
 
+  @doc """
+  Returns a new metadata struct based on the streamed entities passed as the first parameter.
+
+  You can set or override various parts of the struct by passing options:
+
+  * url - the original location of the metadata
+  * uri - a URI that identifies the metadata (Name)
+  * downloaded_at - A DateTime to record when the record was downloaded
+  * modified_at - A DateTime to record when the record was updated *upstream*
+  * valid_until - A DateTime to indicate when an entity expires
+  * priority - An integer between 0 and 9 to show priority
+  * trustiness - a Float between 0.0 and 0.9 to indicate, well, trustiness.
+  * etag - a string to use as an etag (unique content identifier).
+  * cert_url - location of a certificate to use for signature verification
+  * cert_fingerprint - fingerprint of the certificate to use for certificate verification
+  * label - a description for the metadata
+
+  """
   @spec derive(data :: Enumerable.t() | Entity.t(), options :: keyword()) :: Metadata.t()
   def derive(enum, options \\ []) do
     data = Smee.Publish.to_xml(enum, options)
     new(data, options)
   end
 
+  @doc """
+  Resyncs the internal state of a %Metadata{} struct
+
+  If changes have been made using `Metadata.update/2` then this will not be needed - it's there for when the struct
+    has been changed directly
+  """
   @spec update(metadata :: Metadata.t()) :: Metadata.t()
   def update(metadata) do
     update(metadata, Metadata.xml(metadata))
   end
 
+  @doc """
+  Returns an updates %Metadata{} struct with new XML, refreshing various parts of the struct correctly.
+
+  This should be the only way updated Metadata structs are produced - the raw struct should not be changed directly.
+
+  """
   @spec update(metadata :: Metadata.t(), xml :: binary()) :: Metadata.t()
   def update(metadata, xml) do
     xml_has_changed = (xml != Metadata.xml(metadata))
@@ -126,11 +191,17 @@ defmodule Smee.Metadata do
 
   end
 
+  @doc """
+  Returns true if the XML data in an metadata struct has been compressed
+  """
   @spec compressed?(metadata :: Metadata.t()) :: boolean()
   def compressed?(metadata) do
     metadata.compressed || false
   end
 
+  @doc """
+  Returns compressed metadata, containing gzipped XML. This greatly reduces the size of the metadata record.
+  """
   @spec compress(metadata :: Metadata.t()) :: Metadata.t()
   def compress(%Metadata{compressed: true} = metadata) do
     metadata
@@ -141,6 +212,9 @@ defmodule Smee.Metadata do
     |> Map.merge(%{data: :zlib.gzip(metadata.data), compressed: true})
   end
 
+  @doc """
+  Returns decompressed metadata, with plain-text XML data. This makes the struct much larger.
+  """
   @spec decompress(metadata :: Metadata.t()) :: Metadata.t()
   def decompress(%{compressed: false} = metadata) do
     metadata
@@ -151,6 +225,10 @@ defmodule Smee.Metadata do
     |> Map.merge(%{data: :zlib.gunzip(metadata.data), compressed: false})
   end
 
+  @doc """
+  Returns a parsed Erlang `xmerl` structure representing the metadata XML, for use with `xmerl`, `SweetXML` and other
+    tools.
+  """
   @spec xml(metadata :: Metadata.t()) :: binary()
   def xml(%{data: problem}) when is_nil(problem) or problem == "" do
     raise "Missing XML data in Metadata!"
@@ -165,11 +243,17 @@ defmodule Smee.Metadata do
     metadata.data
   end
 
+  @doc """
+  Returns the number of entities in the metadata file
+  """
   @spec count(metadata :: Metadata.t()) :: integer()
   def count(%Metadata{entity_count: count}) do
     count || 0
   end
 
+  @doc """
+  Returns the specified entity from the metadata in an :ok/:error struct
+  """
   @spec entity(metadata :: Metadata.t(), uri :: binary()) :: Entity.t() | nil
   def entity(metadata, uri) do
     try do
@@ -179,17 +263,29 @@ defmodule Smee.Metadata do
     end
   end
 
+  @doc """
+  Returns the specified entity from the metadata or raises an exception if not found
+
+  """
   @spec entity!(metadata :: Metadata.t(), uri :: binary()) :: Entity.t()
   def entity!(metadata, uri) do
     Extract.entity!(metadata, uri)
   end
 
+  @doc """
+  Returns all entities in the metadata as a list of entity structs.
+
+  This can produce very large lists very slowly. The `stream_entities\2` function is much better.
+  """
   @spec entities(metadata :: Metadata.t()) :: list(Entity.t())
   def entities(metadata) do
     stream_entities(metadata)
     |> Enum.to_list
   end
 
+  @doc """
+  Returns a stream of all entities in the metadata.
+  """
   @spec stream_entities(metadata :: Metadata.t(), options :: keyword()) :: Enumerable.t()
   def stream_entities(metadata, options \\ []) do
     options = Keyword.take(options, [:slim, :compress])
@@ -197,6 +293,9 @@ defmodule Smee.Metadata do
     |> Stream.map(fn xml -> Smee.Entity.derive(xml, metadata, options)  end)
   end
 
+  @doc """
+  Returns one randomly selected entity from the metadata
+  """
   @spec random_entity(metadata :: Metadata.t()) :: Entity.t()
   def random_entity(%Metadata{entity_count: max} = metadata) do
     if max > 10 do
@@ -214,6 +313,9 @@ defmodule Smee.Metadata do
     end
   end
 
+  @doc """
+  Returns a list of all entity IDs in the metadata
+  """
   @spec entity_ids(metadata :: Metadata.t()) :: list(binary())
   def entity_ids(%{type: :single} = metadata) do
     extract_id(metadata.data)
@@ -227,6 +329,9 @@ defmodule Smee.Metadata do
     end
   end
 
+  @doc """
+  Returns a suggested filename for the metadata.
+  """
   @spec filename(metadata :: Metadata.t()) :: binary()
   def filename(%{uri: uri} = metadata) when not is_nil(uri) do
     filename(metadata, :sha1)
@@ -240,6 +345,13 @@ defmodule Smee.Metadata do
     raise "No Name/URI or download URI to identify and name the metadata!"
   end
 
+  @doc """
+  Returns a suggested filename for the metadata in the specified format.
+
+  Two formats can be specified: :sha1 and :uri
+
+  """
+  @spec filename(entity :: Entity.t(), format :: atom()) :: binary()
   def filename(metadata, :sha1) do
     "#{metadata.uri_hash}.xml"
   end
@@ -387,7 +499,7 @@ defmodule Smee.Metadata do
   end
 
   @spec list_ids_int(metadata :: Metadata.t()) :: list(binary())
-  def list_ids_int(metadata) do
+  defp list_ids_int(metadata) do
     stream_entities(metadata)
     |> Stream.map(fn e -> e.uri end)
     |> Enum.to_list

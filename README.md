@@ -36,6 +36,8 @@ Smee contain more tools for handling SAML metadata, such as:
 * `Smee.Filter` - filtering streams of entity records
 * `Smee.Transform` - processing and editing entity XML
 * `Smee.Publish` - Formatting and outputting metadata in various formats
+* `Smee.Stats` - Simple stats for entity streams
+* `Smee.Lint` - XML validation and reformatting
 
 ## Examples
 
@@ -59,7 +61,7 @@ alias Smee.{Source, Fetch, Filter, Metadata}
 |> Source.new()
 |> Fetch.remote!()
 |> Metadata.stream_entities()
-|> Filter.idp?()
+|> Filter.idp()
 |> Stream.map(fn e -> e.uri end)
 |> Enum.to_list()
 
@@ -74,7 +76,7 @@ alias Smee.{Source, Fetch, Filter, Metadata, Publish}
 |> Source.new()
 |> Fetch.remote!()
 |> Metadata.stream_entities()
-|> Filter.sp?()
+|> Filter.sp()
 |> Stream.map(fn e -> e.uri end)
 |> Publish.to_xml()
 

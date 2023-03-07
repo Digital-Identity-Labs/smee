@@ -1,7 +1,17 @@
 defmodule Smee.Entity do
 
   @moduledoc """
-      X
+  `Smee` wraps up metadata for individual entities in %Entity{} structs, and the `Smee.Entity` module contains
+    functions that may be useful when working with them.
+
+  Many of the functions mirror those in the `Smee.Metadata` module - the same actions but on a smaller unit of XML.
+
+  Like %Metadata{} structs the XML in entities can be compressed and decompressed, but unlike Metadata structs they have
+    parsed xmerl data in them by default too.
+
+  Wherever possible use `Entity.update/2` to make changes, do not write to the Entity struct directly. If you must write directly
+    you can use `Entity.update/1` to resync the state of the record.
+
   """
 
   import SweetXml
@@ -50,6 +60,20 @@ defmodule Smee.Entity do
     trustiness: 0.5
   ]
 
+  @doc """
+  Returns a new %Entity{} struct if passed XML data.
+
+  You can set or override various parts of the struct by passing options:
+
+  * md_uri - a URI that identifies a parent
+  * downloaded_at - A DateTime to record when the record was downloaded
+  * modified_at - A DateTime to record when the record was updated *upstream*
+  * valid_until - A DateTime to indicate when an entity expires
+  * priority - An integer between 0 and 9 to show priority
+  * trustiness - a Float between 0.0 and 0.9 to indicate, well, trustiness.
+
+  You won't normally need to do this yourself as entities can be extracted from `Smee.Metadata`.
+  """
   @spec new(data :: binary(), options :: keyword() ) :: Entity.t()
   def new(data, options \\ []) do
 
@@ -78,6 +102,22 @@ defmodule Smee.Entity do
 
   end
 
+  @doc """
+  Returns a new %Entity{} struct if passed XML data for an entity *and* parent %Metadata{}.
+
+  Defaults values are set using the parent metadata where possible.
+
+  You can set or override various parts of the struct by passing options:
+
+  * md_uri - a URI that identifies a parent
+  * downloaded_at - A DateTime to record when the record was downloaded
+  * modified_at - A DateTime to record when the record was updated *upstream*
+  * valid_until - A DateTime to indicate when an entity expires
+  * priority - An integer between 0 and 9 to show priority
+  * trustiness - a Float between 0.0 and 0.9 to indicate, well, trustiness.
+
+  You won't normally need to do this yourself as entities can be extracted from `Smee.Metadata`.
+  """
   @spec derive(data :: binary(), metadata :: Metadata.t(), options :: keyword() ) :: Entity.t()
   def derive(data, metadata, options \\ [])
   def derive(data, _metadata, _options) when is_nil(data) or data == "" do
@@ -109,12 +149,23 @@ defmodule Smee.Entity do
 
   end
 
+  @doc """
+  Resyncs the internal state of an %Entity{} struct
+
+  If changes have been made using `Entity.update/2` then this will not be needed - it's there for when the struct
+    has been changed directly
+  """
   @spec update(entity :: Entity.t() ) :: Entity.t()
   def update(entity) do
     entity = decompress(entity)
     update(entity, entity.data)
   end
 
+  @doc """
+  Returns an updates %Entity{} struct with new XML, refreshing various parts of the struct correctly.
+
+  This should be the only way updated Entities are produced - the raw struct should not be changed directly.
+  """
   @spec update(entity :: Entity.t(), xml :: binary() ) :: Entity.t()
   def update(entity, xml) do
     changes = if xml == entity.data, do: entity.changes, else: entity.changes + 1
@@ -125,21 +176,33 @@ defmodule Smee.Entity do
     |> parse_data()
   end
 
+  @doc """
+  Returns an entity with parsed XML data removed, greatly reducing its size but possibly making future processing slower.
+  """
   @spec slim(entity :: Entity.t()) :: Entity.t()
   def slim(entity) do
     struct(entity, %{xdoc: nil})
   end
 
+  @doc """
+    Returns an entity that contains parsed XML data, greatly increasing its size but possibly making future processing faster.
+  """
   @spec bulkup(entity :: Entity.t()) :: Entity.t()
   def bulkup(entity) do
     parse_data(entity)
   end
 
+  @doc """
+  Returns true if the XML data in an entity has been compressed
+  """
   @spec compressed?(entity :: Entity.t()) :: boolean()
   def compressed?(entity) do
     entity.compressed || false
   end
 
+  @doc """
+  Returns a compressed entity, containing gzipped XML. This greatly reduces the size of the entity record.
+  """
   @spec compress(entity :: Entity.t()) :: Entity.t()
   def compress(%{compressed: true} = entity) do
     entity
@@ -151,6 +214,9 @@ defmodule Smee.Entity do
     |> struct(%{data: :zlib.gzip(entity.data), compressed: true})
   end
 
+  @doc """
+  Returns a decompressed entity, with plain-text XML data. This makes the struct much larger.
+  """
   @spec decompress(entity :: Entity.t()) :: Entity.t()
   def decompress(%{compressed: false} = entity) do
     entity
@@ -161,11 +227,20 @@ defmodule Smee.Entity do
     |> struct(%{data: :zlib.gunzip(entity.data), compressed: false})
   end
 
+  @doc """
+  Returns a parsed Erlang `xmerl` structure representing the entities XML, for use with `xmerl`, `SweetXML` and other
+    tools.
+  """
   @spec xdoc(entity :: Entity.t()) :: tuple()
   def xdoc(entity) do
     entity.xdoc || parse_data(entity).xdoc
   end
 
+  @doc """
+  Returns true if the entity has an IdP role.
+
+  An entity may have more than one role.
+  """
   @spec idp?(entity :: Entity.t()) :: boolean
   def idp?(entity) do
     case xdoc(entity)
@@ -175,6 +250,12 @@ defmodule Smee.Entity do
     end
   end
 
+
+  @doc """
+  Returns true if the entity has an SP role.
+
+  An entity may have more than one role.
+  """
   @spec sp?(entity :: Entity.t()) :: boolean
   def sp?(entity) do
     case xdoc(entity)
@@ -184,6 +265,10 @@ defmodule Smee.Entity do
     end
   end
 
+
+  @doc """
+  Returns the plain-text XML of the entity, whether or not it has been compressed.
+  """
   @spec xml(entity :: Entity.t()) :: binary()
   def xml(%{data: problem}) when is_nil(problem) or problem == "" do
    raise "Missing data in entity!"
@@ -197,11 +282,22 @@ defmodule Smee.Entity do
     entity.data
   end
 
+
+  @doc """
+  Returns a suggested filename for the entity.
+  """
   @spec filename(entity :: Entity.t()) :: binary()
   def filename(entity) do
     filename(entity, :sha1)
   end
 
+  @doc """
+  Returns a suggested filename for the entity in the specified format.
+
+  Two formats can be specified: :sha1 and :uri
+
+  """
+  @spec filename(entity :: Entity.t(), format :: atom()) :: binary()
   def filename(entity, :sha1) do
     "#{entity.uri_hash}.xml"
   end
@@ -213,6 +309,9 @@ defmodule Smee.Entity do
     "#{name}.xml"
   end
 
+  @doc """
+  Returns the trustiness level of the entity as a float between 0.0 and 0.9.
+  """
   @spec trustiness(entity :: Entity.t()) :: float()
   def trustiness(entity) do
     trustiness = entity.trustiness
@@ -224,6 +323,9 @@ defmodule Smee.Entity do
     end
   end
 
+  @doc """
+  Returns the priority of the entity as a value between 0 and 9
+  """
   @spec priority(entity :: Entity.t()) :: integer()
   def priority(entity) do
     priority = entity.priority
