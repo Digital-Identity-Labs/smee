@@ -38,6 +38,8 @@ jobs:
         restore-keys: ${{ runner.os }}-mix-
     - name: Install backends
       run: sudo apt-get install libxmlsec1 libxml2-utils xsltproc
+    - name: Check backends are present
+      run: which xmllint ; which xsltproc ; which xmlsec1
     - name: Install dependencies
       run: mix deps.get
     - name: Run tests
