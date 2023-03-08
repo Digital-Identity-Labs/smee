@@ -122,7 +122,7 @@ external programs for processing. At the moment it requires the following comman
 
 On a Mac with Homebrew: `brew install xmlsec1 libxml2 libxslt` (Apple's `xsltproc` is probably already installed)
 
-On Debian Linux: `apt-get install libxmlsec1 libxml2-utils xsltproc`
+On Debian Linux: `apt-get install xmlsec1 libxml2-utils xsltproc`
 
 A future version of Smee will support alternative sets of backends.
 
