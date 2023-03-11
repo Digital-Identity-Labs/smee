@@ -2,9 +2,7 @@ defmodule Smee.XmlCfg do
 
   @moduledoc false
 
-  @default_namespace :md
-
-  @namespaces %{
+  @saml_namespaces %{
     alg: "urn:oasis:names:tc:SAML:metadata:algsupport",
     ds: "http://www.w3.org/2000/09/xmldsig#",
     idpdisc: "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol",
@@ -17,8 +15,22 @@ defmodule Smee.XmlCfg do
     shibmd: "urn:mace:shibboleth:metadata:1.0",
     ukfedlabel: "http://ukfederation.org.uk/2006/11/label",
     xenc: "http://www.w3.org/2001/04/xmlenc#",
-    remd: "http://refeds.org/metadata"
-    #      xsi="http://www.w3.org/2001/XMLSchema-instance"
+    remd: "http://refeds.org/metadata",
+    pyff: "http://pyff.io/NS",
+    "req-attr": "urn:oasis:names:tc:SAML:protocol:ext:req-attr",
+    taat: "http://www.eenet.ee/EENet/urn",
+    hoksso: "urn:oasis:names:tc:SAML:2.0:profiles:holder-of-key:SSO:browser",
+    eduidmd: "http://eduid.cz/schema/metadata/1.0"
+  }
+
+  @default_namespace_prefix :md
+  @default_namespace @saml_namespaces[@default_namespace_prefix]
+
+
+  @xml_namespacss %{
+    xs: "http://www.w3.org/2001/XMLSchema",
+    xsi: "http://www.w3.org/2001/XMLSchema-instance",
+    xrd: "http://docs.oasis-open.org/ns/xri/xrd-1.0"
   }
 
   @risky_eas ~w(
@@ -36,14 +48,19 @@ defmodule Smee.XmlCfg do
     https://www.apereo.org/cas/protocol/proxy
     https://www.apereo.org/cas/protocol/serviceValidate)
 
-  @spec default_namespace() :: atom()
+  @spec default_namespace_prefix() :: atom()
+  def default_namespace_prefix do
+    @default_namespace_prefix
+  end
+
+  @spec default_namespace() :: binary()
   def default_namespace do
     @default_namespace
-  end ## Should this really return the namespace, not the alias? With another method for alias?
+  end
 
   @spec namespaces() :: map()
   def namespaces() do
-    Application.get_env(:smee, :namespaces, nil) || @namespaces
+    Application.get_env(:smee, :namespaces, nil) || @saml_namespaces
   end
 
   @spec risky_entity_attributes() :: list(binary())

@@ -131,7 +131,7 @@ defmodule Smee.Publish do
   defp xml_namespace_declarations do
     XmlCfg.namespaces()
     |> Enum.map(fn {k, v} -> "    xmlns:#{k}=\"#{v}\"" end)
-    |> List.insert_at(0, "    xmlns=\"#{XmlCfg.namespaces()[XmlCfg.default_namespace]}\"")
+    |> List.insert_at(0, "    xmlns=\"#{XmlCfg.default_namespace}\"")
     |> Enum.join("\n")
   end
 

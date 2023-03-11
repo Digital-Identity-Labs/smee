@@ -78,7 +78,7 @@ defmodule SmeePublishTest do
   describe "to_xml_stream_size/2" do
 
     test "returns the size of content in the stream" do
-      assert 39_393 = Publish.to_xml_stream_size(Metadata.stream_entities(@valid_metadata))
+      assert 39_680 = Publish.to_xml_stream_size(Metadata.stream_entities(@valid_metadata))
     end
 
     test "should be the about the same size as a compiled binary output" do
