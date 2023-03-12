@@ -63,6 +63,12 @@ defmodule Smee.XmlCfg do
     Application.get_env(:smee, :namespaces, nil) || @saml_namespaces
   end
 
+  @spec namespace_prefixes() :: map()
+  def namespace_prefixes() do
+    namespaces()
+    |> Map.keys()
+  end
+
   @spec risky_entity_attributes() :: list(binary())
   def risky_entity_attributes() do
     Application.get_env(:smee, :risky_entity_attributes, nil) || @risky_eas
