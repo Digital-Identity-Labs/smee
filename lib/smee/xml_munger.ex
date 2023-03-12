@@ -10,25 +10,30 @@ defmodule Smee.XmlMunger do
   @uri_extractor_pattern ~r|<[md:]*EntityDescriptor .*entityID="(.+)".*>|im
   @signature_pattern ~r|<Signature.+?</Signature>|s
 
+  @spec prepare_xml(xml :: binary()) :: binary()
   def prepare_xml(xml) do
     String.trim(xml)
   end
 
+  @spec namespaces_used(xml :: binary()) :: map()
   def namespaces_used(xml) do
     XmlCfg.namespaces()
     |> Map.take(namespace_prefixes_used(xml))
   end
 
+  @spec namespace_prefixes_used(xml :: binary()) :: list(atom())
   def namespace_prefixes_used(xml) do
     Map.keys(XmlCfg.namespaces())
     |> Enum.filter(fn prefix -> String.contains?(xml, Atom.to_string(prefix)) end)
   end
 
+  @spec remove_xml_declaration(xml :: binary()) :: binary()
   def remove_xml_declaration(xml) do
     Regex.replace(@xml_decl_pattern, prepare_xml(xml), "", global: false)
     |> prepare_xml()
   end
 
+  @spec add_xml_declaration(xml :: binary()) :: binary()
   def add_xml_declaration(@xml_declaration <> _ = xml) do
     xml
   end
@@ -37,6 +42,7 @@ defmodule Smee.XmlMunger do
     "#{@xml_declaration}#{remove_xml_declaration(xml)}"
   end
 
+  @spec expand_entity_top(xml :: binary()) :: binary()
   def expand_entity_top(xml, options \\ []) do
 
     uri = Keyword.get(options, :uri, extract_uri!(xml))
@@ -58,6 +64,7 @@ defmodule Smee.XmlMunger do
     |> String.replace(@top_tag_pattern, replacement_top)
   end
 
+  @spec shrink_entity_top(xml :: binary()) :: binary()
   def shrink_entity_top(xml, options \\ []) do
     uri = Keyword.get(options, :uri, extract_uri!(xml))
     id = Keyword.get(options, :id, nil)
@@ -71,6 +78,7 @@ defmodule Smee.XmlMunger do
     |> String.replace(@top_tag_pattern, replacement_top)
   end
 
+  @spec extract_uri!(xml :: binary()) :: binary()
   def extract_uri!(xml) do
 
     uri = Regex.run(@uri_extractor_pattern, xml, capture: :all_but_first)
@@ -82,16 +90,17 @@ defmodule Smee.XmlMunger do
     end
   end
 
+  @spec remove_signature(xml :: binary()) :: binary()
   def remove_signature(xml) do
     xml
     |> String.replace(@signature_pattern, "")
   end
 
+  @spec process_entity_xml(xml :: binary()) :: binary()
   def process_entity_xml(xml, options \\ []) do
     expand_entity_top(xml, options)
     |> remove_signature()
   end
-
 
   ################################################################################
 

@@ -351,7 +351,7 @@ defmodule Smee.Entity do
       xdoc = SweetXml.parse(entity.data, namespace_conformant: true)
       struct(entity, %{xdoc: xdoc})
     rescue
-      e -> raise "cannot process data for #{entity.uri}! Error is: #{e.message}\n Data is:\n #{entity.data}"
+      e -> reraise "cannot process data for #{entity.uri}! Error is: #{e.message}\n Data is:\n #{entity.data}", __STACKTRACE__
     end
 
   end

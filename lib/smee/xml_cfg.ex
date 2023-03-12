@@ -63,7 +63,7 @@ defmodule Smee.XmlCfg do
     Application.get_env(:smee, :namespaces, nil) || @saml_namespaces
   end
 
-  @spec namespace_prefixes() :: map()
+  @spec namespace_prefixes() :: list(atom())
   def namespace_prefixes() do
     namespaces()
     |> Map.keys()
