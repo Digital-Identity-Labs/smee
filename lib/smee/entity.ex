@@ -18,6 +18,7 @@ defmodule Smee.Entity do
 
   alias __MODULE__
   alias Smee.Utils
+  alias Smee.XmlMunger
   alias Smee.Metadata
 
   @enforce_keys [:data]
@@ -74,10 +75,10 @@ defmodule Smee.Entity do
 
   You won't normally need to do this yourself as entities can be extracted from `Smee.Metadata`.
   """
-  @spec new(data :: binary(), options :: keyword() ) :: Entity.t()
+  @spec new(data :: binary(), options :: keyword()) :: Entity.t()
   def new(data, options \\ []) do
 
-    data = String.trim(data)
+    data = XmlMunger.process_entity_xml(data)
     dlt = DateTime.utc_now()
     until = dlt
             |> DateTime.add(1_209_600, :second)
@@ -118,7 +119,7 @@ defmodule Smee.Entity do
 
   You won't normally need to do this yourself as entities can be extracted from `Smee.Metadata`.
   """
-  @spec derive(data :: binary(), metadata :: Metadata.t(), options :: keyword() ) :: Entity.t()
+  @spec derive(data :: binary(), metadata :: Metadata.t(), options :: keyword()) :: Entity.t()
   def derive(data, metadata, options \\ [])
   def derive(data, _metadata, _options) when is_nil(data) or data == "" do
     raise "No data!"
@@ -126,7 +127,7 @@ defmodule Smee.Entity do
 
   def derive(data, metadata, options) do
 
-    data = String.trim(data)
+    data = XmlMunger.process_entity_xml(data)
     md_uri = Keyword.get(options, :metadata_uri, metadata.uri)
     md_uri_hash = if(md_uri, do: Smee.Utils.sha1(md_uri), else: nil)
     dhash = Smee.Utils.sha1(data)
@@ -134,7 +135,7 @@ defmodule Smee.Entity do
     %Entity{
       data: data,
       size: byte_size(data),
-      downloaded_at:  Keyword.get(options, :downloaded_at, metadata.downloaded_at),
+      downloaded_at: Keyword.get(options, :downloaded_at, metadata.downloaded_at),
       data_hash: dhash,
       modified_at: Keyword.get(options, :modified_at, metadata.modified_at),
       valid_until: Keyword.get(options, :valid_until, metadata.valid_until),
@@ -155,7 +156,7 @@ defmodule Smee.Entity do
   If changes have been made using `Entity.update/2` then this will not be needed - it's there for when the struct
     has been changed directly
   """
-  @spec update(entity :: Entity.t() ) :: Entity.t()
+  @spec update(entity :: Entity.t()) :: Entity.t()
   def update(entity) do
     entity = decompress(entity)
     update(entity, entity.data)
@@ -166,7 +167,7 @@ defmodule Smee.Entity do
 
   This should be the only way updated Entities are produced - the raw struct should not be changed directly.
   """
-  @spec update(entity :: Entity.t(), xml :: binary() ) :: Entity.t()
+  @spec update(entity :: Entity.t(), xml :: binary()) :: Entity.t()
   def update(entity, xml) do
     changes = if xml == entity.data, do: entity.changes, else: entity.changes + 1
     Map.merge(
@@ -265,13 +266,12 @@ defmodule Smee.Entity do
     end
   end
 
-
   @doc """
   Returns the plain-text XML of the entity, whether or not it has been compressed.
   """
   @spec xml(entity :: Entity.t()) :: binary()
   def xml(%{data: problem}) when is_nil(problem) or problem == "" do
-   raise "Missing data in entity!"
+    raise "Missing data in entity!"
   end
 
   def xml(%{compressed: true} = entity) do
@@ -281,7 +281,6 @@ defmodule Smee.Entity do
   def xml(entity) do
     entity.data
   end
-
 
   @doc """
   Returns a suggested filename for the entity.
@@ -334,7 +333,7 @@ defmodule Smee.Entity do
       priority > 10 -> 10
       priority < 1 -> 0
       true -> priority
-      end
+    end
   end
 
   ################################################################################
@@ -347,8 +346,14 @@ defmodule Smee.Entity do
   end
 
   defp parse_data(entity) do
-    xdoc = SweetXml.parse(entity.data, namespace_conformant: false)
-    struct(entity, %{xdoc: xdoc})
+
+    try do
+      xdoc = SweetXml.parse(entity.data, namespace_conformant: true)
+      struct(entity, %{xdoc: xdoc})
+    rescue
+      e -> raise "cannot process data for #{entity.uri}! Error is: #{e.message}\n Data is:\n #{entity.data}"
+    end
+
   end
 
   @spec extract_info(entity :: Entity.t()) :: Entity.t()

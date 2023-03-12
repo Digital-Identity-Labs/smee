@@ -467,7 +467,7 @@ defmodule SmeeMetadataTest do
     end
 
     test "size cannot be set using an option" do
-      assert %Metadata{size: 39_683} = Metadata.derive(Metadata.entities(@valid_metadata), size: 100)
+      assert %Metadata{size: 40658} = Metadata.derive(Metadata.entities(@valid_metadata), size: 100)
     end
 
     test "verified cannot be set using an option" do
