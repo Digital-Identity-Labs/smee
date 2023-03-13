@@ -10,8 +10,7 @@ defmodule Smee.Publish do
 
   alias Smee.Entity
   alias Smee.XmlCfg
-
-  @top_tag ~r|<[md:]*EntityDescriptor.*>|im
+  alias Smee.XmlMunger
 
   @doc """
   Returns a streamed index file, a plain text list of entity IDs.
@@ -86,7 +85,7 @@ defmodule Smee.Publish do
 
   @spec single(entity :: Entity.t(), options :: keyword()) :: list(binary())
   defp single(entity, options) do
-    xml = expand_single_top(entity, options)
+    xml = Entity.xml(entity)
     [xml]
   end
 
@@ -95,117 +94,19 @@ defmodule Smee.Publish do
 
     options = Keyword.put(options, :now, DateTime.utc_now)
 
-    header_stream = [aggregate_header(options)]
-    footer_stream = [aggregate_footer(options)]
+    header_stream = [XmlMunger.generate_aggregate_header(options)]
+    footer_stream = [XmlMunger.generate_aggregate_footer(options)]
 
     estream = entities
-              |> Stream.map(fn e -> Entity.xml(e) end)
+              |> Stream.map(
+                   fn e ->
+                     Entity.xml(e)
+                     |> XmlMunger.trim_entity_xml(uri: e.uri)
+                   end
+                 )
 
     Stream.concat([header_stream, estream, footer_stream])
     |> Stream.map(fn e -> e end)
-  end
-
-  @spec aggregate_header(options :: keyword()) :: binary()
-  def aggregate_header(options \\ []) do
-
-    """
-    <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-    <!--
-    #{aggregate_description(options)}
-    -->
-    <EntitiesDescriptor
-      #{xml_namespace_declarations()}
-      #{id_attrblock(options)} #{cache_attrblock(options)}>
-
-    #{publisher_block(options)}
-
-    """
-  end
-
-  @spec aggregate_footer(options :: keyword()) :: binary()
-  def aggregate_footer(_options) do
-    "\n</EntitiesDescriptor>"
-  end
-
-  @spec xml_namespace_declarations() :: binary()
-  defp xml_namespace_declarations do
-    XmlCfg.namespaces()
-    |> Enum.map(fn {k, v} -> "    xmlns:#{k}=\"#{v}\"" end)
-    |> List.insert_at(0, "    xmlns=\"#{XmlCfg.default_namespace}\"")
-    |> Enum.join("\n")
-  end
-
-  @spec id_attrblock(options :: keyword()) :: binary()
-  defp id_attrblock(options) do
-    id = Keyword.get(options, :id, "_")
-    name = Keyword.get(options, :name, nil)
-
-    "   " <> if name do
-      ~s(ID="#{id}" Name="#{name}")
-    else
-      ~s|ID="#{id}"|
-    end
-
-  end
-
-  @spec cache_attrblock(options :: keyword()) :: binary()
-  defp cache_attrblock(options) do
-    later = Keyword.get(options, :now, DateTime.utc_now)
-            |> DateTime.add(14, :day)
-            |> DateTime.to_iso8601()
-
-    ~s|cacheDuration="PT6H0M0.000S" validUntil="#{later}"|
-
-  end
-
-  @spec publisher_block(options :: keyword()) :: binary()
-  defp publisher_block(options) do
-
-    pub_uri = Keyword.get(options, :publisher_uri, nil)
-    instant = DateTime.to_iso8601(Keyword.get(options, :now, DateTime.utc_now))
-
-    if pub_uri do
-      """
-      <Extensions>
-      <mdrpi:PublicationInfo creationInstant="#{instant}" publisher="#{pub_uri}"/>
-      </Extensions>
-      """
-    else
-      ""
-    end
-
-  end
-
-  @spec aggregate_uri(options :: keyword()) :: binary() | nil
-  defp aggregate_uri(options) do
-    Keyword.get(options, :uri, nil)
-  end
-
-  @spec aggregate_publisher_uri(options :: keyword()) :: binary() | nil
-  defp aggregate_publisher_uri(options) do
-    Keyword.get(options, :uri, aggregate_uri(options))
-  end
-
-  @spec aggregate_description(options :: keyword()) :: binary() | nil
-  defp aggregate_description(options) do
-    Keyword.get(options, :description, "SAML Aggregate")
-  end
-
-  @spec expand_single_top(entity :: Entity.t(), options :: keyword()) :: binary()
-  defp expand_single_top(entity, options) do
-
-    id = Keyword.get(options, :id, "_")
-
-    replacement_top = """
-    <?xml version="1.0" encoding="UTF-8"?>
-    <EntityDescriptor
-    #{xml_namespace_declarations()}
-        ID="#{id}" cacheDuration="P0Y0M0DT6H0M0.000S"
-        entityID="#{entity.uri}" validUntil="#{DateTime.to_iso8601(entity.valid_until)}">
-    """
-
-    entity.data
-    |> String.replace(@top_tag, replacement_top)
   end
 
 end
