@@ -2,6 +2,15 @@ defmodule Smee.XmlMunger do
 
   @moduledoc false
 
+  ## This module collects all the *most pragamatic* code in Smee, the code that
+  ## bootstraps incomplete entity XML fragments into shape and avoids intensive
+  ## processing of XML (trading efficiency for risk)
+  ##
+  ## *Most* metadata is either going to be produced by skilled conscientious
+  ## professionals at NRENs or in-house, lowing risk of surprises, but the plan is to
+  ## have alternatives and guards for the less proper functions in the module,
+  ## just in case.
+
   alias Smee.XmlCfg
 
   @xml_declaration ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n|
@@ -10,6 +19,7 @@ defmodule Smee.XmlMunger do
   @uri_extractor_pattern ~r|\A<(md:)?EntityDescriptor.*entityID="(.+)".*>|mUs
   @signature_pattern ~r|<Signature\s.*>.+</Signature>|ms
   @split_pattern ~r|(<(md:)?EntityDescriptor)|
+  @entities_descriptor_pattern ~r|<(md:)?EntitiesDescriptor.*?>|s
 
   @spec prepare_xml(xml :: binary()) :: binary()
   def prepare_xml(xml) do
@@ -155,6 +165,20 @@ defmodule Smee.XmlMunger do
   @spec split_single_to_stream(xml :: binary(), options :: keyword()) :: Enumerable.t()
   def split_single_to_stream(xml, options \\ []) do
     Stream.concat([[trim_entity_xml(xml, options)]])
+  end
+
+  @spec count_entities(xml :: binary()) :: integer()
+  def count_entities(xml) do
+    length(String.split(xml, "entityID=\"")) - 1
+  end
+
+  @spec snip_aggregate(xml :: binary()) :: binary()
+  def snip_aggregate(xml) do
+    case Regex.run(@entities_descriptor_pattern, xml) do
+      [capture] -> capture
+      nil -> raise "Can't extract EntitiesDescriptor! Data was: #{String.slice(xml, 0..100)}[...]"
+    end
+
   end
 
   ################################################################################

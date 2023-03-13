@@ -384,7 +384,7 @@ defmodule Smee.Metadata do
 
   @spec count_entities(metadata :: Metadata.t()) :: Metadata.t()
   defp count_entities(metadata) do
-    count = length(String.split(Metadata.xml(metadata), "entityID=\"")) - 1
+    count = XmlMunger.count_entities(Metadata.xml(metadata))
     Map.merge(metadata, %{entity_count: count})
   end
 
@@ -393,10 +393,7 @@ defmodule Smee.Metadata do
 
     import SweetXml
 
-    snippet = case Regex.run(~r/<(md:)?EntitiesDescriptor.*?>/s, metadata.data) do
-      [capture] -> capture
-      nil -> raise "Can't extract EntitiesDescriptor! Data was: #{String.slice(metadata.data, 0..100)}[...]"
-    end
+    snippet = XmlMunger.snip_aggregate(metadata.data)
 
     info = Regex.replace(~r/>$/, snippet, "\/>")
            |> xmap(
