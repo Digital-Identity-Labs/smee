@@ -21,6 +21,7 @@ defmodule Smee.Metadata do
 
   alias __MODULE__
   alias Smee.Utils
+  alias Smee.XmlMunger
   alias Smee.Extract
   alias Smee.Entity
   alias Smee.Metadata
@@ -436,35 +437,11 @@ defmodule Smee.Metadata do
 
   @spec split_to_stream(metadata :: Metadata.t()) :: Enumerable.t()
   defp split_to_stream(%{type: :aggregate} = metadata) do
-    metadata.data
-    |> String.splitter("EntityDescriptor>", trim: true)
-    |> Stream.map(
-         fn xf ->
-           xf <> "EntityDescriptor>"
-           |> String.trim()
-         end
-       )
-    |> Stream.with_index()
-    |> Stream.map(fn {fx, n} -> strip_leading(fx, n) end)
-    |> Stream.reject(fn xf -> String.starts_with?(xf, ["</EntitiesDescriptor>", "</md:EntitiesDescriptor>"]) end)
+    XmlMunger.split_aggregate_to_stream(metadata.data)
   end
 
   defp split_to_stream(%{type: :single} = metadata) do
-    xml_without_xmlprefix = metadata.data
-                            |> String.replace(~r{<[?]xml.*[?]>}im, "")
-    Stream.concat([[xml_without_xmlprefix]])
-  end
-
-  @spec strip_leading(fx :: binary(), n :: integer) :: binary()
-  defp strip_leading(fx, 0) do
-    fx
-    |> String.split(~r{(<[md:]*EntityDescriptor)}, include_captures: true)
-    |> Enum.drop(1)
-    |> Enum.join()
-  end
-
-  defp strip_leading(fx, _n) do
-    fx
+    XmlMunger.split_single_to_stream(metadata.data)
   end
 
   @spec extract_id(xml_fragment :: binary()) :: binary()
