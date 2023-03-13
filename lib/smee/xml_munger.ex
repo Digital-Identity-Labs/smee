@@ -6,9 +6,10 @@ defmodule Smee.XmlMunger do
 
   @xml_declaration ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n|
   @xml_decl_pattern ~r|^<\?xml.*\?>\n*|ifUm
-  @top_tag_pattern ~r|<[md:]*EntityDescriptor.*>|m
-  @uri_extractor_pattern ~r|\A<[md:]*EntityDescriptor.*entityID="(.+)".*>|mUs
+  @top_tag_pattern ~r|<(md:)?EntityDescriptor.*>|m
+  @uri_extractor_pattern ~r|\A<(md:)?EntityDescriptor.*entityID="(.+)".*>|mUs
   @signature_pattern ~r|<Signature\s.*>.+</Signature>|ms
+  @split_pattern ~r|(<(md:)?EntityDescriptor)|
 
   @spec prepare_xml(xml :: binary()) :: binary()
   def prepare_xml(xml) do
@@ -91,7 +92,7 @@ defmodule Smee.XmlMunger do
   def extract_uri!(xml) do
     case Regex.run(@uri_extractor_pattern, xml, capture: :all_but_first) do
       nil -> raise "Cannot extract URI from XML!"
-      [uri] -> uri
+      [_, uri] -> uri
     end
   end
 
@@ -237,7 +238,7 @@ defmodule Smee.XmlMunger do
   @spec strip_leading(fx :: binary(), n :: integer) :: binary()
   defp strip_leading(fx, 0) do
     fx
-    |> String.split(~r{(<[md:]*EntityDescriptor)}, include_captures: true)
+    |> String.split(@split_pattern, include_captures: true)
     |> Enum.drop(1)
     |> Enum.join()
   end

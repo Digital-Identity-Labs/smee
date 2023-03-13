@@ -393,7 +393,7 @@ defmodule Smee.Metadata do
 
     import SweetXml
 
-    snippet = case Regex.run(~r/<[md:]*EntitiesDescriptor.*?>/s, metadata.data) do
+    snippet = case Regex.run(~r/<(md:)?EntitiesDescriptor.*?>/s, metadata.data) do
       [capture] -> capture
       nil -> raise "Can't extract EntitiesDescriptor! Data was: #{String.slice(metadata.data, 0..100)}[...]"
     end
