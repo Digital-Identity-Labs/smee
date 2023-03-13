@@ -20,7 +20,7 @@ defmodule Smee.XSLT do
 
     try do
 
-      case Rambo.run("xsltproc", command, in: xml) do
+      case Rambo.run("xsltproc", command, in: xml, log: false) do
       {:ok, %Rambo{status: 0, out: out}} -> {:ok, out}
       {:error, %Rambo{status: status, err: err}} -> {:error, parse_error(status, err)}
         _ -> {:error, "Unknown XSLT parser error has occurred"}
