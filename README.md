@@ -113,6 +113,8 @@ def deps do
 end
 ```
 
+### Backend tools
+
 **Please note:** Smee does not do all processing itself using Elixir - it sometimes cheats (OK, it often cheats) by sending data to
 external programs for processing. At the moment it requires the following commandline utilities:
 
@@ -127,6 +129,18 @@ Smee now includes a Mix task to install the default backend software - just run:
 (Currently only tested on Macs with Homebrew, but it *should* also work on Debian, Ubuntu, Red Hat and Alpine Linux)
 
 A future version of Smee will support alternative sets of backends.
+
+### Rambo and Rust
+
+Smee uses an Elixir library called [Rambo](https://hex.pm/packages/rambo) to run external utilities like xsltproc. Rambo 
+relies on a small compiled shim that is provided pre-compiled for various architectures or automatically built during installation.
+
+- If your system does not match any of the supplied binary shims, you will need to have a rust compiler installed so Rambo
+  can build the shim itself. 
+- Version 0.3.4 of Rambo has an additional problem: it does not ship with a precompiled binary for M1 Macs, *and it also does
+  not automatically build one*. Smee works around that with an explicit compile step in `mix.exs`, but it prevent Smee from
+  being used in Elixir .exs scripts on M1 Macs unless you copy the compiled shim from Smee into your script's build directory.
+  Hopefully this will be fixed in later versions of Rambo.
 
 ## Uses
 
