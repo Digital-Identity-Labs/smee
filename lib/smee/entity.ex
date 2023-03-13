@@ -126,7 +126,6 @@ defmodule Smee.Entity do
   end
 
   def derive(data, metadata, options) do
-
     data = XmlMunger.process_entity_xml(data)
     md_uri = Keyword.get(options, :metadata_uri, metadata.uri)
     md_uri_hash = if(md_uri, do: Smee.Utils.sha1(md_uri), else: nil)
@@ -347,11 +346,15 @@ defmodule Smee.Entity do
 
   defp parse_data(entity) do
 
+    xml_data = Entity.xml(entity)
+
     try do
-      xdoc = SweetXml.parse(entity.data, namespace_conformant: true)
+      xdoc = SweetXml.parse(xml_data, namespace_conformant: true)
       struct(entity, %{xdoc: xdoc})
     rescue
-      e -> reraise "cannot process data for #{entity.uri}! Error is: #{e.message}\n Data is:\n #{entity.data}", __STACKTRACE__
+      e ->
+        reraise "cannot process data for #{entity.uri}! Error is: #{e.message}\n Data is:\n #{xml_data}",
+                __STACKTRACE__
     end
 
   end
