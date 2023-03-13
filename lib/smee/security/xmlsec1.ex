@@ -19,7 +19,7 @@ defmodule Smee.Security.Xmlsec1 do
       case Rambo.run("xmlsec1", command, in: metadata.data) do
         {:ok, %Rambo{status: 0, out: _out}} -> Map.merge(metadata, %{verified: true})
         {:error, %Rambo{status: status, err: err}} -> raise(parse_error(status, err))
-        _ -> {:error, "Unknown XSLT parser error has occurred. Command was: #{debug_command(command)}"}
+        _ -> {:error, "Unknown xmlsec1 error has occurred. Command was: #{debug_command(command)}"}
       end
     rescue
       e -> reraise "Verification of signed XML has failed! Command was: #{debug_command(command)} #{e.message}", __STACKTRACE__

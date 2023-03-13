@@ -2,7 +2,7 @@ defmodule Smee.XmlMunger do
 
   @moduledoc false
 
-  ## This module collects all the *most pragamatic* code in Smee, the code that
+  ## This module collects all the *most pragmatic* code in Smee, the code that
   ## bootstraps incomplete entity XML fragments into shape and avoids intensive
   ## processing of XML (trading efficiency for risk)
   ##
