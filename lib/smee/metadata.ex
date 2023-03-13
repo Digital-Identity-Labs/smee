@@ -155,7 +155,7 @@ defmodule Smee.Metadata do
   """
   @spec derive(data :: Enumerable.t() | Entity.t(), options :: keyword()) :: Metadata.t()
   def derive(enum, options \\ []) do
-    data = Smee.Publish.to_xml(enum, options)
+    data = Smee.Publish.xml(enum, options)
     new(data, options)
   end
 

@@ -15,8 +15,8 @@ defmodule Smee.Publish do
   @doc """
   Returns a streamed index file, a plain text list of entity IDs.
   """
-  @spec to_index_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
-  def to_index_stream(entities, _options \\ []) do
+  @spec index_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
+  def index_stream(entities, _options \\ []) do
     entities
     |> Stream.map(fn e -> "#{e.uri}\n" end)
   end
@@ -24,9 +24,9 @@ defmodule Smee.Publish do
   @doc """
   Returns the estimated size of a streamed index file without generating it in advance.
   """
-  @spec to_index_stream_size(entities :: Enumerable.t(), options :: keyword()) :: integer()
-  def to_index_stream_size(entities, options \\ []) do
-    to_index_stream(entities, options)
+  @spec estimate_index_size(entities :: Enumerable.t(), options :: keyword()) :: integer()
+  def estimate_index_size(entities, options \\ []) do
+    index_stream(entities, options)
     |> Stream.map(fn x -> byte_size(x) end)
     |> Enum.reduce(0, fn x, acc -> x + acc end)
   end
@@ -34,9 +34,9 @@ defmodule Smee.Publish do
   @doc """
   Returns an index text document
   """
-  @spec to_index(entities :: Enumerable.t(), options :: keyword()) :: binary()
-  def to_index(entities, options \\ []) do
-    to_index_stream(entities, options)
+  @spec index(entities :: Enumerable.t(), options :: keyword()) :: binary()
+  def index(entities, options \\ []) do
+    index_stream(entities, options)
     |> Enum.to_list
     |> Enum.join("\n")
   end
@@ -52,22 +52,22 @@ defmodule Smee.Publish do
   @doc """
   Returns a streamed SAML metadata XML file
   """
-  @spec to_xml_stream(entities :: Entity.t() | Enumerable.t(), options :: keyword()) :: Enumerable.t()
-  def to_xml_stream(entity, options \\ [])
-  def to_xml_stream(%Entity{} = entity, options) do
+  @spec xml_stream(entities :: Entity.t() | Enumerable.t(), options :: keyword()) :: Enumerable.t()
+  def xml_stream(entity, options \\ [])
+  def xml_stream(%Entity{} = entity, options) do
     single(entity, options)
   end
 
-  def to_xml_stream(entities, options) do
+  def xml_stream(entities, options) do
     aggregate_stream(entities, options)
   end
 
   @doc """
   Returns the estimated size of a streamed SAML metadata XML file without generating it in advance.
   """
-  @spec to_xml_stream_size(entities :: Enumerable.t(), options :: keyword()) :: integer()
-  def to_xml_stream_size(entities, options \\ []) do
-    to_xml_stream(entities, options)
+  @spec estimate_xml_size(entities :: Enumerable.t(), options :: keyword()) :: integer()
+  def estimate_xml_size(entities, options \\ []) do
+    xml_stream(entities, options)
     |> Stream.map(fn x -> byte_size(x) end)
     |> Enum.reduce(0, fn x, acc -> x + acc end)
   end
@@ -75,9 +75,9 @@ defmodule Smee.Publish do
   @doc """
   Returns a SAML metadata XML file, potentially very large.
   """
-  @spec to_xml(entities :: Enumerable.t(), options :: keyword()) :: binary()
-  def to_xml(entities, options \\ []) do
-    to_xml_stream(entities, options)
+  @spec xml(entities :: Enumerable.t(), options :: keyword()) :: binary()
+  def xml(entities, options \\ []) do
+    xml_stream(entities, options)
     |> Enum.join("\n")
   end
 

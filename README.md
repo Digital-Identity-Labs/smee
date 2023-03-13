@@ -77,7 +77,7 @@ alias Smee.{Source, Fetch, Filter, Metadata, Publish}
 |> Metadata.stream_entities()
 |> Filter.sp()
 |> Stream.map(fn e -> e.uri end)
-|> Publish.to_xml()
+|> Publish.xml()
 
 ```
 ### Munge XML with XSLT

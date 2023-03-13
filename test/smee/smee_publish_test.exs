@@ -11,15 +11,15 @@ defmodule SmeePublishTest do
                   |> Smee.fetch!()
 
 
-  describe "to_index_stream/2" do
+  describe "index_stream/2" do
 
     test "returns a stream when passed an entity stream" do
-      assert %Stream{} = Publish.to_index_stream(Metadata.stream_entities(@valid_metadata))
+      assert %Stream{} = Publish.index_stream(Metadata.stream_entities(@valid_metadata))
     end
 
     test "each item in the stream is a string/URI (when passed an entity stream)" do
       Metadata.stream_entities(@valid_metadata)
-      |> Publish.to_index_stream()
+      |> Publish.index_stream()
       |> Stream.each(fn l -> assert is_binary(l) end)
       |> Stream.each(fn l -> assert %URI{} = URI.parse(String.trim(l)) end)
       |> Stream.run()
@@ -27,44 +27,44 @@ defmodule SmeePublishTest do
 
   end
 
-  describe "to_index_stream_size/2" do
+  describe "estimate_index_size/2" do
 
     test "returns the size of content in the stream" do
-      assert 74 = Publish.to_index_stream_size(Metadata.stream_entities(@valid_metadata))
+      assert 74 = Publish.estimate_index_size(Metadata.stream_entities(@valid_metadata))
     end
 
     test "should be about the same size as a compiled binary output" do
-      actual_size = byte_size(Publish.to_index(Metadata.stream_entities(@valid_metadata)))
-      estimated_size = Publish.to_index_stream_size(Metadata.stream_entities(@valid_metadata))
+      actual_size = byte_size(Publish.index(Metadata.stream_entities(@valid_metadata)))
+      estimated_size = Publish.estimate_index_size(Metadata.stream_entities(@valid_metadata))
       assert (actual_size - estimated_size) in -3..3
 
     end
 
   end
 
-  describe "to_index/2" do
+  describe "index/2" do
 
     test "returns a binary/string" do
-      assert is_binary(Publish.to_index(Metadata.stream_entities(@valid_metadata)))
+      assert is_binary(Publish.index(Metadata.stream_entities(@valid_metadata)))
     end
 
     test "contains all entity URIs" do
-      assert "https://test.ukfederation.org.uk/entity\n\nhttps://indiid.net/idp/shibboleth\n" = Publish.to_index(
+      assert "https://test.ukfederation.org.uk/entity\n\nhttps://indiid.net/idp/shibboleth\n" = Publish.index(
                Metadata.stream_entities(@valid_metadata)
              )
     end
 
   end
 
-  describe "to_xml_stream/2" do
+  describe "xml_stream/2" do
 
     test "returns a stream" do
-      assert %Stream{} = Publish.to_xml_stream(Metadata.stream_entities(@valid_metadata))
+      assert %Stream{} = Publish.xml_stream(Metadata.stream_entities(@valid_metadata))
     end
 
     test "each item in the stream is a chunk of XML (when passed an entity stream)" do
       Metadata.stream_entities(@valid_metadata)
-      |> Publish.to_xml_stream()
+      |> Publish.xml_stream()
       |> Stream.each(fn l -> assert is_binary(l) end)
       |> Stream.run()
     end
@@ -75,26 +75,26 @@ defmodule SmeePublishTest do
 
   end
 
-  describe "to_xml_stream_size/2" do
+  describe "estimate_xml_size/2" do
 
     test "returns the size of content in the stream" do
-      assert 40_490 = Publish.to_xml_stream_size(Metadata.stream_entities(@valid_metadata))
+      assert 40_490 = Publish.estimate_xml_size(Metadata.stream_entities(@valid_metadata))
     end
 
     test "should be the about the same size as a compiled binary output" do
-      actual_size = byte_size(Publish.to_xml(Metadata.stream_entities(@valid_metadata)))
-      estimated_size = Publish.to_xml_stream_size(Metadata.stream_entities(@valid_metadata))
+      actual_size = byte_size(Publish.xml(Metadata.stream_entities(@valid_metadata)))
+      estimated_size = Publish.estimate_xml_size(Metadata.stream_entities(@valid_metadata))
       assert (actual_size - estimated_size) in -8..8
     end
   end
 
-  describe "to_xml/2" do
+  describe "xml/2" do
     test "returns a binary/string" do
-      assert is_binary(Publish.to_xml(Metadata.stream_entities(@valid_metadata)))
+      assert is_binary(Publish.xml(Metadata.stream_entities(@valid_metadata)))
     end
 
     test "contains all entity URIs" do
-      xml = Publish.to_xml(
+      xml = Publish.xml(
         Metadata.stream_entities(@valid_metadata)
       )
 
@@ -103,7 +103,7 @@ defmodule SmeePublishTest do
     end
 
     test "produces valid SAML metadata XML" do
-      xml = Publish.to_xml(
+      xml = Publish.xml(
         Metadata.stream_entities(@valid_metadata)
       )
 

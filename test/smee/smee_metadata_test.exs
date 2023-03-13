@@ -294,7 +294,7 @@ defmodule SmeeMetadataTest do
 
     test "data defaults to a trimmed version of passed data param" do
       data = Metadata.entities(@valid_metadata)
-             |> Smee.Publish.to_xml()
+             |> Smee.Publish.xml()
       # assert %Metadata{data: ^data} = Metadata.derive(Metadata.entities(@valid_metadata))
       assert %Metadata{data: data} = Metadata.derive(Metadata.entities(@valid_metadata))
       ## Test can't work because comparison data will have different datetime strings in it!
@@ -308,7 +308,7 @@ defmodule SmeeMetadataTest do
     test "data_hash is set automatically to the sha1 hash of the data" do
       data = String.trim(
         Metadata.entities(@valid_metadata)
-        |> Smee.Publish.to_xml
+        |> Smee.Publish.xml
       )
       sha1 = Utils.sha1(data)
       #assert %Metadata{data_hash: ^sha1} = Metadata.derive(Metadata.entities(@valid_metadata))
