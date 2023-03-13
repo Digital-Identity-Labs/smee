@@ -120,9 +120,11 @@ external programs for processing. At the moment it requires the following comman
 * `xmllint`
 * `xsltproc`
 
-On a Mac with Homebrew: `brew install xmlsec1 libxml2 libxslt` (Apple's `xsltproc` is probably already installed)
+Smee now includes a Mix task to install the default backend software - just run:
 
-On Debian Linux: `apt-get install xmlsec1 libxml2-utils xsltproc`
+`mix deps.smee`
+
+(Currently only tested on Macs with Homebrew, but it *should* also work on Debian, Ubuntu, Red Hat and Alpine Linux)
 
 A future version of Smee will support alternative sets of backends.
 

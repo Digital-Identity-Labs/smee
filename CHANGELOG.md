@@ -5,12 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.2.0] - 
-XML storage and publishing improvements
+XML storage and publishing bugfixes and small improvements, plus some breaking API changes
 
 ### Breaking Changes
+* All functions in `Publish` have been renamed (they've lost their "to_", and sizes are "estimated_x_size")
 
-
-### New
+### New Features
+- A Mix task for installing the default backend requirements on Macs (via Homebrew) and Linux
 - Code of Conduct document added
 
 ## Fixes
@@ -22,8 +23,6 @@ XML storage and publishing improvements
 - Refactored XML pre-processing code, added XmlMunger module
 - Moved private XML munging code from Publish and Metadata to XmlMunger to make it testable
 
-### MOVE
-- 
 
 
 ## [0.1.0] - 2020-04-11
