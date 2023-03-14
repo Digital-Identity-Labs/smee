@@ -10,6 +10,7 @@ defmodule SmeePublishTest do
   @valid_metadata Source.new("test/support/static/aggregate.xml")
                   |> Smee.fetch!()
 
+  @xml_declaration ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n|
 
   describe "index_stream/2" do
 
@@ -108,6 +109,20 @@ defmodule SmeePublishTest do
       )
 
       assert {:ok, ^xml} = Lint.validate(xml)
+    end
+
+    test "should produce metadata XML with only one XML  - the right one" do
+      xml = Publish.xml(
+        Metadata.stream_entities(@valid_metadata)
+      )
+
+      IO.puts xml
+
+      count = length(String.split(xml, "<?xml")) - 1
+
+      assert String.contains?(xml, @xml_declaration)
+      assert count == 1
+
     end
 
   end

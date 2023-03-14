@@ -94,6 +94,7 @@ defmodule Smee.Publish do
 
     options = Keyword.put(options, :now, DateTime.utc_now)
 
+    xml_declaration = [XmlMunger.xml_declaration]
     header_stream = [XmlMunger.generate_aggregate_header(options)]
     footer_stream = [XmlMunger.generate_aggregate_footer(options)]
 
@@ -105,7 +106,7 @@ defmodule Smee.Publish do
                    end
                  )
 
-    Stream.concat([header_stream, estream, footer_stream])
+    Stream.concat([xml_declaration, header_stream, estream, footer_stream])
     |> Stream.map(fn e -> e end)
   end
 

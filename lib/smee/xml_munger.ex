@@ -21,6 +21,11 @@ defmodule Smee.XmlMunger do
   @split_pattern ~r|(<(md:)?EntityDescriptor)|
   @entities_descriptor_pattern ~r|<(md:)?EntitiesDescriptor.*?>|s
 
+  @spec xml_declaration() :: binary()
+  def xml_declaration() do
+    String.trim(@xml_declaration)
+  end
+
   @spec prepare_xml(xml :: binary()) :: binary()
   def prepare_xml(xml) do
     String.trim(xml)
@@ -130,12 +135,13 @@ defmodule Smee.XmlMunger do
   def generate_aggregate_header(options \\ []) do
 
     """
-    <!--
-    #{aggregate_description(options)}
-    -->
     <EntitiesDescriptor
       #{xml_namespace_declarations()}
       #{id_attrblock(options)} #{cache_attrblock(options)}>
+
+    <!--
+    #{aggregate_description(options)}
+    -->
 
     #{publisher_block(options)}
 
