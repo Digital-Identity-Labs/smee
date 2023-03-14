@@ -25,6 +25,7 @@ defmodule Smee.Metadata do
   alias Smee.Extract
   alias Smee.Entity
   alias Smee.Metadata
+  alias Smee.Lint
 
   #@metadata_types [:aggregate, :single]
 
@@ -410,6 +411,20 @@ defmodule Smee.Metadata do
     else
       metadata
     end
+  end
+
+  @doc """
+  Raises an exception if the metadata has invalid XML, otherwise returns the metadata.
+  """
+  @spec validate!(metadata :: Metadata.t()) :: Metadata.t()
+  def validate!(metadata) do
+    case metadata
+         |> xml()
+         |> Lint.validate() do
+      {:ok, xml} -> metadata
+      {:error, message} -> raise "Invalid metadata XML! #{message}"
+    end
+    metadata
   end
 
   ################################################################################

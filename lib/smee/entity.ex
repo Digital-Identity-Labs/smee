@@ -20,6 +20,7 @@ defmodule Smee.Entity do
   alias Smee.Utils
   alias Smee.XmlMunger
   alias Smee.Metadata
+  alias Smee.Lint
 
   @enforce_keys [:data]
 
@@ -365,6 +366,20 @@ defmodule Smee.Entity do
     else
       entity
     end
+  end
+
+  @doc """
+  Raises an exception if the entity has invalid XML, otherwise returns the entity.
+  """
+  @spec validate!(entity :: Entity.t()) :: Entity.t()
+  def validate!(entity) do
+    case entity
+         |> xml()
+         |> Lint.validate() do
+      {:ok, xml} -> entity
+      {:error, message} -> raise "Invalid entity XML! #{message}"
+    end
+    entity
   end
 
   ################################################################################

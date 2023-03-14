@@ -760,4 +760,19 @@ defmodule SmeeMetadataTest do
 
   end
 
+  describe "validate!/1" do
+
+    test "returns the entity if metadata XML is actually well formed and schema-compliant" do
+      assert %Metadata{} = Metadata.validate!(@valid_metadata)
+    end
+
+    test "raises an exception if metadata XML is invalid" do
+      assert_raise(
+        RuntimeError,
+        fn -> Metadata.validate!(struct(@valid_metadata, %{data: @valid_metadata.data <> "BAD"})) end
+      )
+    end
+
+  end
+
 end

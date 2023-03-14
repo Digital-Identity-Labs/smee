@@ -526,4 +526,19 @@ defmodule SmeeEntityTest do
 
   end
 
+  describe "validate!/1" do
+
+    test "returns the entity if entity XML is actually well formed and schema-compliant" do
+      assert %Entity{} = Entity.validate!(@valid_entity)
+    end
+
+    test "raises an exception if entity XML is invalid" do
+      assert_raise(
+        RuntimeError,
+        fn -> Entity.validate!(struct(@valid_entity, %{data: @valid_entity.data <> "BAD"})) end
+      )
+    end
+
+  end
+
 end

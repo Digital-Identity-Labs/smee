@@ -11,6 +11,7 @@ XML storage and publishing bugfixes and small improvements, plus some breaking A
 * All functions in `Publish` have been renamed (they've lost their "to_", and sizes are "estimated_x_size")
 
 ### New Features
+- Metadata and Entity modules have a `validate!/1` function to check XML schema compliance
 - Metadata and Entity modules have `expired?/1` and `check_date!/1` functions
 - A Mix task for installing the default backend requirements on Macs (via Homebrew) and Linux
 - Code of Conduct document added
