@@ -17,6 +17,7 @@ defmodule Smee.XmlMunger do
   @xml_declaration ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n|
   @xml_decl_pattern ~r|^<\?xml.*\?>\n*|ifUm
   @top_tag_pattern ~r|<(md:)?EntityDescriptor.*?>|ms
+  @bot_tag_pattern ~r|</(md:)?EntityDescriptor>\z|ms
   @uri_extractor_pattern ~r|<(md:)?EntityDescriptor.*entityID="(.+)".*>|mUs
   @signature_pattern ~r|<Signature\s.*.+</Signature>|msU
   @split_pattern ~r|(<(md:)?EntityDescriptor)|
@@ -70,15 +71,19 @@ defmodule Smee.XmlMunger do
     uri = if is_nil(uri), do: extract_uri!(xml), else: uri
     id = Keyword.get(options, :id, nil)
     valid_until = Keyword.get(options, :valid_until, nil)
-    id_fragment = if is_nil(id), do: "", else: ~s|ID="#{id}"|
-    vu_fragment = if is_nil(valid_until), do: "", else: ~s|validUntil="#{DateTime.to_iso8601(valid_until)}"|
+    id_fragment = if is_nil(id), do: nil, else: ~s|ID="#{id}"|
+    vu_fragment = if is_nil(valid_until), do: nil, else: ~s|validUntil="#{DateTime.to_iso8601(valid_until)}"|
 
-    replacement_top = """
-    <EntityDescriptor
-    #{xml_namespace_declarations(xml)}
-       #{id_fragment} cacheDuration="P0Y0M0DT6H0M0.000S" #{vu_fragment}
-        entityID="#{uri}">
-    """
+    replacement_top = [
+                        "<EntityDescriptor",
+                        xml_namespace_declarations(xml),
+                        id_fragment,
+                        ~s|cacheDuration="P0Y0M0DT6H0M0.000S"|,
+                        vu_fragment,
+                        ~s|entityID="#{uri}">|
+                      ]
+                      |> Enum.filter(& &1)
+                      |> Enum.join(" ")
 
     xml
     |> prepare_xml()
@@ -96,12 +101,28 @@ defmodule Smee.XmlMunger do
     uri = Keyword.get(options, :uri, nil)
     uri = if is_nil(uri), do: extract_uri!(xml), else: uri
     id = Keyword.get(options, :id, nil)
-    id_fragment = if is_nil(id), do: "", else: ~s| ID="#{id}"|
+    id_fragment = if is_nil(id), do: nil, else: ~s|ID="#{id}"|
 
-    replacement_top = ~s|<EntityDescriptor#{id_fragment} entityID="#{uri}">|
+    replacement_top = [
+                        ~s|<EntityDescriptor|,
+                        id_fragment,
+                        ~s|entityID="#{uri}">|
+                      ]
+                      |> Enum.filter(& &1)
+                      |> Enum.join(" ")
 
     xml
     |> String.replace(@top_tag_pattern, replacement_top)
+  end
+
+  @spec consistent_bottom(xml :: binary()) :: binary()
+  def consistent_bottom(xml, options \\ []) do
+
+    replacement_bottom = ~s|</EntityDescriptor>|
+
+    xml
+    |> String.replace(@bot_tag_pattern, replacement_bottom)
+
   end
 
   @spec extract_uri!(xml :: binary()) :: binary()
@@ -123,6 +144,7 @@ defmodule Smee.XmlMunger do
     xml
     |> remove_signature()
     |> expand_entity_top(options)
+    |> consistent_bottom(xml)
   end
 
   @spec trim_entity_xml(xml :: binary()) :: binary()
@@ -130,23 +152,23 @@ defmodule Smee.XmlMunger do
     xml
     |> remove_signature()
     |> shrink_entity_top(uri: options[:uri])
+    |> consistent_bottom(xml)
   end
 
   @spec generate_aggregate_header(options :: keyword()) :: binary()
   def generate_aggregate_header(options \\ []) do
-
-    """
-    <EntitiesDescriptor
-      #{xml_namespace_declarations()}
-      #{id_attrblock(options)} #{cache_attrblock(options)}>
-
-    <!--
-    #{aggregate_description(options)}
-    -->
-
-    #{publisher_block(options)}
-
-    """
+    [
+      "<EntitiesDescriptor",
+      xml_namespace_declarations(),
+      id_attrblock(options),
+      cache_attrblock(options),
+      ">",
+      nil,
+      "<!-- #{aggregate_description(options)} -->",
+      publisher_block(options),
+    ]
+    |> Enum.filter(& &1)
+    |> Enum.join(" ")
   end
 
   @spec generate_aggregate_footer(options :: keyword()) :: binary()
@@ -183,9 +205,10 @@ defmodule Smee.XmlMunger do
 
   @spec snip_aggregate(xml :: binary()) :: binary()
   def snip_aggregate(xml) do
-    case Regex.run(@entities_descriptor_pattern, xml) do
+    case Regex.run(@entities_descriptor_pattern, xml) do # TODO this is temp workaround - can be improved
       [capture] -> capture
-      nil -> raise "Can't extract EntitiesDescriptor! Data was: #{String.slice(xml, 0..100)}[...]"
+      [capture, _] -> capture
+      nil -> raise "Can't extract EntitiesDescriptor! Data was: #{String.slice(xml, 0..1000)}[...]"
     end
   end
 
@@ -206,9 +229,9 @@ defmodule Smee.XmlMunger do
   @spec xml_namespace_declarations(namespaces :: map()) :: binary()
   defp render_namespace_list(namespaces) do
     namespaces
-    |> Enum.map(fn {k, v} -> "    xmlns:#{k}=\"#{v}\"" end)
-    |> List.insert_at(0, "    xmlns=\"#{XmlCfg.default_namespace}\"")
-    |> Enum.join("\n")
+    |> Enum.map(fn {k, v} -> "xmlns:#{k}=\"#{v}\"" end)
+    |> List.insert_at(0, "xmlns=\"#{XmlCfg.default_namespace}\"")
+    |> Enum.join(" ")
   end
 
   @spec id_attrblock(options :: keyword()) :: binary()

@@ -25,6 +25,9 @@ XML storage and publishing bugfixes and small improvements, plus some breaking A
 - Tweaks to Readme.md
 - Refactored XML pre-processing code, added XmlMunger module
 - Moved private XML munging code from Publish and Metadata to XmlMunger to make it testable
+- Optional federation-compatibility tests (run with `mix test --only compatibility`)
+- EntitiesDescriptor and EntityDescriptor are now flat, one-line tags
+- More namespaces are available
 
 
 
