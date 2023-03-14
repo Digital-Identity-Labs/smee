@@ -88,27 +88,55 @@ defmodule SmeeXmlMungerTest do
 
     test "returns a list of known namespace prefixes that are present in the XML (as atoms)" do
 
-      assert [:alg, :ds, :idpdisc, :init, :md, :mdattr, :mdrpi, :mdui, :remd, :saml, :shibmd]
-             = XmlMunger.namespace_prefixes_used(@valid_metadata_xml)
-
-      assert [:ds, :md, :mdrpi, :mdui, :shibmd]
-             = XmlMunger.namespace_prefixes_used(@valid_single_metadata_xml)
-
       assert [
                :alg,
+               :algsupport,
+               :disco,
                :ds,
+               :fed,
                :idpdisc,
                :init,
                :md,
                :mdattr,
                :mdrpi,
                :mdui,
+               :refeds,
                :remd,
+               :req,
                :saml,
+               :ser,
+               :shibmd
+             ]
+             = XmlMunger.namespace_prefixes_used(@valid_metadata_xml)
+               |> Enum.sort()
+
+      assert [:ds, :fed, :md, :mdrpi, :mdui, :shibmd]
+             = XmlMunger.namespace_prefixes_used(@valid_single_metadata_xml)
+               |> Enum.sort()
+
+      assert [
+               :alg,
+               :algsupport,
+               :disco,
+               :ds,
+               :eidas,
+               :fed,
+               :idpdisc,
+               :init,
+               :md,
+               :mdattr,
+               :mdrpi,
+               :mdui,
+               :refeds,
+               :remd,
+               :req,
+               :saml,
+               :ser,
                :shibmd
              ] = XmlMunger.namespace_prefixes_used(
-               Entity.xml(Metadata.entity!(@valid_metadata, "https://indiid.net/idp/shibboleth"))
-             )
+                   Entity.xml(Metadata.entity!(@valid_metadata, "https://indiid.net/idp/shibboleth"))
+                 )
+                 |> Enum.sort()
 
     end
 
@@ -166,12 +194,12 @@ defmodule SmeeXmlMungerTest do
     end
 
     test "entity XML with a thin top returns XML with a fat top" do
-      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor\n    xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\"\n    xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"\n    xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\"\n    xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\"\n    xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\"\n    xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\"\n    cacheDuration=\"P0Y0M0DT6H0M0.000S\" \n    entityID=\"https://indiid.net/idp/shibboleth\">" <> _
+      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:fed=\"http://docs.oasis-open.org/wsfed/federation/200706\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
              = XmlMunger.expand_entity_top(@valid_single_metadata_xml, [])
     end
 
     test "entity XML with a fat top returns the same XML, or at least with a fat top" do
-      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor\n    xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\"\n    xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"\n    xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\"\n    xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\"\n    xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\"\n    xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\"\n    cacheDuration=\"P0Y0M0DT6H0M0.000S\" \n    entityID=\"https://indiid.net/idp/shibboleth\">" <> _
+      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:fed=\"http://docs.oasis-open.org/wsfed/federation/200706\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
              = XmlMunger.expand_entity_top(XmlMunger.expand_entity_top(@valid_single_metadata_xml, []), [])
     end
 
@@ -251,7 +279,7 @@ defmodule SmeeXmlMungerTest do
     end
 
     test "expands the top tag" do
-      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor\n    xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\"\n    xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"\n    xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\"\n    xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\"\n    xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\"\n    xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\"\n    cacheDuration=\"P0Y0M0DT6H0M0.000S\" \n    entityID=\"https://indiid.net/idp/shibboleth\">" <> _
+      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:fed=\"http://docs.oasis-open.org/wsfed/federation/200706\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
              = XmlMunger.process_entity_xml(@valid_single_metadata_xml, [])
     end
 
@@ -385,7 +413,7 @@ defmodule SmeeXmlMungerTest do
       assert "<EntitiesDescriptor" <> _ = XmlMunger.snip_aggregate(@valid_metadata_xml)
       assert String.ends_with?(XmlMunger.snip_aggregate(@valid_metadata_xml), ~s| cacheDuration=\"PT6H0M0.000S\">|)
     end
-    
+
   end
 
 end
