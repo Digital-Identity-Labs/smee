@@ -715,6 +715,49 @@ defmodule SmeeMetadataTest do
     end
 
   end
+  
+  describe "expired?/1" do
 
+    test "returns true if the metadata's valid_until is in the past" do
+      date = DateTime.utc_now
+             |> DateTime.add(-14, :day)
+      assert Metadata.expired?(struct(@valid_metadata, %{valid_until: date}))
+    end
+
+    test "returns false if the metadata's valid_until is in the future" do
+      date = DateTime.utc_now
+             |> DateTime.add(14, :day)
+      refute Metadata.expired?(struct(@valid_metadata, %{valid_until: date}))
+    end
+
+    test "returns false if the metadata's valid_until has not been set" do
+      refute Metadata.expired?(struct(@valid_metadata, %{valid_until: nil}))
+    end
+
+  end
+
+  describe "check_date!/1" do
+
+    test "raises an exception if the metadata's valid_until is in the past" do
+      date = DateTime.utc_now
+             |> DateTime.add(-14, :day)
+      assert_raise(
+        RuntimeError,
+        fn -> Metadata.check_date!(struct(@valid_metadata, %{valid_until: date})) end
+      )
+
+    end
+
+    test "returns the metadata if the metadata's valid_until is in the future" do
+      date = DateTime.utc_now
+             |> DateTime.add(14, :day)
+      assert %Metadata{} = Metadata.check_date!(struct(@valid_metadata, %{valid_until: date}))
+    end
+
+    test "returns the metadata if the metadata's valid_until has not been set" do
+      assert %Metadata{} = Metadata.check_date!(struct(@valid_metadata, %{valid_until: nil}))
+    end
+
+  end
 
 end

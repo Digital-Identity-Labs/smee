@@ -335,6 +335,38 @@ defmodule Smee.Entity do
     end
   end
 
+  @doc """
+  Returns true if the entity has expired (based on valid_until datetime)
+
+  If no valid_until has been set (if it's nil) then false will be returned
+  """
+  @spec expired?(entity :: Entity.t()) :: boolean()
+  def expired?(%{valid_until: nil} = entity) do
+    false
+  end
+
+  def expired?(entity) do
+    DateTime.compare(entity.valid_until, DateTime.utc_now) == :lt
+  end
+
+  @doc """
+  Raises an exception if the entity has expired (based on valid_until datetime), otherwise returns the entity.
+
+  If no valid_until has been set (if it's nil) then the entity will always be returned.
+  """
+  @spec check_date!(entity :: Entity.t()) :: Entity.t()
+  def check_date!(%{valid_until: nil} = entity) do
+    entity
+  end
+
+  def check_date!(entity) do
+    if expired?(entity) do
+      raise "Entity has expired!"
+    else
+      entity
+    end
+  end
+
   ################################################################################
 
   @spec parse_data(entity :: Entity.t()) :: Entity.t()

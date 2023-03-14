@@ -352,7 +352,7 @@ defmodule Smee.Metadata do
   Two formats can be specified: :sha1 and :uri
 
   """
-  @spec filename(entity :: Entity.t(), format :: atom()) :: binary()
+  @spec filename(metadata :: Metadata.t(), format :: atom()) :: binary()
   def filename(metadata, :sha1) do
     "#{metadata.uri_hash}.xml"
   end
@@ -378,6 +378,38 @@ defmodule Smee.Metadata do
            |> String.trim_trailing("_")
            |> String.trim_trailing("_xml")
     "#{name}.xml"
+  end
+
+  @doc """
+  Returns true if the metadata has expired (based on valid_until datetime)
+
+  If no valid_until has been set (if it's nil) then false will be returned
+  """
+  @spec expired?(metadata :: Metadata.t()) :: boolean()
+  def expired?(%{valid_until: nil} = metadata) do
+    false
+  end
+
+  def expired?(metadata) do
+    DateTime.compare(metadata.valid_until, DateTime.utc_now) == :lt
+  end
+
+  @doc """
+  Raises an exception if the metadata has expired (based on valid_until datetime), otherwise returns the metadata.
+
+  If no valid_until has been set (if it's nil) then the metadata will always be returned.
+  """
+  @spec check_date!(metadata :: Metadata.t()) :: Metadata.t()
+  def check_date!(%{valid_until: nil} = metadata) do
+    metadata
+  end
+
+  def check_date!(metadata) do
+    if expired?(metadata) do
+      raise "Metadata has expired!"
+    else
+      metadata
+    end
   end
 
   ################################################################################

@@ -210,7 +210,11 @@ defmodule SmeeEntityTest do
     end
 
     test "metadata_uri can be overridden with options" do
-      %Entity{metadata_uri: "http://example.com/federation"} = Entity.derive(@valid_xml, @valid_metadata, metadata_uri: "http://example.com/federation")
+      %Entity{metadata_uri: "http://example.com/federation"} = Entity.derive(
+        @valid_xml,
+        @valid_metadata,
+        metadata_uri: "http://example.com/federation"
+      )
     end
 
     test "metadata_uri_hash is set automatically if metadata uri is present" do
@@ -415,7 +419,7 @@ defmodule SmeeEntityTest do
   describe "xml/1" do
 
     test "returns xml data string for the entity" do
-       xml = Smee.XmlMunger.process_entity_xml(@valid_xml)
+      xml = Smee.XmlMunger.process_entity_xml(@valid_xml)
       assert ^xml = Entity.xml(@valid_entity)
     end
 
@@ -474,6 +478,50 @@ defmodule SmeeEntityTest do
 
     test "cannot return a priority under 0" do
       assert 0 = Entity.priority(struct(@valid_entity, %{priority: -50}))
+    end
+
+  end
+
+  describe "expired?/1" do
+
+    test "returns true if the entity's valid_until is in the past" do
+      date = DateTime.utc_now
+             |> DateTime.add(-14, :day)
+      assert Entity.expired?(struct(@valid_entity, %{valid_until: date}))
+    end
+
+    test "returns false if the entity's valid_until is in the future" do
+      date = DateTime.utc_now
+             |> DateTime.add(14, :day)
+      refute Entity.expired?(struct(@valid_entity, %{valid_until: date}))
+    end
+
+    test "returns false if the entity's valid_until has not been set" do
+      refute Entity.expired?(struct(@valid_entity, %{valid_until: nil}))
+    end
+
+  end
+
+  describe "check_date!/1" do
+
+    test "raises an exception if the entity's valid_until is in the past" do
+      date = DateTime.utc_now
+             |> DateTime.add(-14, :day)
+      assert_raise(
+        RuntimeError,
+        fn -> Entity.check_date!(struct(@valid_entity, %{valid_until: date})) end
+      )
+
+    end
+
+    test "returns the entity if the entity's valid_until is in the future" do
+      date = DateTime.utc_now
+             |> DateTime.add(14, :day)
+      assert %Entity{} = Entity.check_date!(struct(@valid_entity, %{valid_until: date}))
+    end
+
+    test "returns the entity if the entity's valid_until has not been set" do
+      assert %Entity{} = Entity.check_date!(struct(@valid_entity, %{valid_until: nil}))
     end
 
   end
