@@ -17,8 +17,8 @@ defmodule Smee.XmlMunger do
   @xml_declaration ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n|
   @xml_decl_pattern ~r|^<\?xml.*\?>\n*|ifUm
   @top_tag_pattern ~r|<(md:)?EntityDescriptor.*?>|ms
-  @uri_extractor_pattern ~r|\A<(md:)?EntityDescriptor.*entityID="(.+)".*>|mUs
-  @signature_pattern ~r|<Signature\s.*>.+</Signature>|ms
+  @uri_extractor_pattern ~r|<(md:)?EntityDescriptor.*entityID="(.+)".*>|mUs
+  @signature_pattern ~r|<Signature\s.*.+</Signature>|msU
   @split_pattern ~r|(<(md:)?EntityDescriptor)|
   @entities_descriptor_pattern ~r|<(md:)?EntitiesDescriptor.*?>|s
 
@@ -171,7 +171,9 @@ defmodule Smee.XmlMunger do
 
   @spec split_single_to_stream(xml :: binary(), options :: keyword()) :: Enumerable.t()
   def split_single_to_stream(xml, options \\ []) do
-    Stream.concat([[trim_entity_xml(xml, options)]])
+    xml = trim_entity_xml(xml, options)
+    Stream.concat([[xml]])
+    |> Stream.map(fn e -> e end)
   end
 
   @spec count_entities(xml :: binary()) :: integer()
