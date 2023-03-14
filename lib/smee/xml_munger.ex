@@ -12,10 +12,11 @@ defmodule Smee.XmlMunger do
   ## just in case.
 
   alias Smee.XmlCfg
+  alias Smee.XmlMunger
 
   @xml_declaration ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n|
   @xml_decl_pattern ~r|^<\?xml.*\?>\n*|ifUm
-  @top_tag_pattern ~r|<(md:)?EntityDescriptor.*>|m
+  @top_tag_pattern ~r|<(md:)?EntityDescriptor.*?>|ms
   @uri_extractor_pattern ~r|\A<(md:)?EntityDescriptor.*entityID="(.+)".*>|mUs
   @signature_pattern ~r|<Signature\s.*>.+</Signature>|ms
   @split_pattern ~r|(<(md:)?EntityDescriptor)|
@@ -184,7 +185,6 @@ defmodule Smee.XmlMunger do
       [capture] -> capture
       nil -> raise "Can't extract EntitiesDescriptor! Data was: #{String.slice(xml, 0..100)}[...]"
     end
-
   end
 
   ################################################################################

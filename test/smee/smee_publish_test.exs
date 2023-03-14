@@ -5,12 +5,35 @@ defmodule SmeePublishTest do
   alias Smee.Source
   alias Smee.Metadata
   alias Smee.Lint
+  alias Smee.XmlMunger
 
 
   @valid_metadata Source.new("test/support/static/aggregate.xml")
                   |> Smee.fetch!()
 
   @xml_declaration ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n|
+
+  @agg_ns ~w[xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+  xmlns:alg="urn:oasis:names:tc:SAML:metadata:algsupport"
+  xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+  xmlns:eduidmd="http://eduid.cz/schema/metadata/1.0"
+  xmlns:hoksso="urn:oasis:names:tc:SAML:2.0:profiles:holder-of-key:SSO:browser"
+  xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+  xmlns:init="urn:oasis:names:tc:SAML:profiles:SSO:request-init"
+  xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+  xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute"
+  xmlns:mdrpi="urn:oasis:names:tc:SAML:metadata:rpi"
+  xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
+  xmlns:pyff="http://pyff.io/NS"
+  xmlns:remd="http://refeds.org/metadata"
+  xmlns:req-attr="urn:oasis:names:tc:SAML:protocol:ext:req-attr"
+  xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+  xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+  xmlns:taat="http://www.eenet.ee/EENet/urn"
+  xmlns:ukfedlabel="http://ukfederation.org.uk/2006/11/label"
+  xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"]
+
+
 
   describe "index_stream/2" do
 
@@ -79,7 +102,7 @@ defmodule SmeePublishTest do
   describe "estimate_xml_size/2" do
 
     test "returns the size of content in the stream" do
-      assert 40_490 = Publish.estimate_xml_size(Metadata.stream_entities(@valid_metadata))
+      assert 39_680 = Publish.estimate_xml_size(Metadata.stream_entities(@valid_metadata))
     end
 
     test "should be the about the same size as a compiled binary output" do
@@ -115,9 +138,6 @@ defmodule SmeePublishTest do
       xml = Publish.xml(
         Metadata.stream_entities(@valid_metadata)
       )
-
-      IO.puts xml
-
       count = length(String.split(xml, "<?xml")) - 1
 
       assert String.contains?(xml, @xml_declaration)
@@ -125,13 +145,56 @@ defmodule SmeePublishTest do
 
     end
 
+    test "should include minimal EntityDescriptor tags" do
+      xml = Publish.xml(
+        Metadata.stream_entities(@valid_metadata)
+      )
+
+      assert String.contains?(xml, ~s|<EntityDescriptor entityID="https://test.ukfederation.org.uk/entity">|)
+      assert String.contains?(xml, ~s|<EntityDescriptor entityID="https://indiid.net/idp/shibboleth">|)
+
+    end
+
+    test "should include a full EntitiesDescriptor tag with namespaces" do
+      xml = Publish.xml(
+        Metadata.stream_entities(@valid_metadata)
+      )
+
+      top = XmlMunger.snip_aggregate(xml)
+
+      Enum.each(@agg_ns, fn ns -> assert  String.contains?(top, ns) end)
+
+    end
+
+    test "should include a cache duration attribute" do
+      xml = Publish.xml(
+        Metadata.stream_entities(@valid_metadata)
+      )
+
+      top = XmlMunger.snip_aggregate(xml)
+      assert String.contains?(top, ~s|cacheDuration="PT6H0M0.000S|)
+    end
+
+    test "should include an ID attribute" do
+
+      xml = Publish.xml(
+        Metadata.stream_entities(@valid_metadata)
+      )
+
+      top = XmlMunger.snip_aggregate(xml)
+      assert String.contains?(top, ~s|ID="_"|)
+
+    end
+
+    test "should include a validUntil attribute" do
+      xml = Publish.xml(
+        Metadata.stream_entities(@valid_metadata)
+      )
+
+      top = XmlMunger.snip_aggregate(xml)
+      assert String.contains?(top, ~s|validUntil="|)
+    end
+
   end
 
 end
-#
-#
-#assert [
-#         %Entity{uri: "https://test.ukfederation.org.uk/entity"},
-#         %Entity{uri: "https://indiid.net/idp/shibboleth"}
-#       ] = Metadata.stream_entities(@valid_metadata)
-#           |> Enum.to_list
