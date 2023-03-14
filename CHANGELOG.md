@@ -20,6 +20,7 @@ XML storage and publishing bugfixes and small improvements, plus some breaking A
 - Backends no longer output messages to stderr on terminal (tests look **much**) nicer now
 - Basic documentation for Security module
 - Published XML aggregates are now smaller and tidier
+- EntityDescriptor end tags should now match the start tags
 
 ### Changed
 - Tweaks to Readme.md
