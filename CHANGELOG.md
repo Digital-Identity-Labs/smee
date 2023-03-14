@@ -18,6 +18,7 @@ XML storage and publishing bugfixes and small improvements, plus some breaking A
 - Entity XML is now stored with namespaces and processed with xmerl in a namespace-aware way. This fixes problems with
   other libraries (specifically SmeeView) that were using xpath and not getting consistent results.
 - Backends no longer output messages to stderr on terminal (tests look **much**) nicer now
+- Basic documentation for Security module
 
 ### Changed
 - Tweaks to Readme.md
