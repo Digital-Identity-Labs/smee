@@ -140,7 +140,6 @@ defmodule SmeeXmlMungerTest do
 
     end
 
-
   end
 
   describe "remove_xml_declaration/1" do
@@ -412,6 +411,15 @@ defmodule SmeeXmlMungerTest do
     test "returns the EntityDescriptors tag from aggregate metadata" do
       assert "<EntitiesDescriptor" <> _ = XmlMunger.snip_aggregate(@valid_metadata_xml)
       assert String.ends_with?(XmlMunger.snip_aggregate(@valid_metadata_xml), ~s| cacheDuration=\"PT6H0M0.000S\">|)
+    end
+
+  end
+
+  describe "consistent_bottom/2" do
+
+    test "makes sure the entityDescriptor end tag matches the namespace style of the start tag (currently by making both use default ns)" do
+      assert "blah blah </EntityDescriptor>" = XmlMunger.consistent_bottom("blah blah </md:EntityDescriptor>")
+      assert "blah blah </EntityDescriptor>" = XmlMunger.consistent_bottom("blah blah </EntityDescriptor>")
     end
 
   end
