@@ -1,4 +1,4 @@
-defmodule Smxt.MixProject do
+defmodule Smee.MixProject do
   use Mix.Project
 
   def project do
