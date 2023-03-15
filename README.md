@@ -36,7 +36,6 @@ Smee contain more tools for handling SAML metadata, such as:
 * `Smee.Transform` - processing and editing entity XML
 * `Smee.Publish` - Formatting and outputting metadata in various formats
 * `Smee.Stats` - Simple stats for entity streams
-* `Smee.Lint` - XML validation and reformatting
 
 ## Examples
 
@@ -108,7 +107,7 @@ by adding `Smee` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:Smee, "~> 0.1.0"}
+    {:Smee, "~> 0.2.0"}
   ]
 end
 ```
