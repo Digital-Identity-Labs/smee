@@ -22,10 +22,10 @@ defmodule Smee.Security.Xmlsectool do
 
     try do
 
-      case Rambo.run("xmlsectool", command) do
+      case Rambo.run("xmlsectool", command, log: false) do
         {:ok, %Rambo{status: 0, out: _out}} -> Map.merge(metadata, %{verified: true})
         {:error, %Rambo{status: status, err: err}} -> raise parse_error(status, err)
-        _ -> {:error, "Unknown XSLT parser error has occurred"}
+        _ -> {:error, "Unknown xmlsectool error has occurred"}
       end
 
     rescue

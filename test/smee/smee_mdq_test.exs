@@ -8,7 +8,7 @@ defmodule SmeeMDQTest do
   alias Smee.Source
 
   @mdq_service_url "http://mdq.ukfederation.org.uk/"
- # @mdq_service MDQ.source(@mdq_service_url)
+  # @mdq_service MDQ.source(@mdq_service_url)
 
   describe "source/2" do
 
@@ -49,8 +49,8 @@ defmodule SmeeMDQTest do
     end
 
     test "cert_fingerprint defaults to nil" do
-      assert %Source{cert_fingerprint: nil} = Source.new(
-               "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
+      assert %Source{cert_fingerprint: nil} = MDQ.source(
+               "http://mdq.ukfederation.org.uk/"
              )
     end
 
@@ -66,26 +66,38 @@ defmodule SmeeMDQTest do
 
     test "certificate URL can be set as an option" do
       assert %Source{
-               cert_url: "http://metadata.ukfederation.org.uk/ukfederation.pem",
-             } = Source.new(
-               "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
-               cert_url: "http://metadata.ukfederation.org.uk/ukfederation.pem"
+               cert_url: "http://mdq.ukfederation.org.uk/ukfederation-mdq.pem",
+             } = MDQ.source(
+               "http://mdq.ukfederation.org.uk/",
+               cert_url: "http://mdq.ukfederation.org.uk/ukfederation-mdq.pem"
              )
     end
 
     test "certificate fingerprint can be set as an option" do
       assert %Source{
-               cert_fingerprint: "0baa09b8fedaa809bd0e63317afcf3b7a9aedd73",
-             } = Source.new(
-               "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+               cert_fingerprint: "0B:AA:09:B8:FE:DA:A8:09:BD:0E:63:31:7A:FC:F3:B7:A9:AE:DD:73",
+             } = MDQ.source(
+               "http://mdq.ukfederation.org.uk/",
+               cert_fingerprint: "0B:AA:09:B8:FE:DA:A8:09:BD:0E:63:31:7A:FC:F3:B7:A9:AE:DD:73"
+             )
+      assert %Source{
+               cert_fingerprint: "0B:AA:09:B8:FE:DA:A8:09:BD:0E:63:31:7A:FC:F3:B7:A9:AE:DD:73",
+             } = MDQ.source(
+               "http://mdq.ukfederation.org.uk/",
                cert_fingerprint: "0baa09b8fedaa809bd0e63317afcf3b7a9aedd73"
+             )
+      assert %Source{
+               cert_fingerprint: nil,
+             } = MDQ.source(
+               "http://mdq.ukfederation.org.uk/",
+               cert_fingerprint: nil
              )
     end
 
     test "Filesystem paths are set to be file URLs" do
       assert %Source{
                cert_url: "file:/tmp/ukfederation.pem",
-             } = Source.new(
+             } = MDQ.source(
                "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
                cert_url: "/tmp/ukfederation.pem"
              )
@@ -94,7 +106,7 @@ defmodule SmeeMDQTest do
     test "Label can be set as an option" do
       assert %Source{
                label: "Not the most useful feature but",
-             } = Source.new(
+             } = MDQ.source(
                "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
                label: "Not the most useful feature but"
              )

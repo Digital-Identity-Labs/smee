@@ -42,13 +42,15 @@ defmodule SmeeSourceTest do
     end
 
     test "cert_fingerprint defaults to nil" do
-      assert %Source{cert_fingerprint: nil} = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+      assert %Source{cert_fingerprint: nil} = Source.new(
+               "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
+             )
     end
 
     test "strict defaults to false" do
       assert %Source{trustiness: 0.5} = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
     end
-    
+
     test "cache boolean can be set as an option" do
       assert %Source{
                cache: false,
@@ -64,12 +66,30 @@ defmodule SmeeSourceTest do
              )
     end
 
-    test "certificate fingerprint can be set as an option" do
+    test "certificate fingerprint can be set as an option, with normalisation" do
       assert %Source{
-               cert_fingerprint: "0baa09b8fedaa809bd0e63317afcf3b7a9aedd73",
+               cert_fingerprint: "0B:AA:09:B8:FE:DA:A8:09:BD:0E:63:31:7A:FC:F3:B7:A9:AE:DD:73",
              } = Source.new(
                "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
                cert_fingerprint: "0baa09b8fedaa809bd0e63317afcf3b7a9aedd73"
+             )
+      assert %Source{
+               cert_fingerprint: "0B:AA:09:B8:FE:DA:A8:09:BD:0E:63:31:7A:FC:F3:B7:A9:AE:DD:73",
+             } = Source.new(
+               "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+               cert_fingerprint: "0B:AA:09:B8:FE:DA:A8:09:BD:0E:63:31:7A:FC:F3:B7:A9:AE:DD:73"
+             )
+      assert %Source{
+               cert_fingerprint: "0B:AA:09:B8:FE:DA:A8:09:BD:0E:63:31:7A:FC:F3:B7:A9:AE:DD:73",
+             } = Source.new(
+               "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+               cert_fingerprint: "0b:aa:09:b8:fe:da:a8:09:bd:0e:63:31:7a:fc:f3:b7:a9:ae:dd:73"
+             )
+      assert %Source{
+               cert_fingerprint: nil,
+             } = Source.new(
+               "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+               cert_fingerprint: nil
              )
     end
 

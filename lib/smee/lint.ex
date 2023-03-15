@@ -38,7 +38,7 @@ defmodule Smee.Lint do
 
     try do
 
-      case Rambo.run("xmllint", command, in: xml) do
+      case Rambo.run("xmllint", command, in: xml, log: false) do
         {:ok, %Rambo{status: 0, out: ""}} -> {:ok, xml}
         {:ok, %Rambo{status: 0, out: out}} -> {:ok, out}
         {:error, %Rambo{status: status, err: err}} -> {:error, parse_error(status, err)}

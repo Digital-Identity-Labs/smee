@@ -42,7 +42,7 @@ defmodule SmeeEntityTest do
     end
 
     test "sets data hash automatically" do
-      assert %Entity{data_hash: "acdabf04bf26e57cc64ea2fe21890b4e33c83aad"} = Entity.new(@valid_xml)
+      assert %Entity{data_hash: "14f9a481bd900d0be663c2177817c75114516ce9"} = Entity.new(@valid_xml)
     end
 
     test "metadata_uri defaults to nil" do
@@ -54,7 +54,7 @@ defmodule SmeeEntityTest do
     end
 
     test "size is automatically set to the size of the XML data, in bytes" do
-      assert %Entity{size: 8007} = Entity.new(@valid_xml)
+      assert %Entity{size: 7097} = Entity.new(@valid_xml)
     end
 
     test "compressed defaults to false" do
@@ -155,7 +155,7 @@ defmodule SmeeEntityTest do
     end
 
     test "sets data hash automatically" do
-      assert %Entity{data_hash: "acdabf04bf26e57cc64ea2fe21890b4e33c83aad"} = Entity.derive(@valid_xml, @valid_metadata)
+      assert %Entity{data_hash: "14f9a481bd900d0be663c2177817c75114516ce9"} = Entity.derive(@valid_xml, @valid_metadata)
     end
 
     test "metadata_uri defaults to the name of the metadata" do
@@ -170,7 +170,7 @@ defmodule SmeeEntityTest do
     end
 
     test "size is automatically set to the size of the XML data, in bytes" do
-      assert %Entity{size: 8007} = Entity.derive(@valid_xml, @valid_metadata)
+      assert %Entity{size: 7097} = Entity.derive(@valid_xml, @valid_metadata)
     end
 
     test "compressed defaults to false" do
@@ -210,7 +210,11 @@ defmodule SmeeEntityTest do
     end
 
     test "metadata_uri can be overridden with options" do
-      %Entity{metadata_uri: "http://example.com/federation"} = Entity.derive(@valid_xml, @valid_metadata, metadata_uri: "http://example.com/federation")
+      %Entity{metadata_uri: "http://example.com/federation"} = Entity.derive(
+        @valid_xml,
+        @valid_metadata,
+        metadata_uri: "http://example.com/federation"
+      )
     end
 
     test "metadata_uri_hash is set automatically if metadata uri is present" do
@@ -250,12 +254,12 @@ defmodule SmeeEntityTest do
 
     test "an updated entity has the correct bytesize" do
       bad_entity = struct(@valid_entity, %{size: 0})
-      assert %Entity{size: 8007} = Entity.update(bad_entity)
+      assert %Entity{size: 7097} = Entity.update(bad_entity)
     end
 
     test "an updated entity has the correct data hash" do
       bad_entity = struct(@valid_entity, %{data_hash: "LE SIGH..."})
-      assert %Entity{data_hash: "acdabf04bf26e57cc64ea2fe21890b4e33c83aad"} = Entity.update(bad_entity)
+      assert %Entity{data_hash: "14f9a481bd900d0be663c2177817c75114516ce9"} = Entity.update(bad_entity)
     end
 
     test "an updated entity without new XML does not change count value" do
@@ -333,9 +337,9 @@ defmodule SmeeEntityTest do
       assert ^compressed_entity = Entity.compress(compressed_entity)
     end
 
-    test "Bytesize remains the same, original size" do
+    test "Bytesize remains the same, original size, not the gzipped size" do
       compressed_entity = Entity.compress(@valid_entity)
-      assert %Entity{size: 8007} = compressed_entity
+      assert %Entity{size: 7097} = compressed_entity
     end
 
     test "The compressed flag is set" do
@@ -358,7 +362,7 @@ defmodule SmeeEntityTest do
 
     test "Bytesize remains the same, original size" do
       compressed_entity = Entity.compress(@valid_entity)
-      assert %Entity{size: 8007} = Entity.decompress(compressed_entity)
+      assert %Entity{size: 7097} = Entity.decompress(compressed_entity)
     end
 
     test "The compressed flag is unset" do
@@ -415,7 +419,7 @@ defmodule SmeeEntityTest do
   describe "xml/1" do
 
     test "returns xml data string for the entity" do
-       xml = String.trim(@valid_xml)
+      xml = Smee.XmlMunger.process_entity_xml(@valid_xml)
       assert ^xml = Entity.xml(@valid_entity)
     end
 
@@ -474,6 +478,65 @@ defmodule SmeeEntityTest do
 
     test "cannot return a priority under 0" do
       assert 0 = Entity.priority(struct(@valid_entity, %{priority: -50}))
+    end
+
+  end
+
+  describe "expired?/1" do
+
+    test "returns true if the entity's valid_until is in the past" do
+      date = DateTime.utc_now
+             |> DateTime.add(-14, :day)
+      assert Entity.expired?(struct(@valid_entity, %{valid_until: date}))
+    end
+
+    test "returns false if the entity's valid_until is in the future" do
+      date = DateTime.utc_now
+             |> DateTime.add(14, :day)
+      refute Entity.expired?(struct(@valid_entity, %{valid_until: date}))
+    end
+
+    test "returns false if the entity's valid_until has not been set" do
+      refute Entity.expired?(struct(@valid_entity, %{valid_until: nil}))
+    end
+
+  end
+
+  describe "check_date!/1" do
+
+    test "raises an exception if the entity's valid_until is in the past" do
+      date = DateTime.utc_now
+             |> DateTime.add(-14, :day)
+      assert_raise(
+        RuntimeError,
+        fn -> Entity.check_date!(struct(@valid_entity, %{valid_until: date})) end
+      )
+
+    end
+
+    test "returns the entity if the entity's valid_until is in the future" do
+      date = DateTime.utc_now
+             |> DateTime.add(14, :day)
+      assert %Entity{} = Entity.check_date!(struct(@valid_entity, %{valid_until: date}))
+    end
+
+    test "returns the entity if the entity's valid_until has not been set" do
+      assert %Entity{} = Entity.check_date!(struct(@valid_entity, %{valid_until: nil}))
+    end
+
+  end
+
+  describe "validate!/1" do
+
+    test "returns the entity if entity XML is actually well formed and schema-compliant" do
+      assert %Entity{} = Entity.validate!(@valid_entity)
+    end
+
+    test "raises an exception if entity XML is invalid" do
+      assert_raise(
+        RuntimeError,
+        fn -> Entity.validate!(struct(@valid_entity, %{data: @valid_entity.data <> "BAD"})) end
+      )
     end
 
   end

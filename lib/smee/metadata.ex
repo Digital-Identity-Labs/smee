@@ -21,9 +21,11 @@ defmodule Smee.Metadata do
 
   alias __MODULE__
   alias Smee.Utils
+  alias Smee.XmlMunger
   alias Smee.Extract
   alias Smee.Entity
   alias Smee.Metadata
+  alias Smee.Lint
 
   #@metadata_types [:aggregate, :single]
 
@@ -154,7 +156,7 @@ defmodule Smee.Metadata do
   """
   @spec derive(data :: Enumerable.t() | Entity.t(), options :: keyword()) :: Metadata.t()
   def derive(enum, options \\ []) do
-    data = Smee.Publish.to_xml(enum, options)
+    data = Smee.Publish.xml(enum, options)
     new(data, options)
   end
 
@@ -351,7 +353,7 @@ defmodule Smee.Metadata do
   Two formats can be specified: :sha1 and :uri
 
   """
-  @spec filename(entity :: Entity.t(), format :: atom()) :: binary()
+  @spec filename(metadata :: Metadata.t(), format :: atom()) :: binary()
   def filename(metadata, :sha1) do
     "#{metadata.uri_hash}.xml"
   end
@@ -379,11 +381,57 @@ defmodule Smee.Metadata do
     "#{name}.xml"
   end
 
+  @doc """
+  Returns true if the metadata has expired (based on valid_until datetime)
+
+  If no valid_until has been set (if it's nil) then false will be returned
+  """
+  @spec expired?(metadata :: Metadata.t()) :: boolean()
+  def expired?(%{valid_until: nil}) do
+    false
+  end
+
+  def expired?(metadata) do
+    DateTime.compare(metadata.valid_until, DateTime.utc_now) == :lt
+  end
+
+  @doc """
+  Raises an exception if the metadata has expired (based on valid_until datetime), otherwise returns the metadata.
+
+  If no valid_until has been set (if it's nil) then the metadata will always be returned.
+  """
+  @spec check_date!(metadata :: Metadata.t()) :: Metadata.t()
+  def check_date!(%{valid_until: nil} = metadata) do
+    metadata
+  end
+
+  def check_date!(metadata) do
+    if expired?(metadata) do
+      raise "Metadata has expired!"
+    else
+      metadata
+    end
+  end
+
+  @doc """
+  Raises an exception if the metadata has invalid XML, otherwise returns the metadata.
+  """
+  @spec validate!(metadata :: Metadata.t()) :: Metadata.t()
+  def validate!(metadata) do
+    case metadata
+         |> xml()
+         |> Lint.validate() do
+      {:ok, _xml} -> metadata
+      {:error, message} -> raise "Invalid metadata XML! #{message}"
+    end
+    metadata
+  end
+
   ################################################################################
 
   @spec count_entities(metadata :: Metadata.t()) :: Metadata.t()
   defp count_entities(metadata) do
-    count = length(String.split(Metadata.xml(metadata), "entityID=\"")) - 1
+    count = XmlMunger.count_entities(Metadata.xml(metadata))
     Map.merge(metadata, %{entity_count: count})
   end
 
@@ -392,10 +440,7 @@ defmodule Smee.Metadata do
 
     import SweetXml
 
-    snippet = case Regex.run(~r/<[md:]*EntitiesDescriptor.*?>/s, metadata.data) do
-      [capture] -> capture
-      nil -> raise "Can't extract EntitiesDescriptor! Data was: #{String.slice(metadata.data, 0..100)}[...]"
-    end
+    snippet = XmlMunger.snip_aggregate(metadata.data)
 
     info = Regex.replace(~r/>$/, snippet, "\/>")
            |> xmap(
@@ -436,35 +481,11 @@ defmodule Smee.Metadata do
 
   @spec split_to_stream(metadata :: Metadata.t()) :: Enumerable.t()
   defp split_to_stream(%{type: :aggregate} = metadata) do
-    metadata.data
-    |> String.splitter("EntityDescriptor>", trim: true)
-    |> Stream.map(
-         fn xf ->
-           xf <> "EntityDescriptor>"
-           |> String.trim()
-         end
-       )
-    |> Stream.with_index()
-    |> Stream.map(fn {fx, n} -> strip_leading(fx, n) end)
-    |> Stream.reject(fn xf -> String.starts_with?(xf, ["</EntitiesDescriptor>", "</md:EntitiesDescriptor>"]) end)
+    XmlMunger.split_aggregate_to_stream(metadata.data)
   end
 
   defp split_to_stream(%{type: :single} = metadata) do
-    xml_without_xmlprefix = metadata.data
-                            |> String.replace(~r{<[?]xml.*[?]>}im, "")
-    Stream.concat([[xml_without_xmlprefix]])
-  end
-
-  @spec strip_leading(fx :: binary(), n :: integer) :: binary()
-  defp strip_leading(fx, 0) do
-    fx
-    |> String.split(~r{(<[md:]*EntityDescriptor)}, include_captures: true)
-    |> Enum.drop(1)
-    |> Enum.join()
-  end
-
-  defp strip_leading(fx, _n) do
-    fx
+    XmlMunger.split_single_to_stream(metadata.data)
   end
 
   @spec extract_id(xml_fragment :: binary()) :: binary()

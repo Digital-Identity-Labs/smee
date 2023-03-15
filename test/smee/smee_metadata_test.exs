@@ -6,7 +6,7 @@ defmodule SmeeMetadataTest do
   alias Smee.Metadata
   alias Smee.Source
   alias Smee.Fetch
-  alias Smee.Utils
+#  alias Smee.Utils
 
   # @arbitrary_dt DateTime.new!(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
   @valid_metadata_file "test/support/static/aggregate.xml"
@@ -292,30 +292,32 @@ defmodule SmeeMetadataTest do
              )
     end
 
-    test "data defaults to a trimmed version of passed data param" do
-      data = Metadata.entities(@valid_metadata)
-             |> Smee.Publish.to_xml()
-      # assert %Metadata{data: ^data} = Metadata.derive(Metadata.entities(@valid_metadata))
-      assert %Metadata{data: data} = Metadata.derive(Metadata.entities(@valid_metadata))
-      ## Test can't work because comparison data will have different datetime strings in it!
-      ## Leaving as a compile error to nag me to allow options in publish so date can be set
-    end
+    #    test "data defaults to a trimmed version of passed data param" do
+    #      data = Metadata.entities(@valid_metadata)
+    #             |> Smee.Publish.xml()
+    #      # assert %Metadata{data: ^data} = Metadata.derive(Metadata.entities(@valid_metadata))
+    #      assert %Metadata{data: ^data} = Metadata.derive(Metadata.entities(@valid_metadata))
+    #      ## Test can't work because comparison data will have different datetime strings in it!
+    #      ## Leaving as a compile error to nag me to allow options in publish so date can be set
+    #    end
+    # See Issue #6
 
     test "size is set automatically to the bytesize of the data" do
-      assert %Metadata{size: 39_396} = Metadata.derive(Metadata.entities(@valid_metadata))
+      assert %Metadata{size: 41_009} = Metadata.derive(Metadata.entities(@valid_metadata))
     end
 
-    test "data_hash is set automatically to the sha1 hash of the data" do
-      data = String.trim(
-        Metadata.entities(@valid_metadata)
-        |> Smee.Publish.to_xml
-      )
-      sha1 = Utils.sha1(data)
-      #assert %Metadata{data_hash: ^sha1} = Metadata.derive(Metadata.entities(@valid_metadata))
-      assert %Metadata{data_hash: sha1} = Metadata.derive(Metadata.entities(@valid_metadata))
-      ## Test can't work because comparison data will have different datetime strings in it!
-      ## Leaving as a compile error to nag me to allow options in publish so date can be set
-    end
+    #    test "data_hash is set automatically to the sha1 hash of the data" do
+    #      data = String.trim(
+    #        Metadata.entities(@valid_metadata)
+    #        |> Smee.Publish.xml
+    #      )
+    #      sha1 = Utils.sha1(data)
+    #      #assert %Metadata{data_hash: ^sha1} = Metadata.derive(Metadata.entities(@valid_metadata))
+    #      assert %Metadata{data_hash: ^sha1} = Metadata.derive(Metadata.entities(@valid_metadata))
+    #      ## Test can't work because comparison data will have different datetime strings in it!
+    #      ## Leaving as a compile error to nag me to allow options in publish so date can be set
+    #    end
+    # See Issue #6
 
     test "type defaults to :aggregate" do
       assert %Metadata{type: :aggregate} = Metadata.derive(Metadata.entities(@valid_metadata))
@@ -467,7 +469,7 @@ defmodule SmeeMetadataTest do
     end
 
     test "size cannot be set using an option" do
-      assert %Metadata{size: 39_396} = Metadata.derive(Metadata.entities(@valid_metadata), size: 100)
+      assert %Metadata{size: 41_009} = Metadata.derive(Metadata.entities(@valid_metadata), size: 100)
     end
 
     test "verified cannot be set using an option" do
@@ -716,5 +718,63 @@ defmodule SmeeMetadataTest do
 
   end
 
+  describe "expired?/1" do
+
+    test "returns true if the metadata's valid_until is in the past" do
+      date = DateTime.utc_now
+             |> DateTime.add(-14, :day)
+      assert Metadata.expired?(struct(@valid_metadata, %{valid_until: date}))
+    end
+
+    test "returns false if the metadata's valid_until is in the future" do
+      date = DateTime.utc_now
+             |> DateTime.add(14, :day)
+      refute Metadata.expired?(struct(@valid_metadata, %{valid_until: date}))
+    end
+
+    test "returns false if the metadata's valid_until has not been set" do
+      refute Metadata.expired?(struct(@valid_metadata, %{valid_until: nil}))
+    end
+
+  end
+
+  describe "check_date!/1" do
+
+    test "raises an exception if the metadata's valid_until is in the past" do
+      date = DateTime.utc_now
+             |> DateTime.add(-14, :day)
+      assert_raise(
+        RuntimeError,
+        fn -> Metadata.check_date!(struct(@valid_metadata, %{valid_until: date})) end
+      )
+
+    end
+
+    test "returns the metadata if the metadata's valid_until is in the future" do
+      date = DateTime.utc_now
+             |> DateTime.add(14, :day)
+      assert %Metadata{} = Metadata.check_date!(struct(@valid_metadata, %{valid_until: date}))
+    end
+
+    test "returns the metadata if the metadata's valid_until has not been set" do
+      assert %Metadata{} = Metadata.check_date!(struct(@valid_metadata, %{valid_until: nil}))
+    end
+
+  end
+
+  describe "validate!/1" do
+
+    test "returns the entity if metadata XML is actually well formed and schema-compliant" do
+      assert %Metadata{} = Metadata.validate!(@valid_metadata)
+    end
+
+    test "raises an exception if metadata XML is invalid" do
+      assert_raise(
+        RuntimeError,
+        fn -> Metadata.validate!(struct(@valid_metadata, %{data: @valid_metadata.data <> "BAD"})) end
+      )
+    end
+
+  end
 
 end
