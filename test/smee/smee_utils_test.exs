@@ -190,7 +190,9 @@ defmodule SmeeUtilsTest do
       assert is_binary(Utils.xdoc_to_string(xmerl))
       ## This is difficult, need canonicalisation to accurately compare - TODO!
       #assert ^xml_string = Utils.xdoc_to_string(xmerl)
-      assert unxmerl == Utils.xdoc_to_string(SweetXml.parse(Utils.xdoc_to_string(xmerl))) # At least consistent with its own XML
+      assert unxmerl == Utils.xdoc_to_string(
+               SweetXml.parse(Utils.xdoc_to_string(xmerl))
+             ) # At least consistent with its own XML
     end
 
   end
@@ -215,8 +217,43 @@ defmodule SmeeUtilsTest do
 
     test "any values in a map that are empty strings are converted to nils" do
       assert %{one: "One", two: nil, three: 3, four: nil} = Utils.nillify_map_empties(
-        %{one: "One", two: "", three: 3, four: ""}
-      )
+               %{one: "One", two: "", three: 3, four: ""}
+             )
+    end
+
+  end
+
+  describe "normalize_fingerprint/1" do
+
+    test "should return nil if passed nil, as a fingerprint is not required" do
+      assert Utils.normalize_fingerprint(nil) == nil
+    end
+
+    test "should return correct 40 character capitalised hex strings with colons when passed such" do
+      assert "3F:6B:F4:AF:E0:1B:3C:D7:C1:F2:3D:F6:EA:C5:60:AE:B1:5A:E8:26" = Utils.normalize_fingerprint(
+               "3F:6B:F4:AF:E0:1B:3C:D7:C1:F2:3D:F6:EA:C5:60:AE:B1:5A:E8:26"
+             )
+    end
+
+    test "should return 40 character capitalised hex strings with colons when passed correct hashes without colons" do
+      assert "3F:6B:F4:AF:E0:1B:3C:D7:C1:F2:3D:F6:EA:C5:60:AE:B1:5A:E8:26" = Utils.normalize_fingerprint(
+               "3F6BF4AFE01B3CD7C1F23DF6EAC560AEB15AE826"
+             )
+
+      assert "3F:6B:F4:AF:E0:1B:3C:D7:C1:F2:3D:F6:EA:C5:60:AE:B1:5A:E8:26" = Utils.normalize_fingerprint(
+               "3f6bf4afe01b3cd7c1f23df6eac560aeb15ae826"
+             )
+    end
+
+    test "should return 40 character capitalised hex strings with colons when passed correct hashes that are lowercase" do
+      assert "3F:6B:F4:AF:E0:1B:3C:D7:C1:F2:3D:F6:EA:C5:60:AE:B1:5A:E8:26" = Utils.normalize_fingerprint(
+               "3f:6b:f4:af:e0:1b:3c:d7:c1:f2:3d:f6:ea:c5:60:ae:b1:5a:e8:26"
+             )
+
+    end
+
+    test "should raise an exception if not passed a valid sha1 hash at all" do
+      assert_raise RuntimeError, fn -> Utils.normalize_fingerprint("The quick brown fox") end
     end
 
   end

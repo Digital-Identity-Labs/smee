@@ -151,6 +151,32 @@ defmodule Smee.Utils do
     |> Map.new()
   end
 
+  @spec normalize_fingerprint(fp :: binary() | nil) :: binary() | nil
+  def normalize_fingerprint(fp) do
+
+    if  is_nil(fp) do
+      nil
+    else
+      fp = fp
+           |> String.trim()
+           |> String.upcase
+      cond do
+
+        String.match?(fp, ~r/^([0-9A-F]{2}[:]){19}[0-9A-F]{2}$/) -> fp
+        String.match?(fp, ~r/^[0-9a-fA-F]{40}$/) -> String.upcase(fp)
+                                                    |> String.split(
+                                                         ~r|[0-9a-fA-F]{2}|,
+                                                         include_captures: true,
+                                                         trim: true
+                                                       )
+                                                    |> Enum.join(":")
+        true -> raise "Incorrect fingerprint format - should be SHA1 hexadecimal"
+      end
+
+    end
+
+  end
+
   ################################################################################
 
 end

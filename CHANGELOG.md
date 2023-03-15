@@ -15,6 +15,7 @@ XML storage and publishing bugfixes and small improvements, plus some breaking A
 - Metadata and Entity modules have `expired?/1` and `check_date!/1` functions
 - A Mix task for installing the default backend requirements on Macs (via Homebrew) and Linux
 - Code of Conduct document added
+- Certificate fingerprints are converted to the correct format automatically (if they are valid sha1 hashes at least)
 
 ## Fixes
 - Entity XML is now stored with namespaces and processed with xmerl in a namespace-aware way. This fixes problems with
