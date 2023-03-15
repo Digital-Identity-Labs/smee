@@ -342,7 +342,7 @@ defmodule Smee.Entity do
   If no valid_until has been set (if it's nil) then false will be returned
   """
   @spec expired?(entity :: Entity.t()) :: boolean()
-  def expired?(%{valid_until: nil} = entity) do
+  def expired?(%{valid_until: nil}) do
     false
   end
 
@@ -376,7 +376,7 @@ defmodule Smee.Entity do
     case entity
          |> xml()
          |> Lint.validate() do
-      {:ok, xml} -> entity
+      {:ok, _xml} -> entity
       {:error, message} -> raise "Invalid entity XML! #{message}"
     end
     entity

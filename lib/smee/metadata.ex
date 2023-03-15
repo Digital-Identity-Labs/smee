@@ -387,7 +387,7 @@ defmodule Smee.Metadata do
   If no valid_until has been set (if it's nil) then false will be returned
   """
   @spec expired?(metadata :: Metadata.t()) :: boolean()
-  def expired?(%{valid_until: nil} = metadata) do
+  def expired?(%{valid_until: nil}) do
     false
   end
 
@@ -421,7 +421,7 @@ defmodule Smee.Metadata do
     case metadata
          |> xml()
          |> Lint.validate() do
-      {:ok, xml} -> metadata
+      {:ok, _xml} -> metadata
       {:error, message} -> raise "Invalid metadata XML! #{message}"
     end
     metadata

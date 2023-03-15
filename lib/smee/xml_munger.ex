@@ -116,7 +116,7 @@ defmodule Smee.XmlMunger do
   end
 
   @spec consistent_bottom(xml :: binary()) :: binary()
-  def consistent_bottom(xml, options \\ []) do
+  def consistent_bottom(xml, _options \\ []) do
 
     replacement_bottom = ~s|</EntityDescriptor>|
 

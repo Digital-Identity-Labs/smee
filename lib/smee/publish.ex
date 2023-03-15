@@ -9,7 +9,6 @@ defmodule Smee.Publish do
   """
 
   alias Smee.Entity
-  alias Smee.XmlCfg
   alias Smee.XmlMunger
 
   @doc """
@@ -84,7 +83,7 @@ defmodule Smee.Publish do
   ################################################################################
 
   @spec single(entity :: Entity.t(), options :: keyword()) :: list(binary())
-  defp single(entity, options) do
+  defp single(entity, _options) do
     xml = Entity.xml(entity)
     [xml]
   end

@@ -42,7 +42,6 @@ defmodule Smee.XmlCfg do
     ser: "http://eidas.europa.eu/metadata/servicelist",
     shibmd: "urn:mace:shibboleth:metadata:1.0",
     taat: "http://www.eenet.ee/EENet/urn",
-    taat: "http://www.eenet.ee/EENet/urn",
     ukfedlabel: "http://ukfederation.org.uk/2006/11/label",
     wayf: "http://sdss.ac.uk/2006/06/WAYF",
     wsa: "http://www.w3.org/2005/08/addressing",
