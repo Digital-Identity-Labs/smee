@@ -5,7 +5,6 @@ defmodule CompatibilityEdugateTest do
   @moduletag :compatibility
 
   alias Smee
-  alias Smee.Source
   alias Smee.Entity
   alias Smee.Metadata
   alias Smee.Security

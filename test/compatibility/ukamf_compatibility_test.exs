@@ -5,7 +5,6 @@ defmodule CompatibilityUKAMFTest do
   @moduletag :compatibility
 
   alias Smee
-  alias Smee.Source
   alias Smee.Entity
   alias Smee.Metadata
   alias Smee.Security
@@ -15,18 +14,22 @@ defmodule CompatibilityUKAMFTest do
   @aggregate_cert_url "http://metadata.ukfederation.org.uk/ukfederation.pem"
   @aggregate_cert_fp "AD:80:7A:6D:26:8C:59:01:55:47:8D:F1:BA:61:68:10:DA:81:86:66"
   @mdq_url "http://mdq.ukfederation.org.uk/"
-  @mdq_cert_url "http://mdq.ukfederation.org.uk/ukfederation-mdq.pem"
-  @mdq_cert_fp "3F:6B:F4:AF:E0:1B:3C:D7:C1:F2:3D:F6:EA:C5:60:AE:B1:5A:E8:26"
+  #@mdq_cert_url "http://mdq.ukfederation.org.uk/ukfederation-mdq.pem"
+  #@mdq_cert_fp "3F:6B:F4:AF:E0:1B:3C:D7:C1:F2:3D:F6:EA:C5:60:AE:B1:5A:E8:26"
 
   @min_count 9_000
 
   describe "aggregate service" do
 
     test "Can download and verify metadata" do
-      assert @min_count < Smee.source(@aggregate_url, cert_url: @aggregate_cert_url, cert_fingerprint:  @aggregate_cert_fp)
-      |> Smee.fetch!()
-      |> Security.verify!()
-      |> Metadata.count()
+      assert @min_count < Smee.source(
+                            @aggregate_url,
+                            cert_url: @aggregate_cert_url,
+                            cert_fingerprint: @aggregate_cert_fp
+                          )
+                          |> Smee.fetch!()
+                          |> Security.verify!()
+                          |> Metadata.count()
     end
 
   end
@@ -45,8 +48,8 @@ defmodule CompatibilityUKAMFTest do
            |> MDQ.list!()
            |> Enum.random()
 
-      assert %Entity{uri: id} = MDQ.source(@mdq_url)
-                                |> MDQ.lookup!(id)
+      assert %Entity{uri: ^id} = MDQ.source(@mdq_url)
+                                 |> MDQ.lookup!(id)
 
     end
 
@@ -55,15 +58,17 @@ defmodule CompatibilityUKAMFTest do
   describe "Metadata" do
 
     test "all entities can be parsed in a namespace-aware manner without errors" do
-      assert is_list(Smee.source(@aggregate_url)
-      |> Smee.fetch!()
-      |> Metadata.stream_entities()
-      |> Stream.map(
-           fn e -> Entity.xdoc(e)
-           |> SweetXml.xpath(~x"string(/*/@entityID)"s)
-           end
-         )
-         |> Enum.to_list())
+      assert is_list(
+               Smee.source(@aggregate_url)
+               |> Smee.fetch!()
+               |> Metadata.stream_entities()
+               |> Stream.map(
+                    fn e -> Entity.xdoc(e)
+                            |> SweetXml.xpath(~x"string(/*/@entityID)"s)
+                    end
+                  )
+               |> Enum.to_list()
+             )
     end
 
   end

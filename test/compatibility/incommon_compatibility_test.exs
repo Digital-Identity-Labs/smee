@@ -5,7 +5,6 @@ defmodule CompatibilityIncommonTest do
   @moduletag :compatibility
 
   alias Smee
-  alias Smee.Source
   alias Smee.Entity
   alias Smee.Metadata
   alias Smee.Security
@@ -16,8 +15,8 @@ defmodule CompatibilityIncommonTest do
   @aggregate_cert_fp "F8:4E:F8:47:EF:BB:EE:47:86:32:DB:94:17:8A:31:A6:94:73:19:36"
 
   @mdq_url "https://mdq.incommon.org/"
-  @mdq_cert_url "http://md.incommon.org/certs/inc-md-cert-mdq.pem"
-  @mdq_cert_fp "F8:4E:F8:47:EF:BB:EE:47:86:32:DB:94:17:8A:31:A6:94:73:19:36"
+  #@mdq_cert_url "http://md.incommon.org/certs/inc-md-cert-mdq.pem"
+  #@mdq_cert_fp "F8:4E:F8:47:EF:BB:EE:47:86:32:DB:94:17:8A:31:A6:94:73:19:36"
 
   @min_count 12_000
 
@@ -50,8 +49,8 @@ defmodule CompatibilityIncommonTest do
            |> MDQ.list!()
            |> Enum.random()
 
-      assert %Entity{uri: id} = MDQ.source(@mdq_url)
-                                |> MDQ.lookup!(id)
+      assert %Entity{uri: ^id} = MDQ.source(@mdq_url)
+                                 |> MDQ.lookup!(id)
 
     end
 
@@ -60,15 +59,17 @@ defmodule CompatibilityIncommonTest do
   describe "Metadata" do
 
     test "all entities can be parsed in a namespace-aware manner without errors" do
-      assert is_list(Smee.source(@aggregate_url)
-                  |> Smee.fetch!()
-                  |> Metadata.stream_entities()
-                  |> Stream.map(
-                       fn e -> Entity.xdoc(e)
-                               |> SweetXml.xpath(~x"string(/*/@entityID)"s)
-                       end
-                     )
-                  |> Enum.to_list())
+      assert is_list(
+               Smee.source(@aggregate_url)
+               |> Smee.fetch!()
+               |> Metadata.stream_entities()
+               |> Stream.map(
+                    fn e -> Entity.xdoc(e)
+                            |> SweetXml.xpath(~x"string(/*/@entityID)"s)
+                    end
+                  )
+               |> Enum.to_list()
+             )
     end
   end
 

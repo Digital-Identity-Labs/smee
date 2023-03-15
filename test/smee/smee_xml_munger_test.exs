@@ -5,23 +5,22 @@ defmodule SmeeXmlMungerTest do
   alias Smee.XmlCfg
   alias Smee.Metadata
   alias Smee.Entity
-  alias Smee.Source
 
   @valid_metadata_file "test/support/static/aggregate.xml"
   @signed_metadata_file "test/support/static/valid.xml"
-  @valid_noname_metadata_file "test/support/static/aggregate_no_name.xml"
+  #@valid_noname_metadata_file "test/support/static/aggregate_no_name.xml"
   @valid_single_metadata_file "test/support/static/indiid.xml"
   @valid_metadata_xml File.read! @valid_metadata_file
   @signed_metadata_xml File.read! @signed_metadata_file
-  @valid_noname_metadata_xml File.read! @valid_noname_metadata_file
+  #@valid_noname_metadata_xml File.read! @valid_noname_metadata_file
   @valid_single_metadata_xml File.read! @valid_single_metadata_file
   @valid_metadata @valid_metadata_file
                   |> Smee.Source.new()
                   |> Smee.Fetch.local!()
 
-  @big_live_metadata "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
-                     |> Smee.Source.new()
-                     |> Smee.fetch!()
+#  @big_live_metadata "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
+#                     |> Smee.Source.new()
+#                     |> Smee.fetch!()
 
   describe "xml_declaration/0" do
 
