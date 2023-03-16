@@ -197,6 +197,9 @@ be found at <https://hexdocs.pm/smee>.
 You can request new features by creating an [issue](https://github.com/Digital-Identity-Labs/smee/issues),
 or submit a [pull request](https://github.com/Digital-Identity-Labs/smee/pulls) with your contribution.
 
+If you are comfortable working with Python but Smee's Elixir code is unfamiliar then this blog post may help: 
+[Elixir For Humans Who Know Python](https://hibox.live/elixir-for-humans-who-know-python)
+
 ## Copyright and License
 
 Copyright (c) 2023 Digital Identity Ltd, UK
