@@ -18,9 +18,9 @@ defmodule SmeeXmlMungerTest do
                   |> Smee.Source.new()
                   |> Smee.Fetch.local!()
 
-#  @big_live_metadata "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
-#                     |> Smee.Source.new()
-#                     |> Smee.fetch!()
+  #  @big_live_metadata "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
+  #                     |> Smee.Source.new()
+  #                     |> Smee.fetch!()
 
   describe "xml_declaration/0" do
 
@@ -419,6 +419,40 @@ defmodule SmeeXmlMungerTest do
     test "makes sure the entityDescriptor end tag matches the namespace style of the start tag (currently by making both use default ns)" do
       assert "blah blah </EntityDescriptor>" = XmlMunger.consistent_bottom("blah blah </md:EntityDescriptor>")
       assert "blah blah </EntityDescriptor>" = XmlMunger.consistent_bottom("blah blah </EntityDescriptor>")
+    end
+
+  end
+
+  describe "discover_metadata_type/2" do
+
+    test "should detect aggregate metadata correctly" do
+      assert :aggregate = XmlMunger.discover_metadata_type(@valid_metadata_xml)
+    end
+
+    test "should detect single entity metadata correctly" do
+      IO.puts @valid_single_metadata_xml
+      assert :single = XmlMunger.discover_metadata_type(@valid_single_metadata_xml)
+    end
+
+    test "should return :unknown for non-metadata" do
+      assert :unknown = XmlMunger.discover_metadata_type("This is not XML")
+    end
+
+  end
+
+  describe "discover_metadata_type2/2" do
+
+    test "should detect aggregate metadata correctly" do
+      assert :aggregate = XmlMunger.discover_metadata_type2(@valid_metadata_xml)
+    end
+
+    test "should detect single entity metadata correctly" do
+      IO.puts @valid_single_metadata_xml
+      assert :single = XmlMunger.discover_metadata_type2(@valid_single_metadata_xml)
+    end
+
+    test "should return :unknown for non-metadata" do
+      assert :unknown = XmlMunger.discover_metadata_type2("This is not XML")
     end
 
   end

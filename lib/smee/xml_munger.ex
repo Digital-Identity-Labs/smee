@@ -17,6 +17,8 @@ defmodule Smee.XmlMunger do
   @xml_declaration ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n|
   @xml_decl_pattern ~r|^<\?xml.*\?>\n*|ifUm
   @top_tag_pattern ~r|<(md:)?EntityDescriptor.*?>|ms
+  @single_pattern @top_tag_pattern
+  @aggregate_pattern ~r|^<(md:)?EntitiesDescriptor.*?>|ms
   @bot_tag_pattern ~r|</(md:)?EntityDescriptor>\z|ms
   @uri_extractor_pattern ~r|<(md:)?EntityDescriptor.*entityID="(.+)".*>|mUs
   @signature_pattern ~r|<Signature\s.*.+</Signature>|msU
@@ -209,6 +211,28 @@ defmodule Smee.XmlMunger do
       [capture] -> capture
       [capture, _] -> capture
       nil -> raise "Can't extract EntitiesDescriptor! Data was: #{String.slice(xml, 0..1000)}[...]"
+    end
+  end
+
+  @spec discover_metadata_type(xml :: binary(), options :: keyword()) :: atom()
+  def discover_metadata_type(xml, options \\ []) do
+    xml = remove_xml_declaration(xml)
+    cond do
+      String.match?(xml, @aggregate_pattern) -> :aggregate
+      String.match?(xml, @single_pattern) -> :single
+      true -> :unknown
+    end
+  end
+
+  @spec discover_metadata_type2(xml :: binary(), options :: keyword()) :: atom()
+  def discover_metadata_type2(xml, options \\ []) do
+    xml = remove_xml_declaration(xml)
+    cond do
+      String.starts_with?(xml, "<Entities") -> :aggregate
+      String.starts_with?(xml, "<md:Entities") -> :aggregate
+      String.starts_with?(xml, "<Entity") -> :single
+      String.starts_with?(xml, "<md:Entity") -> :single
+      true -> :unknown
     end
   end
 
