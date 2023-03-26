@@ -7,10 +7,12 @@ defmodule SmeeXmlMungerTest do
   alias Smee.Entity
 
   @valid_metadata_file "test/support/static/aggregate.xml"
+  @commented_metadata_file "test/support/static/aggregate_lots_of_comments.xml"
   @signed_metadata_file "test/support/static/valid.xml"
   #@valid_noname_metadata_file "test/support/static/aggregate_no_name.xml"
   @valid_single_metadata_file "test/support/static/indiid.xml"
   @valid_metadata_xml File.read! @valid_metadata_file
+  @commented_metadata_xml File.read!  @commented_metadata_file
   @signed_metadata_xml File.read! @signed_metadata_file
   #@valid_noname_metadata_xml File.read! @valid_noname_metadata_file
   @valid_single_metadata_xml File.read! @valid_single_metadata_file
@@ -430,7 +432,6 @@ defmodule SmeeXmlMungerTest do
     end
 
     test "should detect single entity metadata correctly" do
-      IO.puts @valid_single_metadata_xml
       assert :single = XmlMunger.discover_metadata_type(@valid_single_metadata_xml)
     end
 
@@ -440,19 +441,60 @@ defmodule SmeeXmlMungerTest do
 
   end
 
-  describe "discover_metadata_type2/2" do
+  describe "remove_comments/1" do
 
-    test "should detect aggregate metadata correctly" do
-      assert :aggregate = XmlMunger.discover_metadata_type2(@valid_metadata_xml)
+    test "XML comments are all removed from the XML binary" do
+      assert String.contains?(@commented_metadata_xml, "<!--")
+      assert String.contains?(@commented_metadata_xml, "-->")
+      assert 8 = Enum.count(Regex.scan(~r|<!--[\s\S]*?-->|, @commented_metadata_xml))
+
+      processed_xml = XmlMunger.remove_comments(@commented_metadata_xml)
+      refute String.contains?(processed_xml, "<!--")
+      refute String.contains?(processed_xml, "-->")
+      assert 0 = Enum.count(Regex.scan(~r|<!--[\s\S]*?-->|, processed_xml))
+
+    end
+  end
+
+  describe "process_metadata_xml/2" do
+
+    test "XML comments are all removed from the XML binary" do
+      assert String.contains?(@commented_metadata_xml, "<!--")
+      assert String.contains?(@commented_metadata_xml, "-->")
+      assert 8 = Enum.count(Regex.scan(~r|<!--[\s\S]*?-->|, @commented_metadata_xml))
+
+      processed_xml = XmlMunger.process_metadata_xml(@commented_metadata_xml)
+      refute String.contains?(processed_xml, "<!--")
+      refute String.contains?(processed_xml, "-->")
+      assert 0 = Enum.count(Regex.scan(~r|<!--[\s\S]*?-->|, processed_xml))
+
     end
 
-    test "should detect single entity metadata correctly" do
-      IO.puts @valid_single_metadata_xml
-      assert :single = XmlMunger.discover_metadata_type2(@valid_single_metadata_xml)
+    test "doesn't mind there not being an XML declaration in the first place" do
+      assert "<test>content</test>" = XmlMunger.process_metadata_xml("<test>content</test>")
     end
 
-    test "should return :unknown for non-metadata" do
-      assert :unknown = XmlMunger.discover_metadata_type2("This is not XML")
+    test "removes small declarations" do
+
+      assert "<test>content</test>" = XmlMunger.process_metadata_xml(
+               ~s|<?xml version="1.0" ?>\n<test>content</test>|
+             )
+    end
+
+    test "removes big declarations" do
+      assert "<test>content</test>" = XmlMunger.process_metadata_xml(
+               ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n<test>content</test>|
+             )
+    end
+
+    test "removes XML declarations on the same line" do
+      assert "<test>content</test>" = XmlMunger.process_metadata_xml(
+               ~s|<?xml version="1.0" ?><test>content</test>|
+             )
+    end
+
+    test "removes surrounding whitespace, line endings, etc" do
+      assert "<test>content</test>" = XmlMunger.process_metadata_xml("   <test>content</test>  \n")
     end
 
   end

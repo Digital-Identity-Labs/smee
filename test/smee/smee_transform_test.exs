@@ -10,8 +10,6 @@ defmodule SmeeTransformTest do
                   |> Smee.fetch!()
   @example_xslt_stylesheet File.read!("test/support/static/valid_until.xsl")
 
-  @small_agg_md_xml File.read!("test/support/static/aggregate.xml")
-
   @now DateTime.utc_now()
   @xml_now DateTime.to_iso8601(@now)
 

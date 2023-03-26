@@ -7,9 +7,7 @@ data_big = File.read!("test/support/static/aggregate.xml")
 Benchee.run(
   %{
     "type_agg_1" => fn -> Smee.XmlMunger.discover_metadata_type(data_big) end,
-    "type_agg_2" => fn -> Smee.XmlMunger.discover_metadata_type2(data_big) end,
     "type_single_1" => fn -> Smee.XmlMunger.discover_metadata_type(data_small) end,
-    "type_single_2" => fn -> Smee.XmlMunger.discover_metadata_type2(data_small) end,
 
   },
   time: 30,
