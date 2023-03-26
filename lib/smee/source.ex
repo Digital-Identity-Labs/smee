@@ -75,7 +75,7 @@ defmodule Smee.Source do
   def new(url, options \\ []) do
     %Source{
       url: Utils.normalize_url(url),
-      type: Keyword.get(options, :type, :aggregate),
+      type: normalize_type(Keyword.get(options, :type, :aggregate)),
       auth: Keyword.get(options, :auth, nil),
       cache: Keyword.get(options, :cache, true),
       cert_url: Utils.normalize_url(Keyword.get(options, :cert_url, nil)),
@@ -143,6 +143,16 @@ defmodule Smee.Source do
     Map.merge(source, %{url: url})
   end
 
+  defp normalize_type(type) when is_binary(type) do
+    type
+    |> String.downcase()
+    |> String.trim()
+    |> String.to_existing_atom()
+    |> normalize_type()
+  end
 
+  defp normalize_type(type) when is_atom(type) do
+    type
+  end
 
 end
