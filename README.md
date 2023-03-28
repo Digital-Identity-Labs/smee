@@ -10,6 +10,8 @@ projects. Smee can be used within applications or in simpler scripts for process
 [![API Docs](https://img.shields.io/badge/api-docs-yellow.svg?style=flat)](http://hexdocs.pm/smee/)
 ![Github Elixir CI](https://github.com/Digital-Identity-Labs/smee/workflows/Elixir%20CI/badge.svg)
 
+[![Run in Livebook](https://livebook.dev/badge/v1/blue.svg)](https://livebook.dev/run?url=https%3A%2F%2Fraw.githubusercontent.com%2FDigital-Identity-Labs%2Fsmee%2Fmain%2Fsmee_notebook.livemd)
+
 ## Features
 
 * Download remote SAML metadata or load local files, with effective caching
@@ -36,6 +38,11 @@ Smee contain more tools for handling SAML metadata, such as:
 * `Smee.Transform` - processing and editing entity XML
 * `Smee.Publish` - Formatting and outputting metadata in various formats
 * `Smee.Stats` - Simple stats for entity streams
+
+## Extensions and Extras
+
+* [SmeeFeds](https://github.com/Digital-Identity-Labs/smee_feds) - a federation management extension for use in
+  research, testing and development. SmeeFeds has a built-in list of many education and research federations.
 
 ## Examples
 
@@ -196,6 +203,9 @@ be found at <https://hexdocs.pm/smee>.
 
 You can request new features by creating an [issue](https://github.com/Digital-Identity-Labs/smee/issues),
 or submit a [pull request](https://github.com/Digital-Identity-Labs/smee/pulls) with your contribution.
+
+If you are comfortable working with Python but Smee's Elixir code is unfamiliar then this blog post may help: 
+[Elixir For Humans Who Know Python](https://hibox.live/elixir-for-humans-who-know-python)
 
 ## Copyright and License
 

@@ -108,7 +108,7 @@ defmodule Smee.Metadata do
   @spec new(data :: binary(), options :: keyword()) :: Metadata.t()
   def new(data, options \\ []) when is_binary(data) do
 
-    data = String.trim(data)
+    data = XmlMunger.process_metadata_xml(data)
     url = Utils.normalize_url(Keyword.get(options, :url, nil))
     dlt = Keyword.get(options, :downloaded_at, DateTime.utc_now())
     dhash = Smee.Utils.sha1(data)
@@ -157,6 +157,7 @@ defmodule Smee.Metadata do
   @spec derive(data :: Enumerable.t() | Entity.t(), options :: keyword()) :: Metadata.t()
   def derive(enum, options \\ []) do
     data = Smee.Publish.xml(enum, options)
+           |> XmlMunger.process_metadata_xml()
     new(data, options)
   end
 
@@ -511,11 +512,12 @@ defmodule Smee.Metadata do
 
   @spec fix_type(metadata :: Metadata.t()) :: Metadata.t()
   defp fix_type(metadata) do
-    type = cond do
-      (metadata.type == :mdq) && (count(metadata) > 1) -> :aggregate
-      (metadata.type == :mdq) && (count(metadata) == 1) -> :single
-      true -> metadata.type
+    type = XmlMunger.discover_metadata_type(metadata.data)
+
+    if type == :unknown do
+      raise "Unknown metadata type!"
     end
+
     struct(metadata, %{type: type})
   end
 

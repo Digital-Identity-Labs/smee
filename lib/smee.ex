@@ -52,7 +52,6 @@ defmodule Smee do
       iex> Smee.source("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
       iex>
 
-
   """
   @spec source(url :: binary()) :: Source.t()
   def source(url) do

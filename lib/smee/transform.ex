@@ -32,13 +32,13 @@ defmodule Smee.Transform do
   end
 
 
-  @doc """
-  Returns a metadata struct with all comments removed, in an :ok/:error struct
-  """
-  @spec strip_comments(metadata :: Metadata.t()) :: {:ok, Metadata.t()} | {:error, binary()}
-  def strip_comments(metadata) do
-    transform(metadata, @strip_comments_s, [])
-  end
+#  @doc """
+#  Returns a metadata struct with all comments removed, in an :ok/:error struct
+#  """
+#  @spec strip_comments(metadata :: Metadata.t()) :: {:ok, Metadata.t()} | {:error, binary()}
+#  def strip_comments(metadata) do
+#    transform(metadata, @strip_comments_s, [])
+#  end
 
 
   @doc """

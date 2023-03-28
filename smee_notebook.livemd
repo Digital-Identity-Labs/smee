@@ -1,0 +1,55 @@
+<!-- livebook:{"app_settings":{"slug":"smee"}} -->
+
+# Smee Workbook
+
+```elixir
+Mix.install([{:smee, ">= 0.2.0"}, {:rambo, "~> 0.3.4"}])
+alias Smee.{Metadata, Entity, Source, MDQ}
+```
+
+## Requirements - Please Read!
+
+Backend tools
+Please note: Smee does not do all processing itself using Elixir - it sometimes cheats (OK, it often cheats) by sending
+ data to external programs for processing. At the moment it requires the following commandline utilities:
+
+* xmlsec1
+* xmllint
+* xsltproc
+
+On Debian: `sudo apt-get install xmlsec1 libxml2-utils xsltproc`
+On RedHat: `sudo yum install xmlsec1 libxml2 libxslt`
+On Macs: `brew install xmlsec1 libxml2 libxslt`
+
+## Grabbing some metadata with Smee
+
+```elixir
+xml =
+  Smee.source("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+  |> Smee.fetch!()
+  |> Smee.Metadata.xml()
+```
+
+## Using MDQ from SmeeFeds
+
+```elixir
+cern_idp =
+  SmeeFeds.get(:ukamf)
+  |> SmeeFeds.Federation.mdq()
+  |> MDQ.lookup!("https://cern.ch/login")
+```
+
+## List all IdPs
+
+```elixir
+alias Smee.{Source, Fetch, Filter, Metadata}
+
+"http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
+|> Source.new()
+|> Fetch.remote!()
+|> Metadata.stream_entities()
+|> Filter.idp()
+|> Stream.map(fn e -> e.uri end)
+|> Enum.to_list()
+
+```

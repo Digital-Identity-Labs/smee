@@ -4,7 +4,7 @@ defmodule Smee.MixProject do
   def project do
     [
       app: :smee,
-      version: "0.2.0",
+      version: "0.3.0",
       elixir: "~> 1.14",
       description: "SAML Metadata Extractor, Etc",
       package: package(),
@@ -42,14 +42,14 @@ defmodule Smee.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:req, "~> 0.3.3"},
+      {:req, "~> 0.3.6"},
       {:sweet_xml, "~> 0.7.3"},
       {:rambo, "~> 0.3.4"},
       {:briefly, "~> 0.4.0"},
       {:easy_ssl, "~> 1.3"},
       {:xmerl_xml_indent, "~> 0.1.0"},
       {:xmlixer, "~> 0.1.1"},
-      {:castore, ">= 0.0.0"},
+      {:castore, ">= 1.0.1"},
 
       {:apex, "~> 1.2", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.6.7", only: [:dev, :test], runtime: false},

@@ -17,11 +17,14 @@ defmodule Smee.XmlMunger do
   @xml_declaration ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n|
   @xml_decl_pattern ~r|^<\?xml.*\?>\n*|ifUm
   @top_tag_pattern ~r|<(md:)?EntityDescriptor.*?>|ms
+  @single_pattern @top_tag_pattern
+  @aggregate_pattern ~r|^<(md:)?EntitiesDescriptor.*?>|ms
   @bot_tag_pattern ~r|</(md:)?EntityDescriptor>\z|ms
   @uri_extractor_pattern ~r|<(md:)?EntityDescriptor.*entityID="(.+)".*>|mUs
   @signature_pattern ~r|<Signature\s.*.+</Signature>|msU
   @split_pattern ~r|(<(md:)?EntityDescriptor)|
   @entities_descriptor_pattern ~r|<(md:)?EntitiesDescriptor.*?>|s
+  @comments_pattern ~r|<!--[\s\S]*?-->|
 
   @spec xml_declaration() :: binary()
   def xml_declaration() do
@@ -139,12 +142,20 @@ defmodule Smee.XmlMunger do
     |> String.replace(@signature_pattern, "\n")
   end
 
-  @spec process_entity_xml(xml :: binary()) :: binary()
+  @spec process_entity_xml(xml :: binary(), options :: keyword()) :: binary()
   def process_entity_xml(xml, options \\ []) do
     xml
     |> remove_signature()
     |> expand_entity_top(options)
     |> consistent_bottom(xml)
+  end
+
+  @spec process_metadata_xml(xml :: binary(), options :: keyword()) :: binary()
+  def process_metadata_xml(xml, _options \\ []) do
+    xml
+    |> remove_xml_declaration()
+    |> remove_signature()
+    |> remove_comments()
   end
 
   @spec trim_entity_xml(xml :: binary()) :: binary()
@@ -210,6 +221,27 @@ defmodule Smee.XmlMunger do
       [capture, _] -> capture
       nil -> raise "Can't extract EntitiesDescriptor! Data was: #{String.slice(xml, 0..1000)}[...]"
     end
+  end
+
+  @spec discover_metadata_type(xml :: binary(), options :: keyword()) :: atom()
+  def discover_metadata_type(xml, _options \\ []) do
+    xml = remove_xml_declaration(xml) |> remove_comments()
+
+   # IO.puts String.slice(xml, 0..1000)
+
+    ## This is 10 times faster than the more elegant regex version and also clearer. It's still a bodge tho.
+    cond do
+      String.starts_with?(xml, "<Entities") -> :aggregate
+      String.starts_with?(xml, "<md:Entities") -> :aggregate
+      String.starts_with?(xml, "<Entity") -> :single
+      String.starts_with?(xml, "<md:Entity") -> :single
+      true -> :unknown
+    end
+  end
+
+  def remove_comments(xml) do
+    Regex.replace(@comments_pattern, prepare_xml(xml), "", global: true)
+    |> prepare_xml()
   end
 
   ################################################################################

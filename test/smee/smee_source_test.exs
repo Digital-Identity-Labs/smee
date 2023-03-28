@@ -17,10 +17,26 @@ defmodule SmeeSourceTest do
              } = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
     end
 
-    test "type option can set a specific type" do
+    test "type option can set to a specific type" do
       assert %Source{
                type: :mdq,
              } = Source.new("http://mdq.ukfederation.org.uk/", type: :mdq)
+    end
+
+    test "type option can set using dubious strings too *stares at SmeeFeds*" do
+      assert %Source{
+               type: :mdq,
+             } = Source.new("http://mdq.ukfederation.org.uk/", type: "mdq")
+      assert %Source{
+               type: :aggregate,
+             } = Source.new("http://mdq.ukfederation.org.uk/", type: " aggregate ")
+      assert %Source{
+               type: :single,
+             } = Source.new("http://mdq.ukfederation.org.uk/", type: "SINGLE ")
+    end
+
+    test "type option cannot be set to non-existent atoms" do
+      assert_raise ArgumentError, fn -> Source.new("http://mdq.ukfederation.org.uk/", type: "bigaggregate") end
     end
 
     test "cache boolean defaults to true" do

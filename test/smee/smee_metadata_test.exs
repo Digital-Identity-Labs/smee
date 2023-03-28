@@ -6,7 +6,8 @@ defmodule SmeeMetadataTest do
   alias Smee.Metadata
   alias Smee.Source
   alias Smee.Fetch
-#  alias Smee.Utils
+  alias Smee.XmlMunger
+  #  alias Smee.Utils
 
   # @arbitrary_dt DateTime.new!(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
   @valid_metadata_file "test/support/static/aggregate.xml"
@@ -67,16 +68,16 @@ defmodule SmeeMetadataTest do
     end
 
     test "data defaults to a trimmed version of passed data param" do
-      data = String.trim(@valid_metadata_xml)
+      data = XmlMunger.process_metadata_xml(@valid_metadata_xml)
       assert %Metadata{data: ^data} = Metadata.new(@valid_metadata_xml)
     end
 
     test "size is set automatically to the bytesize of the data" do
-      assert %Metadata{size: 39_363} = Metadata.new(@valid_metadata_xml)
+      assert %Metadata{size: 39_222} = Metadata.new(@valid_metadata_xml)
     end
 
     test "data_hash is set automatically to the sha1 hash of the data" do
-      assert %Metadata{data_hash: "7bb9e69f7b5490f679e70b9fc4e4b14d2022ab83"} = Metadata.new(@valid_metadata_xml)
+      assert %Metadata{data_hash: "3e5e9ba036e3b1915a2004830828284cccec36f6"} = Metadata.new(@valid_metadata_xml)
     end
 
     test "type defaults to :aggregate" do
@@ -104,7 +105,7 @@ defmodule SmeeMetadataTest do
     end
 
     test "etag defaults to the data hash" do
-      assert %Metadata{etag: "7bb9e69f7b5490f679e70b9fc4e4b14d2022ab83"} = Metadata.new(@valid_metadata_xml)
+      assert %Metadata{etag: "3e5e9ba036e3b1915a2004830828284cccec36f6"} = Metadata.new(@valid_metadata_xml)
     end
 
     test "label defaults to nil" do
@@ -213,12 +214,12 @@ defmodule SmeeMetadataTest do
     end
 
     test "data cannot be set using an option" do
-      data = String.trim(@valid_metadata_xml)
+      data = XmlMunger.process_metadata_xml(@valid_metadata_xml)
       assert %Metadata{data: ^data} = Metadata.new(@valid_metadata_xml, data: "This shouldn't be set")
     end
 
     test "hashes cannot be set using an option" do
-      assert %Metadata{data_hash: "7bb9e69f7b5490f679e70b9fc4e4b14d2022ab83"} = Metadata.new(
+      assert %Metadata{data_hash: "3e5e9ba036e3b1915a2004830828284cccec36f6"} = Metadata.new(
                @valid_metadata_xml,
                data_hash: "WRONG"
              )
@@ -229,7 +230,7 @@ defmodule SmeeMetadataTest do
     end
 
     test "size cannot be set using an option" do
-      assert %Metadata{size: 39_363} = Metadata.new(@valid_metadata_xml, size: 100)
+      assert %Metadata{size: 39_222} = Metadata.new(@valid_metadata_xml, size: 100)
     end
 
     test "verified cannot be set using an option" do
@@ -303,7 +304,7 @@ defmodule SmeeMetadataTest do
     # See Issue #6
 
     test "size is set automatically to the bytesize of the data" do
-      assert %Metadata{size: 41_009} = Metadata.derive(Metadata.entities(@valid_metadata))
+      assert %Metadata{size: 40_829} = Metadata.derive(Metadata.entities(@valid_metadata))
     end
 
     #    test "data_hash is set automatically to the sha1 hash of the data" do
@@ -469,7 +470,7 @@ defmodule SmeeMetadataTest do
     end
 
     test "size cannot be set using an option" do
-      assert %Metadata{size: 41_009} = Metadata.derive(Metadata.entities(@valid_metadata), size: 100)
+      assert %Metadata{size: 40_829} = Metadata.derive(Metadata.entities(@valid_metadata), size: 100)
     end
 
     test "verified cannot be set using an option" do
@@ -492,12 +493,12 @@ defmodule SmeeMetadataTest do
 
     test "updated metadata has the correct bytesize" do
       bad_metadata = struct(@valid_metadata, %{size: 0})
-      assert %Metadata{size: 39_363} = Metadata.update(bad_metadata)
+      assert %Metadata{size: 39_222} = Metadata.update(bad_metadata)
     end
 
     test "updated metadata has the correct data hash" do
       bad_entity = struct(@valid_metadata, %{data_hash: "LE SIGH..."})
-      assert %Metadata{data_hash: "7bb9e69f7b5490f679e70b9fc4e4b14d2022ab83"} = Metadata.update(bad_entity)
+      assert %Metadata{data_hash: "3e5e9ba036e3b1915a2004830828284cccec36f6"} = Metadata.update(bad_entity)
     end
 
     test "updated metadata without new XML does not change count value" do
@@ -558,7 +559,7 @@ defmodule SmeeMetadataTest do
 
     test "Bytesize remains the same, original size" do
       compressed_metadata = Metadata.compress(@valid_metadata)
-      assert %Metadata{size: 39_363} = compressed_metadata
+      assert %Metadata{size: 39_222} = compressed_metadata
     end
 
     test "The compressed flag is set" do
@@ -583,7 +584,7 @@ defmodule SmeeMetadataTest do
 
     test "Bytesize remains the same, original size" do
       compressed_metadata = Metadata.compress(@valid_metadata)
-      assert %Metadata{size: 39_363} = Metadata.decompress(compressed_metadata)
+      assert %Metadata{size: 39_222} = Metadata.decompress(compressed_metadata)
     end
 
     test "The compressed flag is unset" do
@@ -597,8 +598,16 @@ defmodule SmeeMetadataTest do
   describe "xml/1" do
 
     test "returns xml data string for the Metadata" do
-      xml = String.trim(@valid_metadata_xml)
+      xml = XmlMunger.process_metadata_xml(@valid_metadata_xml)
       assert ^xml = Metadata.xml(@valid_metadata)
+    end
+
+    test "returns xml data with no comments in it at all" do
+      assert String.contains?(@valid_metadata_xml, "<!--")
+      assert String.contains?(@valid_metadata_xml, "-->")
+      assert 1 = (length(String.split(@valid_metadata_xml, "<!--")) - 1)
+      refute String.contains?(Metadata.xml(@valid_metadata), "<!--")
+      refute String.contains?(Metadata.xml(@valid_metadata), "-->")
     end
 
     test "raises an exception if there is no data" do
