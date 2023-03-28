@@ -34,8 +34,7 @@ xml =
 
 ```elixir
 cern_idp =
-  SmeeFeds.get(:ukamf)
-  |> SmeeFeds.Federation.mdq()
+  MDQ.source("http://mdq.ukfederation.org.uk/")
   |> MDQ.lookup!("https://cern.ch/login")
 ```
 
