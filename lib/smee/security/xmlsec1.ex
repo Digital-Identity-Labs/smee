@@ -1,5 +1,4 @@
 defmodule Smee.Security.Xmlsec1 do
-
   use Memoize
 
   @moduledoc false
@@ -12,7 +11,6 @@ defmodule Smee.Security.Xmlsec1 do
 
   @spec verify!(metadata :: Metadata.t()) :: Metadata.t()
   def verify!(metadata) do
-
     cert_file = SigningCertificate.prepare_file!(metadata)
 
     command = build_command(metadata, cert_file)
@@ -22,18 +20,17 @@ defmodule Smee.Security.Xmlsec1 do
       {:error, %Rambo{status: status, err: err}} -> raise(parse_error(status, err))
       other -> raise "Unknown xmlsec1 error has occurred. Command was: #{debug_command(command)}"
     end
-
   end
 
-  @spec build_command(metadata ::Metadata.t(), cert_file :: binary()) :: list()
+  @spec build_command(metadata :: Metadata.t(), cert_file :: binary()) :: list()
   defp build_command(_metadata, cert_file) do
     @base_command ++
-    version_dependent_options() ++
+      version_dependent_options() ++
       [
-      "--pubkey-cert-pem",
-      cert_file,
-      "-"
-    ]
+        "--pubkey-cert-pem",
+        cert_file,
+        "-"
+      ]
   end
 
   @spec debug_command(command :: list()) :: binary()
@@ -43,10 +40,12 @@ defmodule Smee.Security.Xmlsec1 do
 
   @spec parse_error(status :: integer(), err :: binary()) :: binary()
   defp parse_error(status, err) do
-    type = case status do
-      1 -> "Verification failed"
-      _ -> "Unknown xmlsec1 error"
-    end
+    type =
+      case status do
+        1 -> "Verification failed"
+        _ -> "Unknown xmlsec1 error"
+      end
+
     "#{type}: #{err}"
   end
 
@@ -70,24 +69,21 @@ defmodule Smee.Security.Xmlsec1 do
 
   @spec command_is_modern?() :: boolean()
   defp command_is_modern? do
+    output =
+      case Rambo.run("xmlsec1", "version", log: false) do
+        {:ok, %Rambo{status: 0, out: output}} -> output
+        {:ok, %Rambo{status: 1, out: output}} -> output
+        _ -> "Unknown error"
+      end
 
-    output = case Rambo.run("xmlsec1", "version", log: false) do
-     {:ok, %Rambo{status: 0, out: output}}  -> output
-     {:ok, %Rambo{status: 1, out: output}}  -> output
-     _ -> "Unknown error"
-   end
-
-   if [_, major, minor, patch] = Regex.run(~r/.*(\d+)[.](\d+)[.](\d+)/, output) do
-
-     cond do
-       major > 1 -> true
-       major == 1 && minor > 29 -> true
-       true -> false
-     end
-   else
-     false
-   end
-
+    if [_, major, minor, patch] = Regex.run(~r/.*(\d+)[.](\d+)[.](\d+)/, output) do
+      cond do
+        major > 1 -> true
+        major == 1 && minor > 29 -> true
+        true -> false
+      end
+    else
+      false
+    end
   end
-
 end
