@@ -4,7 +4,7 @@ defmodule Smee.MixProject do
   def project do
     [
       app: :smee,
-      version: "0.3.0",
+      version: "0.4.0",
       elixir: "~> 1.14",
       description: "SAML Metadata Extractor, Etc",
       package: package(),
@@ -46,10 +46,12 @@ defmodule Smee.MixProject do
       {:sweet_xml, "~> 0.7.3"},
       {:rambo, "~> 0.3.4"},
       {:briefly, "~> 0.4.0"},
-      {:easy_ssl, "~> 1.3"},
+      #{:easy_ssl, "~> 1.3"},
+      {:easy_ssl, git: "https://github.com/CaliDog/EasySSL", ref: "87ece602a3510ad60b7bba1755b6a32d5eb1141b"},
       {:xmerl_xml_indent, "~> 0.1.0"},
       {:xmlixer, "~> 0.1.1"},
       {:castore, ">= 1.0.1"},
+      {:memoize, "~> 1.4"},
 
       {:apex, "~> 1.2", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.6.7", only: [:dev, :test], runtime: false},

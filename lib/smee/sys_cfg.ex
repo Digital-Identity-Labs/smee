@@ -17,6 +17,12 @@ defmodule Smee.SysCfg do
     Application.get_env(:smee, :verifier, Smee.Security.Xmlsec1)
   end
 
+  ###
+
+  def xmlsec1_modern?() do
+    Application.get_env(:smee, :xmlsec1_modern, false)
+  end
+
   ################################################################################
 
 
