@@ -1,5 +1,4 @@
 defmodule Smee.Security do
-
   @moduledoc """
   `Smee.Security` uses XML signatures to provide anti-tampering and origin authentication features.
 
@@ -10,7 +9,6 @@ defmodule Smee.Security do
   """
 
   alias Smee.Metadata
-
 
   @doc """
   Returns a metadata struct with `verified: true` set if verification passes, or raises an exception.
@@ -59,5 +57,4 @@ defmodule Smee.Security do
   defp selected_backend() do
     Smee.SysCfg.security_backend()
   end
-
 end
