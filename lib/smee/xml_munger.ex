@@ -12,13 +12,13 @@ defmodule Smee.XmlMunger do
   ## just in case.
 
   alias Smee.XmlCfg
-  alias Smee.XmlMunger
+  #alias Smee.XmlMunger
 
   @xml_declaration ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n|
   @xml_decl_pattern ~r|^<\?xml.*\?>\n*|ifUm
   @top_tag_pattern ~r|<(md:)?EntityDescriptor.*?>|ms
-  @single_pattern @top_tag_pattern
-  @aggregate_pattern ~r|^<(md:)?EntitiesDescriptor.*?>|ms
+  #@single_pattern @top_tag_pattern
+ # @aggregate_pattern ~r|^<(md:)?EntitiesDescriptor.*?>|ms
   @bot_tag_pattern ~r|</(md:)?EntityDescriptor>\z|ms
   @uri_extractor_pattern ~r|<(md:)?EntityDescriptor.*entityID="(.+)".*>|mUs
   @signature_pattern ~r|<Signature\s.*.+</Signature>|msU
@@ -188,7 +188,7 @@ defmodule Smee.XmlMunger do
   end
 
   @spec split_aggregate_to_stream(xml :: binary(), options :: keyword()) :: Enumerable.t()
-  def split_aggregate_to_stream(xml, options \\ []) do
+  def split_aggregate_to_stream(xml, _options \\ []) do
     xml
     |> String.splitter("EntityDescriptor>", trim: true)
     |> Stream.map(
@@ -307,15 +307,17 @@ defmodule Smee.XmlMunger do
 
   end
 
-  @spec aggregate_uri(options :: keyword()) :: binary() | nil
-  defp aggregate_uri(options) do
-    Keyword.get(options, :uri, nil)
-  end
+  ## TODO: USE
+#  @spec aggregate_uri(options :: keyword()) :: binary() | nil
+#  defp aggregate_uri(options) do
+#    Keyword.get(options, :uri, nil)
+#  end
 
-  @spec aggregate_publisher_uri(options :: keyword()) :: binary() | nil
-  defp aggregate_publisher_uri(options) do
-    Keyword.get(options, :uri, aggregate_uri(options))
-  end
+  ## TODO: USE
+#  @spec aggregate_publisher_uri(options :: keyword()) :: binary() | nil
+#  defp aggregate_publisher_uri(options) do
+#    Keyword.get(options, :uri, aggregate_uri(options))
+#  end
 
   @spec aggregate_description(options :: keyword()) :: binary() | nil
   defp aggregate_description(options) do

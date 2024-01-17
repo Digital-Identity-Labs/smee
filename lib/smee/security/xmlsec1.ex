@@ -18,7 +18,7 @@ defmodule Smee.Security.Xmlsec1 do
     case Rambo.run("xmlsec1", command, in: metadata.data, log: false) do
       {:ok, %Rambo{status: 0, out: _out}} -> Map.merge(metadata, %{verified: true})
       {:error, %Rambo{status: status, err: err}} -> raise(parse_error(status, err))
-      other -> raise "Unknown xmlsec1 error has occurred. Command was: #{debug_command(command)}"
+      _other -> raise "Unknown xmlsec1 error has occurred. Command was: #{debug_command(command)}"
     end
   end
 
@@ -76,7 +76,7 @@ defmodule Smee.Security.Xmlsec1 do
         _ -> "Unknown error"
       end
 
-    if [_, major, minor, patch] = Regex.run(~r/.*(\d+)[.](\d+)[.](\d+)/, output) do
+    if [_, major, minor, _patch] = Regex.run(~r/.*(\d+)[.](\d+)[.](\d+)/, output) do
       cond do
         major > 1 -> true
         major == 1 && minor > 29 -> true

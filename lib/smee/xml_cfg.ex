@@ -52,11 +52,11 @@ defmodule Smee.XmlCfg do
   @default_namespace @saml_namespaces[@default_namespace_prefix]
 
 
-  @xml_namespacss %{
-    xs: "http://www.w3.org/2001/XMLSchema",
-    xsi: "http://www.w3.org/2001/XMLSchema-instance",
-    xrd: "http://docs.oasis-open.org/ns/xri/xrd-1.0"
-  }
+#  @xml_namespaces %{
+#    xs: "http://www.w3.org/2001/XMLSchema",
+#    xsi: "http://www.w3.org/2001/XMLSchema-instance",
+#    xrd: "http://docs.oasis-open.org/ns/xri/xrd-1.0"
+#  }
 
   @risky_eas ~w(
     http://shibboleth.net/ns/profiles
