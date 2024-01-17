@@ -461,7 +461,7 @@ defmodule SmeeEntityTest do
     end
 
     test "cannot return a trustiness under 0" do
-      assert 0.0 = Entity.trustiness(struct(@valid_entity, %{trustiness: -0.5}))
+      assert "0.0" = Entity.trustiness(struct(@valid_entity, %{trustiness: -0.5})) |> Float.to_string()
     end
 
   end
