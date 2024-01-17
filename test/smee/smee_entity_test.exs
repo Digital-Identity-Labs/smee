@@ -42,7 +42,7 @@ defmodule SmeeEntityTest do
     end
 
     test "sets data hash automatically" do
-      assert %Entity{data_hash: "14f9a481bd900d0be663c2177817c75114516ce9"} = Entity.new(@valid_xml)
+      assert %Entity{data_hash: "10214ff611e8de13f1ae26f8e048965c27e8f593"} = Entity.new(@valid_xml)
     end
 
     test "metadata_uri defaults to nil" do
@@ -155,7 +155,7 @@ defmodule SmeeEntityTest do
     end
 
     test "sets data hash automatically" do
-      assert %Entity{data_hash: "14f9a481bd900d0be663c2177817c75114516ce9"} = Entity.derive(@valid_xml, @valid_metadata)
+      assert %Entity{data_hash: "10214ff611e8de13f1ae26f8e048965c27e8f593"} = Entity.derive(@valid_xml, @valid_metadata)
     end
 
     test "metadata_uri defaults to the name of the metadata" do
@@ -259,7 +259,7 @@ defmodule SmeeEntityTest do
 
     test "an updated entity has the correct data hash" do
       bad_entity = struct(@valid_entity, %{data_hash: "LE SIGH..."})
-      assert %Entity{data_hash: "14f9a481bd900d0be663c2177817c75114516ce9"} = Entity.update(bad_entity)
+      assert %Entity{data_hash: "10214ff611e8de13f1ae26f8e048965c27e8f593"} = Entity.update(bad_entity)
     end
 
     test "an updated entity without new XML does not change count value" do
