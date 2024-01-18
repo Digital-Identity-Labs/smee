@@ -262,6 +262,7 @@ defmodule Smee.XmlMunger do
   defp render_namespace_list(namespaces) do
     namespaces
     |> Enum.map(fn {k, v} -> "xmlns:#{k}=\"#{v}\"" end)
+    |> Enum.sort()
     |> List.insert_at(0, "xmlns=\"#{XmlCfg.default_namespace}\"")
     |> Enum.join(" ")
   end
