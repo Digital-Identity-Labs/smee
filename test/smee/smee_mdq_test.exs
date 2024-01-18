@@ -114,6 +114,7 @@ defmodule SmeeMDQTest do
 
   end
 
+  @tag timeout: 180_000
   describe "list/2" do
 
     test "returns a list of all entity IDs at an MDQ service" do
@@ -136,6 +137,7 @@ defmodule SmeeMDQTest do
 
   end
 
+  @tag timeout: 180_000
   describe "aggregate!/2" do
     test "returns a list of all entity IDs at an MDQ service" do
 
@@ -292,6 +294,7 @@ defmodule SmeeMDQTest do
 
   end
 
+  @tag timeout: 180_000
   describe "stream/1" do
 
     test "returns a stream of all entities at an MDQ service" do
