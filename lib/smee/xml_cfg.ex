@@ -3,12 +3,12 @@ defmodule Smee.XmlCfg do
   @moduledoc false
 
   @saml_namespaces %{
-    "req-attr": "urn:oasis:names:tc:SAML:protocol:ext:req-attr",
     alg: "urn:oasis:names:tc:SAML:metadata:algsupport",
     algsupport: "urn:oasis:names:tc:SAML:metadata:algsupport",
     auth: "http://docs.oasis-open.org/wsfed/authorization/200706",
     disco: "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol",
     ds: "http://www.w3.org/2000/09/xmldsig#",
+    dsig: "http://www.w3.org/2000/09/xmldsig#",
     eduidmd: "http://eduid.cz/schema/metadata/1.0",
     eidas: "http://eidas.europa.eu/saml-extensions",
     elab: "http://eduserv.org.uk/labels",
@@ -35,13 +35,16 @@ defmodule Smee.XmlCfg do
     refeds: "http://refeds.org/metadata",
     remd: "http://refeds.org/metadata",
     req: "urn:oasis:names:tc:SAML:profiles:SSO:request-init",
+    "req-attr": "urn:oasis:names:tc:SAML:protocol:ext:req-attr",
     saml1md: "urn:mace:shibboleth:metadata:1.0",
     saml2: "urn:oasis:names:tc:SAML:2.0:assertion",
     saml: "urn:oasis:names:tc:SAML:2.0:assertion",
+    samla: "urn:oasis:names:tc:SAML:2.0:assertion",
     samlp: "urn:oasis:names:tc:SAML:2.0:protocol",
     ser: "http://eidas.europa.eu/metadata/servicelist",
     shibmd: "urn:mace:shibboleth:metadata:1.0",
     taat: "http://www.eenet.ee/EENet/urn",
+    ti: "https://seamlessaccess.org/NS/trustinfo",
     ukfedlabel: "http://ukfederation.org.uk/2006/11/label",
     wayf: "http://sdss.ac.uk/2006/06/WAYF",
     wsa: "http://www.w3.org/2005/08/addressing",
@@ -53,8 +56,10 @@ defmodule Smee.XmlCfg do
 
 
 #  @xml_namespaces %{
+#    xi: "http://www.w3.org/2001/XInclude",
 #    xs: "http://www.w3.org/2001/XMLSchema",
 #    xsi: "http://www.w3.org/2001/XMLSchema-instance",
+#    xsd: "http://www.w3.org/2001/XMLSchema",
 #    xrd: "http://docs.oasis-open.org/ns/xri/xrd-1.0"
 #  }
 
