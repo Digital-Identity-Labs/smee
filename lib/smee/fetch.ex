@@ -12,6 +12,7 @@ defmodule Smee.Fetch do
 
   """
 
+  alias Smee.SysCfg
   alias Smee.Utils
   alias Smee.Source
   alias Smee.Metadata
@@ -193,6 +194,7 @@ defmodule Smee.Fetch do
         headers: [{"accept", "application/samlmetadata+xml"}, {"Accept-Charset", "utf-8"}],
         max_redirects: source.redirects,
         cache: source.cache,
+        cache_dir: SysCfg.cache_directory(),
         user_agent: Utils.http_agent_name,
         # http_errors: :raise,
         max_retries: source.retries,

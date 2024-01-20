@@ -9,10 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Breaking Changes
 - Smee is now not compatible with Windows, at least until this is supported by the Rambo package. We've had to chose between
   Windows support and easier use with modern Macs. If new versions of Rambo support Windows compilation again, Windows
-  compatibility can return.
+  compatibility can return. !!! Might need to roll back this change
 
 ## New Features
--
+- Smee now uses its own cache directory for downloaded files, and that cache can be purged with `Smee.Sys.reset_cache/0`
 
 ## Improvements
 - A few more metadata namespaces have been added
@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Fixes
 - Should now work with OTP26 and Elixir 1.16.0 
 - Hopefully compatible with recent versions of `xmlsec1`, which has changed its behaviour and commandline.  
-- Rambo no longer needs to be specified as a compiler option and dependency on Macs.
+- Rambo no longer needs to be specified as a compiler option and dependency on Macs.  !!! Might need to roll back this change
 
 ## Other Changes
 - Namespaces in metadata are now in alphabetical order, after the default namespace

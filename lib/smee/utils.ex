@@ -177,6 +177,13 @@ defmodule Smee.Utils do
 
   end
 
+  @spec check_cache_dir!(cache_dir :: binary() | nil) :: binary()
+  def check_cache_dir!(cache_dir) do
+    if (cache_dir == nil) || (cache_dir == "") || (cache_dir == File.cwd!()) || (cache_dir == "/") || (
+      cache_dir == System.user_home!()), do: raise "Cache directory appears to be set to a bad location!"
+    cache_dir
+  end
+
   ################################################################################
 
 end

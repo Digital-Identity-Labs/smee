@@ -1,8 +1,11 @@
 defmodule SmeeSysCfgTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
 
   alias Smee.SysCfg
 
+  setup do
+    on_exit(fn -> Application.put_env(:smee, :cache_dir, SysCfg.default_cache_directory()) end)
+  end
 
   describe "strategies/0" do
 
@@ -36,5 +39,26 @@ defmodule SmeeSysCfgTest do
 
   end
 
+  describe "cache_directory/0" do
+
+    test "should default to the value of default_cache_directory/0" do
+      default_directory = SysCfg.default_cache_directory()
+      assert ^default_directory = SysCfg.cache_directory()
+    end
+
+    test "should be changeable using a config option" do
+      Application.put_env(:smee, :cache_dir, "/tmp/example_smee_cache")
+      assert "/tmp/example_smee_cache" = SysCfg.cache_directory()
+    end
+  end
+
+  describe "default_cache_directory/0" do
+
+    test "should be a 'smee' directory that is inside the system user cache directory (differs depending on OS and OTP)" do
+      default_directory = :filename.basedir(:user_cache, "smee")
+      assert ^default_directory = SysCfg.default_cache_directory()
+    end
+
+  end
 
 end

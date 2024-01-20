@@ -258,4 +258,20 @@ defmodule SmeeUtilsTest do
 
   end
 
+  describe "check_cache_dir!/1" do
+
+    test "should raise an exception if passed what looks like an obviously dangerous or bad path for a cache" do
+      assert_raise RuntimeError, fn -> Utils.check_cache_dir!(nil) end
+      assert_raise RuntimeError, fn -> Utils.check_cache_dir!("") end
+      assert_raise RuntimeError, fn -> Utils.check_cache_dir!("/") end
+      assert_raise RuntimeError, fn -> Utils.check_cache_dir!(System.user_home!()) end
+      assert_raise RuntimeError, fn -> Utils.check_cache_dir!(File.cwd!()) end
+    end
+
+    test "should simply return an apparently innocent cache path" do
+      assert "/tmp/cache" = Utils.check_cache_dir!("/tmp/cache")
+    end
+
+  end
+
 end

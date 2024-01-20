@@ -17,13 +17,23 @@ defmodule Smee.SysCfg do
     Application.get_env(:smee, :verifier, Smee.Security.Xmlsec1)
   end
 
-  ###
-
+  @spec xmlsec1_modern?() :: boolean()
   def xmlsec1_modern?() do
     Application.get_env(:smee, :xmlsec1_modern, false)
   end
 
+  @spec cache_directory() :: binary()
+  def cache_directory() do
+    Application.get_env(:smee, :cache_dir, default_cache_directory())
+  end
+
+  @spec default_cache_directory() :: binary()
+  def default_cache_directory() do
+    :filename.basedir(:user_cache, "smee")
+  end
+
   ################################################################################
+
 
 
 end
