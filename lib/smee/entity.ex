@@ -229,6 +229,26 @@ defmodule Smee.Entity do
   end
 
   @doc """
+  Returns the entityID of the entity struct.
+
+  (This is the same as the URI)
+  """
+  @spec id(entity :: Entity.t()) :: binary()
+  def id(entity) do
+    entity.uri
+  end
+
+  @doc """
+  Returns the MDQ hashed style entityID of the entity struct.
+
+  (This is the same as the URI)
+  """
+  @spec transformed_id(entity :: Entity.t()) :: binary()
+  def transformed_id(entity) do
+    "{sha1}#{entity.uri_hash}"
+  end
+
+  @doc """
   Returns a parsed Erlang `xmerl` structure representing the entities XML, for use with `xmerl`, `SweetXML` and other
     tools.
   """

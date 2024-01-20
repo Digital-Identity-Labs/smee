@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Improvements
 - A few more metadata namespaces have been added
+- `Smee.Entity.id/1` and `Smee.Entity.transformed_id/1` as helpers for getting an entityID 
 
 ## Fixes
 - Should now work with OTP26 and Elixir 1.16.0 

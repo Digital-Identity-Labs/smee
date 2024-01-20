@@ -461,7 +461,8 @@ defmodule SmeeEntityTest do
     end
 
     test "cannot return a trustiness under 0" do
-      assert "0.0" = Entity.trustiness(struct(@valid_entity, %{trustiness: -0.5})) |> Float.to_string()
+      assert "0.0" = Entity.trustiness(struct(@valid_entity, %{trustiness: -0.5}))
+                     |> Float.to_string()
     end
 
   end
@@ -537,6 +538,22 @@ defmodule SmeeEntityTest do
         RuntimeError,
         fn -> Entity.validate!(struct(@valid_entity, %{data: @valid_entity.data <> "BAD"})) end
       )
+    end
+
+  end
+
+  describe "id/1" do
+
+    test "returns the entityID (uri) of the entity" do
+      "https://indiid.net/idp/shibboleth" = Entity.id(@valid_entity)
+    end
+
+  end
+
+  describe "transformed_id/1" do
+
+    test "returns the entityID (uri) of the entity, hashed in MDQ transformed ID format" do
+      "{sha1}77603e0cbda1e00d50373ca8ca20a375f5d1f171" = Entity.transformed_id(@valid_entity)
     end
 
   end
