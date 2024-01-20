@@ -165,7 +165,7 @@ defmodule Smee.SigningCertificate do
 
     case Application.get_env(:smee, :cert_dir) do
       {:ok, dir} -> dir
-      _ -> {:ok, path} = Briefly.create(directory: true)
+      _ -> {:ok, path} = Briefly.create(type: :directory)
            path
     end
 
