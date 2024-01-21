@@ -184,6 +184,24 @@ defmodule Smee.Utils do
     cache_dir
   end
 
+  @spec tidy_tags(tags :: list() | nil) :: list(binary())
+  def tidy_tags(nil) do
+    []
+  end
+
+  def tidy_tags([]) do
+    []
+  end
+
+  def tidy_tags(tags) do
+    tags
+    |> List.wrap()
+    |> List.flatten()
+    |> Enum.uniq()
+    |> Enum.map(fn tag -> "#{tag}" end)
+    |> Enum.sort()
+  end
+
   ################################################################################
 
 end

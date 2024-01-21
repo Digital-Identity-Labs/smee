@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## New Features
 - Smee now uses its own cache directory for downloaded files, and that cache can be purged with `Smee.Sys.reset_cache/0`
+- Sources, Metadata and Entity structs now have tags, and `tag/2` and `tags/1` functions to get and set them. Tags are inherited.
 
 ## Improvements
 - A few more metadata namespaces have been added

@@ -67,6 +67,10 @@ defmodule SmeeSourceTest do
       assert %Source{trustiness: 0.5} = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
     end
 
+    test "tags defaults to []" do
+      assert %Source{tags: []} = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+    end
+
     test "cache boolean can be set as an option" do
       assert %Source{
                cache: false,
@@ -124,6 +128,13 @@ defmodule SmeeSourceTest do
              } = Source.new(
                "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
                label: "Not the most useful feature but"
+             )
+    end
+
+    test "tags can be set with options" do
+      assert %Source{tags: ["bar", "foo"]} = Source.new(
+               "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+               tags: ["foo", "bar"]
              )
     end
 
@@ -187,6 +198,33 @@ defmodule SmeeSourceTest do
 
   end
 
+  describe "tags/1" do
 
+    test "returns a list of tags" do
+      source = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml", tags: ["a", :b, 5, :b])
+      assert ["5", "a", "b"] = Source.tags(source)
+    end
+
+    test "returns an empty list even if tags value is nil" do
+      source = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml", tags: ["a", :b, 5])
+      source = struct(source, %{tags: nil})
+      assert [] = Source.tags(source)
+    end
+
+  end
+
+  describe "tag/2" do
+
+    test "sets all tags, overwriting existing tags, as a sorted, unique list of tags as strings" do
+      source = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml", tags: ["a", :b, 5])
+      %Source{tags: ["0", "bar", "foo"]} = Source.tag(source, [:foo, "bar", 0])
+    end
+
+    test "list can be set with a single string" do
+      source = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml", tags: ["a", :b, 5])
+      %Source{tags: ["custard"]} = Source.tag(source, "custard")
+    end
+
+  end
 
 end

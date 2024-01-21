@@ -274,4 +274,25 @@ defmodule SmeeUtilsTest do
 
   end
 
+  describe "tidy_tags/1" do
+
+    test "should return an empty list if passed nil" do
+      assert [] = Utils.tidy_tags(nil)
+    end
+
+    test "should return an empty list if passed an empty list" do
+      assert [] = Utils.tidy_tags([])
+    end
+
+    test "should return an list of one binary item if passed one item" do
+      assert ["hello"] = Utils.tidy_tags("hello")
+      assert ["hello"] = Utils.tidy_tags(:hello)
+    end
+
+    test "should return a list of binary strings if passed strings and/or atoms or numbers" do
+      assert ["1", "a", "b", "c", "d"] = Utils.tidy_tags([1, :a, "b", "c", :d])
+    end
+
+  end
+
 end

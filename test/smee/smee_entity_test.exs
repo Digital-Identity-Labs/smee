@@ -77,6 +77,10 @@ defmodule SmeeEntityTest do
       assert %Entity{trustiness: 0.5} = Entity.new(@valid_xml)
     end
 
+    test "tags defaults to []" do
+      assert %Entity{tags: []} = Entity.new(@valid_xml)
+    end
+
     test "downloaded_at can be set with options" do
       %Entity{downloaded_at: @arbitrary_dt} = Entity.new(@valid_xml, downloaded_at: @arbitrary_dt)
     end
@@ -112,9 +116,12 @@ defmodule SmeeEntityTest do
       assert %Entity{priority: 9} = Entity.new(@valid_xml, priority: 9)
     end
 
-
     test "trustiness can be set with options" do
       assert %Entity{trustiness: 0.2} = Entity.new(@valid_xml, trustiness: 0.2)
+    end
+
+    test "tags can be set with options" do
+      assert %Entity{tags: ["bar", "foo"]} = Entity.new(@valid_xml, tags: ["foo", "bar"])
     end
 
     test "a parsed xmlerl structure is included automatically by default" do
@@ -554,6 +561,34 @@ defmodule SmeeEntityTest do
 
     test "returns the entityID (uri) of the entity, hashed in MDQ transformed ID format" do
       "{sha1}77603e0cbda1e00d50373ca8ca20a375f5d1f171" = Entity.transformed_id(@valid_entity)
+    end
+
+  end
+
+  describe "tags/1" do
+
+    test "returns a list of tags" do
+      entity = struct(@valid_entity, %{tags: ["a", "b", "c"]})
+      assert ["a", "b", "c"] = Entity.tags(entity)
+    end
+
+    test "returns an empty list even if tags value is nil" do
+      entity = struct(@valid_entity, %{tags: nil})
+      assert [] = Entity.tags(entity)
+    end
+
+  end
+
+  describe "tag/2" do
+
+    test "sets all tags, overwriting existing tags, as a sorted, unique list of tags as strings" do
+      entity = struct(@valid_entity, %{tags: ["a", :b, 5]})
+      %Entity{tags: ["0", "bar", "foo"]} = Entity.tag(entity, [:foo, "bar", 0])
+    end
+
+    test "list can be set with a single string" do
+      entity = struct(@valid_entity, %{tags: ["a", :b, 5]})
+      %Entity{tags: ["custard"]} = Entity.tag(entity, "custard")
     end
 
   end

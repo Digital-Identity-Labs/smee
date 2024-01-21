@@ -108,7 +108,8 @@ defmodule Smee.Fetch do
       etag: Utils.sha1(data),
       label: source.label,
       priority: source.priority,
-      trustiness: source.trustiness
+      trustiness: source.trustiness,
+      tags: source.tags
     )
 
   end
@@ -179,7 +180,8 @@ defmodule Smee.Fetch do
             etag: extract_http_etag(response, source),
             label: source.label,
             priority: source.priority,
-            trustiness: source.trustiness
+            trustiness: source.trustiness,
+            tags: source.tags
           )
         }
       other_status when other_status in 100..999 -> {:error, :"http_#{other_status}"}

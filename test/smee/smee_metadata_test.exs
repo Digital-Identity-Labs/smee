@@ -152,6 +152,10 @@ defmodule SmeeMetadataTest do
       assert %Metadata{trustiness: 0.5} = Metadata.new(@valid_metadata_xml)
     end
 
+    test "tags defaults to []" do
+      assert %Metadata{tags: []} = Metadata.new(@valid_metadata_xml)
+    end
+
     test "downloaded_at can be set using an option" do
       now = DateTime.utc_now()
       assert  %Metadata{downloaded_at: ^now} = Metadata.new(@valid_metadata_xml, downloaded_at: now)
@@ -240,6 +244,11 @@ defmodule SmeeMetadataTest do
     #    test "Some incorrect or preliminary types can be fixed automatically" do
     #      assert %Metadata{type: :single} = Metadata.new(@valid_single_metadata_xml, type: :mdq)
     #    end
+
+    test "tags can be set with options" do
+      assert %Metadata{tags: ["bar", "foo"]} =  Metadata.new(@valid_metadata_xml, tags: ["foo", "bar"])
+    end
+
 
   end
 
@@ -394,6 +403,10 @@ defmodule SmeeMetadataTest do
       assert %Metadata{trustiness: 0.5} = Metadata.derive(Metadata.entities(@valid_metadata))
     end
 
+    test "tags defaults to []" do
+      assert %Metadata{tags: []} = Metadata.new(@valid_metadata_xml)
+    end
+
     test "downloaded_at can be set using an option" do
       now = DateTime.utc_now()
       assert  %Metadata{downloaded_at: ^now} = Metadata.derive(Metadata.entities(@valid_metadata), downloaded_at: now)
@@ -481,6 +494,9 @@ defmodule SmeeMetadataTest do
     #      assert %Metadata{type: :single} = Metadata.derive(@valid_single_metadata_xml, type: :mdq)
     #    end
 
+    test "tags can be set with options" do
+      assert %Metadata{tags: ["bar", "foo"]} =  Metadata.new(@valid_metadata_xml, tags: ["foo", "bar"])
+    end
 
   end
 
@@ -782,6 +798,34 @@ defmodule SmeeMetadataTest do
         RuntimeError,
         fn -> Metadata.validate!(struct(@valid_metadata, %{data: @valid_metadata.data <> "BAD"})) end
       )
+    end
+
+  end
+
+  describe "tags/1" do
+
+    test "returns a list of tags" do
+      metadata = struct(@valid_metadata, %{tags: ["5", "a", "b"]})
+      assert ["5", "a", "b"] = Metadata.tags(metadata)
+    end
+
+    test "returns an empty list even if tags value is nil" do
+      metadata = struct(@valid_metadata, %{tags: nil})
+      assert [] = Metadata.tags(metadata)
+    end
+
+  end
+
+  describe "tag/2" do
+
+    test "sets all tags, overwriting existing tags, as a sorted, unique list of tags as strings" do
+      metadata = struct(@valid_metadata, %{tags: ["5", "a", "b"]})
+      %Metadata{tags: ["0", "bar", "foo"]} = Metadata.tag(metadata, [:foo, "bar", 0])
+    end
+
+    test "list can be set with a single string" do
+      metadata = struct(@valid_metadata, %{tags: ["5", "a", "b"]})
+      %Metadata{tags: ["custard"]} = Metadata.tag(metadata, "custard")
     end
 
   end

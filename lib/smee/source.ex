@@ -27,6 +27,7 @@ defmodule Smee.Source do
                priority: integer(),
                trustiness: float(),
                strict: boolean(),
+               tags: list(binary())
              }
 
   @enforce_keys [:url]
@@ -43,7 +44,8 @@ defmodule Smee.Source do
     label: nil,
     priority: 5,
     trustiness: 0.5,
-    strict: false
+    strict: false,
+    tags: []
   ]
 
   @doc """
@@ -83,7 +85,8 @@ defmodule Smee.Source do
       label: Keyword.get(options, :label, nil),
       priority: Keyword.get(options, :priority, 5),
       trustiness: Keyword.get(options, :trustiness, 0.5),
-      retries: Keyword.get(options, :retries, 5)
+      retries: Keyword.get(options, :retries, 5),
+      tags: Utils.tidy_tags(Keyword.get(options, :tags, []))
     }
     |> fix_type()
     |> fix_url()
@@ -116,6 +119,26 @@ defmodule Smee.Source do
       {:ok, source} -> source
       {:error, msg} -> raise "Invalid source configuration: #{msg}"
     end
+  end
+
+  @doc """
+  Returns the tags of the source struct, a list of binary strings
+
+  Tags are arbitrary classifiers
+  """
+  @spec tags(source :: Source.t()) :: list(binary())
+  def tags(source) do
+    source.tags || []
+  end
+
+  @doc """
+  Tags a source with one or more tags, replacing existing tags.
+
+  Tags are arbitrary strings. They will be inherited by metadata and entities derived from this source.
+  """
+  @spec tag(source :: Source.t(), tags :: list() | nil | binary()) :: list(binary())
+  def tag(source, tags) do
+    struct(source, %{tags: Utils.tidy_tags(tags)})
   end
 
   ################################################################################

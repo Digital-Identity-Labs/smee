@@ -40,7 +40,8 @@ defmodule Smee.Entity do
                compressed: boolean(),
                changes: integer(),
                priority: integer(),
-               trustiness: float()
+               trustiness: float(),
+               tags: list(binary())
              }
 
   defstruct [
@@ -59,7 +60,8 @@ defmodule Smee.Entity do
     compressed: false,
     changes: 0,
     priority: 5,
-    trustiness: 0.5
+    trustiness: 0.5,
+    tags: []
   ]
 
   @doc """
@@ -98,6 +100,7 @@ defmodule Smee.Entity do
       metadata_uri_hash: if(md_uri, do: Smee.Utils.sha1(md_uri), else: nil),
       priority: Keyword.get(options, :priority, 5),
       trustiness: Keyword.get(options, :trustiness, 0.5),
+      tags:  Utils.tidy_tags(Keyword.get(options, :tags, []))
     }
     |> parse_data()
     |> extract_info()
@@ -144,6 +147,7 @@ defmodule Smee.Entity do
       metadata_uri_hash: md_uri_hash,
       priority: Keyword.get(options, :priority, metadata.priority),
       trustiness: Keyword.get(options, :trustiness, metadata.trustiness),
+      tags:  Utils.tidy_tags(Keyword.get(options, :tags,  metadata.tags))
     }
     |> parse_data()
     |> extract_info()
@@ -400,6 +404,26 @@ defmodule Smee.Entity do
       {:error, message} -> raise "Invalid entity XML! #{message}"
     end
     entity
+  end
+
+  @doc """
+  Returns the tags of the entity struct, a list of binary strings
+
+  Tags are arbitrary strings, which may be initially inherited from source and metadata
+  """
+  @spec tags(entity :: Entity.t()) :: list(binary())
+  def tags(entity) do
+    entity.tags || []
+  end
+
+  @doc """
+  Tags an entity with one or more tags, replacing existing tags.
+
+  Tags are arbitrary classifiers, initially inherited from source and metadata
+  """
+  @spec tag(entity :: Entity.t(), tags :: list() | nil | binary()) :: list(binary())
+  def tag(entity, tags) do
+    struct(entity, %{tags: Utils.tidy_tags(tags)})
   end
 
   ################################################################################

@@ -53,7 +53,8 @@ defmodule Smee.Metadata do
                compressed: boolean(),
                changes: integer(),
                priority: integer(),
-               trustiness: float()
+               trustiness: float(),
+               tags: list(binary())
              }
 
   @enforce_keys [:data]
@@ -82,7 +83,8 @@ defmodule Smee.Metadata do
     compressed: false,
     changes: 0,
     priority: 5,
-    trustiness: 0.5
+    trustiness: 0.5,
+    tags: []
   ]
 
   @doc """
@@ -128,7 +130,8 @@ defmodule Smee.Metadata do
       cert_fingerprint: Keyword.get(options, :cert_fingerprint, nil),
       verified: false,
       priority: Keyword.get(options, :priority, 5),
-      trustiness: Keyword.get(options, :trustiness, 0.5)
+      trustiness: Keyword.get(options, :trustiness, 0.5),
+      tags:  Utils.tidy_tags(Keyword.get(options, :tags, []))
     }
     |> fix_type()
     |> extract_info()
@@ -426,6 +429,26 @@ defmodule Smee.Metadata do
       {:error, message} -> raise "Invalid metadata XML! #{message}"
     end
     metadata
+  end
+
+  @doc """
+  Returns the tags of the metadata struct, a list of binary strings
+
+  Tags are arbitrary strings, which may be initially inherited from source records, and will be passed on to entities.
+  """
+  @spec tags(metadata :: Metadata.t()) :: list(binary())
+  def tags(metadata) do
+    metadata.tags || []
+  end
+
+  @doc """
+  Tags a metadata record with one or more tags, replacing existing tags.
+
+  Tags are arbitrary classifiers, initially inherited from sources
+  """
+  @spec tag(metadata :: Metadata.t(), tags :: list() | nil | binary()) :: list(binary())
+  def tag(metadata, tags) do
+    struct(metadata, %{tags: Utils.tidy_tags(tags)})
   end
 
   ################################################################################
