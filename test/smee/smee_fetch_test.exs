@@ -16,6 +16,7 @@ defmodule SmeeFetchTest do
   @remote_bad_source Source.new("http://metadata.example.com/metadata.xml", retries: 0)
   @mdq_service MDQ.source("http://mdq.ukfederation.org.uk/")
 
+  ## TODO: There are missing tests here for how the fetch module configures Metadata structs
 
   describe "fetch!/2" do
 
