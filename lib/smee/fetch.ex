@@ -193,7 +193,7 @@ defmodule Smee.Fetch do
   defp http_options(source, extra_options \\ []) do
     Keyword.merge(
       [
-        headers: [{"accept", "application/samlmetadata+xml"}, {"Accept-Charset", "utf-8"}],
+        headers: %{"accept" => "application/samlmetadata+xml", "Accept-Charset" => "utf-8"},
         max_redirects: source.redirects,
         cache: source.cache,
         cache_dir: SysCfg.cache_directory(),

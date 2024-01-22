@@ -4,6 +4,7 @@ defmodule Smee.SigningCertificate do
 
   #alias __MODULE__
   alias Smee.Utils
+  alias Smee.SysCfg
 
   @spec prepare_file!(input :: struct(), fingerprint :: binary() | nil) :: binary()
   def prepare_file!(input, override_fingerprint \\ nil) do
@@ -73,9 +74,9 @@ defmodule Smee.SigningCertificate do
 
   ################################################################################
 
-  defp select_fingerprint(nil, nil),  do: nil
-  defp select_fingerprint(builtin, nil),  do: builtin
-  defp select_fingerprint(_builtin, override),  do: override
+  defp select_fingerprint(nil, nil), do: nil
+  defp select_fingerprint(builtin, nil), do: builtin
+  defp select_fingerprint(_builtin, override), do: override
 
   defp  ensure_local_cert("file:" <> _ = url) do
     path = Utils.file_url_to_path(url)
@@ -94,13 +95,13 @@ defmodule Smee.SigningCertificate do
       {:ok, cert_file}
     else
       try do
-        pem_data = download(url)
-
-        {:ok, fh} = File.open(cert_file, [:write, :utf8])
-        IO.write(fh, pem_data)
-        File.close(fh)
-
-        {:ok, cert_file}
+        case download(url) do
+          {:ok, pem_data} -> {:ok, fh} = File.open(cert_file, [:write, :utf8])
+                             IO.write(fh, pem_data)
+                             File.close(fh)
+                             {:ok, cert_file}
+          {:error, _message} -> {:error, "File #{url} cannot be downloaded!"}
+        end
 
       rescue
         _ -> {:error, "File #{url} cannot be downloaded!"}
@@ -139,16 +140,25 @@ defmodule Smee.SigningCertificate do
   end
 
   def download(url) do
-    Req.get!(
+    response = Req.get!(
       url,
-      headers: [{"accept", "application/x-pem-file"}],
-      max_redirects: 3,
+      headers: %{
+        "accept" => "application/x-pem-file"
+      },
+      max_redirects: 5,
       cache: true,
+      cache_dir: SysCfg.cache_directory(),
       user_agent: Utils.http_agent_name,
-      http_errors: :raise,
+      #http_errors: :raise,
       max_retries: 3,
       retry_delay: &retry_jitter/1
-    ).body
+    )
+
+    case response.status do
+      200 -> {:ok, response.body}
+      other_status when other_status in 100..999 -> {:error, :"http_#{other_status}"}
+    end
+
   end
 
   defp retry_jitter(n) do

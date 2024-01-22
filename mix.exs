@@ -42,24 +42,24 @@ defmodule Smee.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:req, "~> 0.3.6"},
+      {:req, "~> 0.4"},
       {:sweet_xml, "~> 0.7.3"},
       {:rambo, "~> 0.3.4"},
       {:briefly, "~> 0.5.0"},
       {:easy_ssl, git: "https://github.com/Digital-Identity-Labs/EasySSL", ref: "87ece602a3510ad60b7bba1755b6a32d5eb1141b"},
-      {:xmerl_xml_indent, "~> 0.1.0"},
+      {:xmerl_xml_indent, "~> 0.2.0"},
       {:xmlixer, "~> 0.1.1"},
-      {:castore, ">= 1.0.1"},
+      {:castore, ">= 1.0.5"},
       {:memoize, "~> 1.4"},
 
       {:apex, "~> 1.2", only: [:dev, :test], runtime: false},
-      {:credo, "~> 1.6.7", only: [:dev, :test], runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.14 and >= 0.14.4", only: [:dev, :test]},
-      {:benchee, "~> 1.0.1", only: [:dev, :test]},
-      {:ex_doc, "~> 0.23.0", only: :dev, runtime: false},
-      {:earmark, "~> 1.3", only: :dev, runtime: false},
-      {:dialyxir, "~> 1.0.0-rc.4", only: [:dev], runtime: false},
-      {:doctor, "~> 0.17.0", only: :dev, runtime: false}
+      {:benchee, "~> 1.3", only: [:dev, :test]},
+      {:ex_doc, "~> 0.31", only: :dev, runtime: false},
+      {:earmark, "~> 1.4", only: :dev, runtime: false},
+      {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
+      {:doctor, "~> 0.21", only: :dev, runtime: false}
     ]
   end
 
