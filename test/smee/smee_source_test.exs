@@ -71,6 +71,14 @@ defmodule SmeeSourceTest do
       assert %Source{tags: []} = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
     end
 
+    test "id defaults to nil" do
+      assert %Source{id: nil} = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+    end
+
+    test "fedid defaults to nil" do
+      assert %Source{fedid: nil} = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+    end
+
     test "cache boolean can be set as an option" do
       assert %Source{
                cache: false,

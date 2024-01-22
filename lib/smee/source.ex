@@ -27,7 +27,9 @@ defmodule Smee.Source do
                priority: integer(),
                trustiness: float(),
                strict: boolean(),
-               tags: list(binary())
+               tags: list(binary()),
+               id: binary() | atom(),
+               fedid: binary() | atom()
              }
 
   @enforce_keys [:url]
@@ -45,7 +47,9 @@ defmodule Smee.Source do
     priority: 5,
     trustiness: 0.5,
     strict: false,
-    tags: []
+    tags: [],
+    id: nil,
+    fedid: nil
   ]
 
   @doc """
@@ -86,7 +90,9 @@ defmodule Smee.Source do
       priority: Keyword.get(options, :priority, 5),
       trustiness: Keyword.get(options, :trustiness, 0.5),
       retries: Keyword.get(options, :retries, 5),
-      tags: Utils.tidy_tags(Keyword.get(options, :tags, []))
+      tags: Utils.tidy_tags(Keyword.get(options, :tags, [])),
+      id: Keyword.get(options, :id, nil),
+      fedid: Keyword.get(options, :fedid, nil),
     }
     |> fix_type()
     |> fix_url()
@@ -166,6 +172,7 @@ defmodule Smee.Source do
     Map.merge(source, %{url: url})
   end
 
+  @spec normalize_type(type :: binary() | atom()) :: atom()
   defp normalize_type(type) when is_binary(type) do
     type
     |> String.downcase()
