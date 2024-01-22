@@ -35,13 +35,16 @@ defmodule SmeeTest do
     end
   end
 
+
   describe "fetch!/1" do
 
+    @tag timeout: 180_000
     test "Returns aggregate metadata when passed a valid aggregate Source" do
       assert %Metadata{} = Smee.source("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
                            |> Smee.fetch!()
     end
 
+    @tag timeout: 180_000
     test "Returns aggregate metadata when passed a valid MDQ Source" do
       assert %Metadata{} = Smee.source("http://mdq.ukfederation.org.uk/", type: :mdq)
                            |> Smee.fetch!()
@@ -94,6 +97,7 @@ defmodule SmeeTest do
 
   end
 
+  @tag timeout: 180_000
   describe "entity_ids/1" do
 
     test "returns a list of all entity IDs at a Source" do
@@ -115,8 +119,10 @@ defmodule SmeeTest do
 
   end
 
+
   describe "stream_entities/1" do
 
+    @tag timeout: 180_000
     test "returns a a stream of all entities at a Source" do
       assert %Stream{} = Smee.source(
                            "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
@@ -124,6 +130,7 @@ defmodule SmeeTest do
                          |> Smee.stream_entities()
     end
 
+    @tag timeout: 180_000
     test "returns a a stream of all entities in Metadata" do
       assert %Stream{} = Smee.source(
                            "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
