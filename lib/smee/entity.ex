@@ -44,6 +44,8 @@ defmodule Smee.Entity do
                tags: list(binary())
              }
 
+  @derive {Jason.Encoder, except: [:xdoc]}
+  @derive {Inspect, except: [:xdoc, :data]}
   defstruct [
     :metadata_uri,
     :metadata_uri_hash,
@@ -464,4 +466,9 @@ defmodule Smee.Entity do
 
   end
 
+end
+
+defimpl String.Chars, for: Smee.Entity do
+  @moduledoc false
+  def to_string(s), do: "#[Entity #{s.uri}]"
 end

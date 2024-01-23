@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Smee now uses its own cache directory for downloaded files, and that cache can be purged with `Smee.Sys.reset_cache/0`
 - Sources, Metadata and Entity structs now have tags, and `tag/2` and `tags/1` functions to get and set them. Tags are inherited.
 - Sources have optional `id` and `fedid` keys to help manage them in larger applications
+- Source, Metadata and Entity structs are now truncated for `inspect`, omitting data and parsed XML, for easier debugging
+- Source, Metadata and Entity structs can now be interpolated and printed in strings, showing a type and unique URI 
+  (format may change in future releases)
 
 ## Improvements
 - A few more metadata namespaces have been added
@@ -27,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Other Changes
 - Namespaces in metadata are now in alphabetical order, after the default namespace
+- Updated dependencies, and hopefully loosened them for better integration compatibility with other apps 
 
 
 

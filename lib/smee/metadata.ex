@@ -58,7 +58,8 @@ defmodule Smee.Metadata do
              }
 
   @enforce_keys [:data]
-
+  @derive Jason.Encoder
+  @derive {Inspect, except: [:data]}
   defstruct [
     :downloaded_at,
     :modified_at,
@@ -556,4 +557,8 @@ defmodule Smee.Metadata do
     Extract.list_ids(metadata)
   end
 
+end
+defimpl String.Chars, for: Smee.Metadata do
+  @moduledoc false
+  def to_string(s), do: "#[Metadata #{s.url}]"
 end

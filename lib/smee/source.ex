@@ -33,7 +33,7 @@ defmodule Smee.Source do
              }
 
   @enforce_keys [:url]
-
+  @derive Jason.Encoder
   defstruct [
     url: nil,
     type: :aggregate,
@@ -185,4 +185,9 @@ defmodule Smee.Source do
     type
   end
 
+end
+
+defimpl String.Chars, for: Smee.Source do
+  @moduledoc false
+  def to_string(s), do: "#[Source #{s.url}]"
 end

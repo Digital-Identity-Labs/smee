@@ -830,4 +830,12 @@ defmodule SmeeMetadataTest do
 
   end
 
+  describe "Protocol String.Chars.to_string/1" do
+    "#[Metadata file:test/support/static/aggregate.xml]" = "#{@valid_metadata}"
+  end
+
+  describe "Protocol Jason Encoder" do
+    "{\"compressed\":false,\"data\":\"<EntitiesDescriptor" <> _ = Jason.encode!(@valid_metadata)
+  end
+
 end

@@ -235,4 +235,14 @@ defmodule SmeeSourceTest do
 
   end
 
+  describe "Protocol String.Chars.to_string/1" do
+    source = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+    "#[Source http://metadata.ukfederation.org.uk/ukfederation-metadata.xml]" = "#{source}"
+  end
+
+  describe "Protocol Jason Encoder" do
+    source = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+    "{\"id\":null,\"label\":null,\"priority\":5,\"type\":\"aggregate\"" <> _ = Jason.encode!(source)
+  end
+
 end

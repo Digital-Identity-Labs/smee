@@ -51,6 +51,7 @@ defmodule Smee.MixProject do
       {:xmlixer, "~> 0.1.1"},
       {:castore, ">= 1.0.5"},
       {:memoize, "~> 1.4"},
+      {:jason, "~> 1.4"},
 
       {:apex, "~> 1.2", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
