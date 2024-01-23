@@ -42,7 +42,7 @@ defmodule SmeeEntityTest do
     end
 
     test "sets data hash automatically" do
-      assert %Entity{data_hash: "bb63fb938e3b3345d7daaaaefed0ce1d43d6f970"} = Entity.new(@valid_xml)
+      assert %Entity{data_hash: "63b0e1342986414431bab9d3878ee592efcab4ee"} = Entity.new(@valid_xml)
     end
 
     test "metadata_uri defaults to nil" do
@@ -54,7 +54,7 @@ defmodule SmeeEntityTest do
     end
 
     test "size is automatically set to the size of the XML data, in bytes" do
-      assert %Entity{size: 7196} = Entity.new(@valid_xml)
+      assert %Entity{size: 6978} = Entity.new(@valid_xml)
     end
 
     test "compressed defaults to false" do
@@ -162,7 +162,7 @@ defmodule SmeeEntityTest do
     end
 
     test "sets data hash automatically" do
-      assert %Entity{data_hash: "bb63fb938e3b3345d7daaaaefed0ce1d43d6f970"} = Entity.derive(@valid_xml, @valid_metadata)
+      assert %Entity{data_hash: "63b0e1342986414431bab9d3878ee592efcab4ee"} = Entity.derive(@valid_xml, @valid_metadata)
     end
 
     test "metadata_uri defaults to the name of the metadata" do
@@ -177,7 +177,7 @@ defmodule SmeeEntityTest do
     end
 
     test "size is automatically set to the size of the XML data, in bytes" do
-      assert %Entity{size: 7196} = Entity.derive(@valid_xml, @valid_metadata)
+      assert %Entity{size: 6978} = Entity.derive(@valid_xml, @valid_metadata)
     end
 
     test "compressed defaults to false" do
@@ -261,12 +261,12 @@ defmodule SmeeEntityTest do
 
     test "an updated entity has the correct bytesize" do
       bad_entity = struct(@valid_entity, %{size: 0})
-      assert %Entity{size: 7196} = Entity.update(bad_entity)
+      assert %Entity{size: 6978} = Entity.update(bad_entity)
     end
 
     test "an updated entity has the correct data hash" do
       bad_entity = struct(@valid_entity, %{data_hash: "LE SIGH..."})
-      assert %Entity{data_hash: "bb63fb938e3b3345d7daaaaefed0ce1d43d6f970"} = Entity.update(bad_entity)
+      assert %Entity{data_hash: "63b0e1342986414431bab9d3878ee592efcab4ee"} = Entity.update(bad_entity)
     end
 
     test "an updated entity without new XML does not change count value" do
@@ -346,7 +346,7 @@ defmodule SmeeEntityTest do
 
     test "Bytesize remains the same, original size, not the gzipped size" do
       compressed_entity = Entity.compress(@valid_entity)
-      assert %Entity{size: 7196} = compressed_entity
+      assert %Entity{size: 6978} = compressed_entity
     end
 
     test "The compressed flag is set" do
@@ -369,7 +369,7 @@ defmodule SmeeEntityTest do
 
     test "Bytesize remains the same, original size" do
       compressed_entity = Entity.compress(@valid_entity)
-      assert %Entity{size: 7196} = Entity.decompress(compressed_entity)
+      assert %Entity{size: 6978} = Entity.decompress(compressed_entity)
     end
 
     test "The compressed flag is unset" do

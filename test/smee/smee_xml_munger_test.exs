@@ -48,34 +48,22 @@ defmodule SmeeXmlMungerTest do
                ds: "http://www.w3.org/2000/09/xmldsig#",
                idpdisc: "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol",
                init: "urn:oasis:names:tc:SAML:profiles:SSO:request-init",
-               md: "urn:oasis:names:tc:SAML:2.0:metadata",
-               mdattr: "urn:oasis:names:tc:SAML:metadata:attribute",
                mdrpi: "urn:oasis:names:tc:SAML:metadata:rpi",
                mdui: "urn:oasis:names:tc:SAML:metadata:ui",
-               remd: "http://refeds.org/metadata",
-               saml: "urn:oasis:names:tc:SAML:2.0:assertion",
                shibmd: "urn:mace:shibboleth:metadata:1.0"
              } = XmlMunger.namespaces_used(@valid_metadata_xml)
 
       assert %{
                ds: "http://www.w3.org/2000/09/xmldsig#",
-               md: "urn:oasis:names:tc:SAML:2.0:metadata",
                mdrpi: "urn:oasis:names:tc:SAML:metadata:rpi",
                mdui: "urn:oasis:names:tc:SAML:metadata:ui",
                shibmd: "urn:mace:shibboleth:metadata:1.0"
              } = XmlMunger.namespaces_used(@valid_single_metadata_xml)
 
       assert %{
-               alg: "urn:oasis:names:tc:SAML:metadata:algsupport",
                ds: "http://www.w3.org/2000/09/xmldsig#",
-               idpdisc: "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol",
-               init: "urn:oasis:names:tc:SAML:profiles:SSO:request-init",
-               md: "urn:oasis:names:tc:SAML:2.0:metadata",
-               mdattr: "urn:oasis:names:tc:SAML:metadata:attribute",
                mdrpi: "urn:oasis:names:tc:SAML:metadata:rpi",
                mdui: "urn:oasis:names:tc:SAML:metadata:ui",
-               remd: "http://refeds.org/metadata",
-               saml: "urn:oasis:names:tc:SAML:2.0:assertion",
                shibmd: "urn:mace:shibboleth:metadata:1.0"
              } = XmlMunger.namespaces_used(
                Entity.xml(Metadata.entity!(@valid_metadata, "https://indiid.net/idp/shibboleth"))
@@ -89,15 +77,15 @@ defmodule SmeeXmlMungerTest do
 
     test "returns a list of known namespace prefixes that are present in the XML (as atoms)" do
 
-      assert [:alg, :algsupport, :disco, :ds, :dsig, :fed, :idpdisc, :init, :md, :mdattr, :mdrpi, :mdui, :refeds, :remd, :req, :saml, :ser, :shibmd, :ti]
+      assert [:alg, :ds, :idpdisc, :init, :mdrpi, :mdui, :shibmd]
              = XmlMunger.namespace_prefixes_used(@valid_metadata_xml)
                |> Enum.sort()
 
-      assert [:ds, :dsig, :fed, :md, :mdrpi, :mdui, :shibmd, :ti]
+      assert [:ds, :mdrpi, :mdui, :shibmd]
              = XmlMunger.namespace_prefixes_used(@valid_single_metadata_xml)
                |> Enum.sort()
 
-      assert [:alg, :algsupport, :disco, :ds, :dsig, :eidas, :fed, :idpdisc, :init, :md, :mdattr, :mdrpi, :mdui, :refeds, :remd, :req, :saml, :ser, :shibmd, :ti] = XmlMunger.namespace_prefixes_used(
+      assert [:ds, :mdrpi, :mdui, :shibmd] = XmlMunger.namespace_prefixes_used(
                    Entity.xml(Metadata.entity!(@valid_metadata, "https://indiid.net/idp/shibboleth"))
                  )
                  |> Enum.sort()
@@ -157,12 +145,12 @@ defmodule SmeeXmlMungerTest do
     end
 
     test "entity XML with a thin top returns XML with a fat top" do
-      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:dsig=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:fed=\"http://docs.oasis-open.org/wsfed/federation/200706\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" xmlns:ti=\"https://seamlessaccess.org/NS/trustinfo\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
+      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
              = XmlMunger.expand_entity_top(@valid_single_metadata_xml, [])
     end
 
     test "entity XML with a fat top returns the same XML, or at least with a fat top" do
-      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:dsig=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:fed=\"http://docs.oasis-open.org/wsfed/federation/200706\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" xmlns:ti=\"https://seamlessaccess.org/NS/trustinfo\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
+      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
              = XmlMunger.expand_entity_top(XmlMunger.expand_entity_top(@valid_single_metadata_xml, []), [])
     end
 
@@ -242,7 +230,7 @@ defmodule SmeeXmlMungerTest do
     end
 
     test "expands the top tag" do
-      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:dsig=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:fed=\"http://docs.oasis-open.org/wsfed/federation/200706\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" xmlns:ti=\"https://seamlessaccess.org/NS/trustinfo\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
+      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
              = XmlMunger.process_entity_xml(@valid_single_metadata_xml, [])
     end
 
@@ -274,9 +262,9 @@ defmodule SmeeXmlMungerTest do
     end
 
     test "by default includes all known namespaces" do
-      known_namespaces = XmlCfg.namespaces()
+      known_namespaces = XmlCfg.namespaces() |> Enum.sort()
       assert ^known_namespaces = XmlMunger.generate_aggregate_header([])
-                                 |> XmlMunger.namespaces_used()
+                                 |> XmlMunger.namespaces_declared() |> Enum.sort()
     end
 
     test "by default includes an ID of '_'" do
