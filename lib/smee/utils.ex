@@ -126,6 +126,7 @@ defmodule Smee.Utils do
     "Smee #{Application.spec(:smee, :vsn)}"
   end
 
+
   @spec xdoc_to_string(xdoc :: tuple()) :: binary()
   def xdoc_to_string(xdoc) do
     :xmerl.export([xdoc], XmerlXmlIndent)
@@ -200,6 +201,13 @@ defmodule Smee.Utils do
     |> Enum.uniq()
     |> Enum.map(fn tag -> "#{tag}" end)
     |> Enum.sort()
+  end
+
+  @spec format_xml_date(dt :: %DateTime{}) :: binary()
+  def format_xml_date(dt) do
+    dt
+    |> DateTime.truncate(:second)
+    |> DateTime.to_iso8601()
   end
 
   ################################################################################

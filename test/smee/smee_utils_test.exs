@@ -295,4 +295,9 @@ defmodule SmeeUtilsTest do
 
   end
 
+  describe "format_xml_date/1" do
+    {:ok, dt} = DateTime.new(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
+    assert "2016-05-24T13:26:08Z" = Utils.format_xml_date(dt)
+  end
+
 end
