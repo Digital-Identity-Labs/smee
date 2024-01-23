@@ -83,8 +83,8 @@ defmodule Smee.Publish do
   ################################################################################
 
   @spec single(entity :: Entity.t(), options :: keyword()) :: list(binary())
-  defp single(entity, _options) do
-    xml = Entity.xml(entity)
+  defp single(entity, options) do
+    xml = Entity.xml(entity) |> XmlMunger.expand_entity_top(options)
     [xml]
   end
 
