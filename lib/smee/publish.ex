@@ -6,6 +6,9 @@ defmodule Smee.Publish do
   At present the output formats are SAML XML (individual and collections) and simple index text files. Formats can be
   output as binary strings or streamed. Streamed output can be useful for web services, allowing gradual downloads generated
   on-the-fly with no need to render a very large document in advance.
+
+  Options:
+  * `valid_until` - pass a DateTime to set the validUntil attribute for the entity metadata.
   """
 
   alias Smee.Entity
