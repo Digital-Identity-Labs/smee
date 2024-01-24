@@ -12,13 +12,14 @@ defmodule Smee.XmlMunger do
   ## just in case.
 
   alias Smee.XmlCfg
+  alias Smee.Utils
   #alias Smee.XmlMunger
 
   @xml_declaration ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n|
   @xml_decl_pattern ~r|^<\?xml.*\?>\n*|ifUm
   @top_tag_pattern ~r|<(md:)?EntityDescriptor.*?>|ms
   #@single_pattern @top_tag_pattern
- # @aggregate_pattern ~r|^<(md:)?EntitiesDescriptor.*?>|ms
+  # @aggregate_pattern ~r|^<(md:)?EntitiesDescriptor.*?>|ms
   @bot_tag_pattern ~r|</(md:)?EntityDescriptor>\z|ms
   @uri_extractor_pattern ~r|<(md:)?EntityDescriptor.*entityID="(.+)".*>|mUs
   @signature_pattern ~r|<Signature\s.*.+</Signature>|msU
@@ -45,7 +46,24 @@ defmodule Smee.XmlMunger do
   @spec namespace_prefixes_used(xml :: binary()) :: list(atom())
   def namespace_prefixes_used(xml) do
     Map.keys(XmlCfg.namespaces())
-    |> Enum.filter(fn prefix -> String.contains?(xml, Atom.to_string(prefix)) end)
+    |> Enum.sort()
+    |> Enum.filter(fn prefix -> String.contains?(xml, "#{Atom.to_string(prefix)}:") end)
+  end
+
+  @spec namespaces_declared(xml :: binary()) :: map()
+  def namespaces_declared(xml) do
+   # text = if (String.length(xml) > 10000), do: String.slice(xml, 0..10000), else: xml
+    text = xml
+    Regex.scan(~r/\sxmlns:([0-9a-z\-]+)[=]"(\S+)"/, text, capture: :all_but_first)
+    |> Enum.sort()
+    |> Map.new(fn [k, v] -> {String.to_atom(k), v} end)
+  end
+
+  @spec namespace_prefixes_declared(xml :: binary()) :: list(atom())
+  def namespace_prefixes_declared(xml) do
+    namespaces_declared(xml)
+    |> Map.keys()
+    |> Enum.sort()
   end
 
   @spec remove_xml_declaration(xml :: binary()) :: binary()
@@ -75,7 +93,7 @@ defmodule Smee.XmlMunger do
     id = Keyword.get(options, :id, nil)
     valid_until = Keyword.get(options, :valid_until, nil)
     id_fragment = if is_nil(id), do: nil, else: ~s|ID="#{id}"|
-    vu_fragment = if is_nil(valid_until), do: nil, else: ~s|validUntil="#{DateTime.to_iso8601(valid_until)}"|
+    vu_fragment = if is_nil(valid_until), do: nil, else: ~s|validUntil="#{Utils.valid_until(valid_until)}"|
 
     replacement_top = [
                         "<EntityDescriptor",
@@ -173,6 +191,7 @@ defmodule Smee.XmlMunger do
       xml_namespace_declarations(),
       id_attrblock(options),
       cache_attrblock(options),
+      valid_until_attrblock(options),
       ">",
       nil,
       "<!-- #{aggregate_description(options)} -->",
@@ -225,9 +244,10 @@ defmodule Smee.XmlMunger do
 
   @spec discover_metadata_type(xml :: binary(), options :: keyword()) :: atom()
   def discover_metadata_type(xml, _options \\ []) do
-    xml = remove_xml_declaration(xml) |> remove_comments()
+    xml = remove_xml_declaration(xml)
+          |> remove_comments()
 
-   # IO.puts String.slice(xml, 0..1000)
+    # IO.puts String.slice(xml, 0..1000)
 
     ## This is 10 times faster than the more elegant regex version and also clearer. It's still a bodge tho.
     cond do
@@ -281,13 +301,14 @@ defmodule Smee.XmlMunger do
   end
 
   @spec cache_attrblock(options :: keyword()) :: binary()
-  defp cache_attrblock(options) do
-    later = Keyword.get(options, :now, DateTime.utc_now)
-            |> DateTime.add(14, :day)
-            |> DateTime.to_iso8601()
+  defp cache_attrblock(_options) do
+    ~s|cacheDuration="PT6H0M0.000S"|
+  end
 
-    ~s|cacheDuration="PT6H0M0.000S" validUntil="#{later}"|
-
+  @spec valid_until_attrblock(options :: keyword()) :: binary()
+  defp valid_until_attrblock(options) do
+    vu = Keyword.get(options, :valid_until, nil)
+    if (vu), do: ~s|validUntil="#{Utils.valid_until(vu)}"|, else: ""
   end
 
   @spec publisher_block(options :: keyword()) :: binary()
@@ -309,16 +330,16 @@ defmodule Smee.XmlMunger do
   end
 
   ## TODO: USE
-#  @spec aggregate_uri(options :: keyword()) :: binary() | nil
-#  defp aggregate_uri(options) do
-#    Keyword.get(options, :uri, nil)
-#  end
+  #  @spec aggregate_uri(options :: keyword()) :: binary() | nil
+  #  defp aggregate_uri(options) do
+  #    Keyword.get(options, :uri, nil)
+  #  end
 
   ## TODO: USE
-#  @spec aggregate_publisher_uri(options :: keyword()) :: binary() | nil
-#  defp aggregate_publisher_uri(options) do
-#    Keyword.get(options, :uri, aggregate_uri(options))
-#  end
+  #  @spec aggregate_publisher_uri(options :: keyword()) :: binary() | nil
+  #  defp aggregate_publisher_uri(options) do
+  #    Keyword.get(options, :uri, aggregate_uri(options))
+  #  end
 
   @spec aggregate_description(options :: keyword()) :: binary() | nil
   defp aggregate_description(options) do

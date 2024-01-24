@@ -102,7 +102,7 @@ defmodule SmeePublishTest do
   describe "estimate_xml_size/2" do
 
     test "returns the size of content in the stream" do
-      assert 41_054 = Publish.estimate_xml_size(Metadata.stream_entities(@valid_metadata))
+      assert 41_014 = Publish.estimate_xml_size(Metadata.stream_entities(@valid_metadata))
     end
 
     test "should be the about the same size as a compiled binary output" do
@@ -186,13 +186,47 @@ defmodule SmeePublishTest do
 
     end
 
-    test "should include a validUntil attribute" do
+    test "should not include a validUntil attribute unless it is specified in some form" do
       xml = Publish.xml(
         Metadata.stream_entities(@valid_metadata)
       )
 
       top = XmlMunger.snip_aggregate(xml)
-      assert String.contains?(top, ~s|validUntil="|)
+      refute String.contains?(top, ~s|validUntil="|)
+    end
+
+    test "should include a validUntil attribute if a datetime is specified directly with :valid_until option" do
+
+      two_weeks_away = DateTime.utc_now
+                       |> DateTime.add(14, :day)
+      expected_string = Smee.Utils.format_xml_date(two_weeks_away)
+
+      xml = Publish.xml(
+        Metadata.stream_entities(@valid_metadata),
+        valid_until: two_weeks_away
+      )
+
+      assert String.contains?(xml, ~s| validUntil="#{expected_string}|)
+
+    end
+
+    test "should include a validUntil attribute if expiry is specified as a number of days with :valid_until option [rather circular test]" do
+      expected_string = Smee.Utils.valid_until(20)
+      xml = Publish.xml(
+        Metadata.stream_entities(@valid_metadata),
+        valid_until: 20
+      )
+
+      assert String.contains?(xml, ~s| validUntil="#{expected_string}|)
+    end
+
+    test "should include a validUntil attribute if expiry is specified with a :valid_until option of :auto [rather circular test]" do
+      expected_string = Smee.Utils.valid_until("default")
+      xml = Publish.xml(
+        Metadata.stream_entities(@valid_metadata),
+        valid_until: :auto
+      )
+      assert String.contains?(xml, ~s| validUntil="#{expected_string}|)
     end
 
   end

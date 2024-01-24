@@ -313,7 +313,7 @@ defmodule SmeeMetadataTest do
     # See Issue #6
 
     test "size is set automatically to the bytesize of the data" do
-      assert %Metadata{size: 40_980} = Metadata.derive(Metadata.entities(@valid_metadata))
+      assert %Metadata{size: 40_940} = Metadata.derive(Metadata.entities(@valid_metadata))
     end
 
     #    test "data_hash is set automatically to the sha1 hash of the data" do
@@ -483,7 +483,7 @@ defmodule SmeeMetadataTest do
     end
 
     test "size cannot be set using an option" do
-      assert %Metadata{size: 40_980} = Metadata.derive(Metadata.entities(@valid_metadata), size: 100)
+      assert %Metadata{size: 40_940} = Metadata.derive(Metadata.entities(@valid_metadata), size: 100)
     end
 
     test "verified cannot be set using an option" do

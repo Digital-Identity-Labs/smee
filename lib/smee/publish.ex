@@ -8,7 +8,8 @@ defmodule Smee.Publish do
   on-the-fly with no need to render a very large document in advance.
 
   Options:
-  * `valid_until` - pass a DateTime to set the validUntil attribute for the entity metadata.
+  * `valid_until` - pass a DateTime to set the validUntil attribute for the entity metadata. Alternatively, an integer can be
+    passed to request a validity of n days, or "default" and "auto" to use the default validity period.
   """
 
   alias Smee.Entity

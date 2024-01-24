@@ -210,6 +210,23 @@ defmodule Smee.Utils do
     |> DateTime.to_iso8601()
   end
 
+  @spec valid_until(dt :: %DateTime{} | binary() | atom() | integer()) :: binary()
+  def valid_until(flag) when flag in [:auto, "auto", :default, "default"] do
+    Smee.SysCfg.validity_days()
+    |> valid_until()
+  end
+
+  def valid_until(%DateTime{} = dt) do
+    dt
+    |> format_xml_date()
+  end
+
+  def valid_until(days) when is_integer(days) do
+    DateTime.utc_now
+    |> DateTime.add(days, :day)
+    |> format_xml_date()
+  end
+
   ################################################################################
 
 end

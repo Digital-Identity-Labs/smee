@@ -4,7 +4,10 @@ defmodule SmeeSysCfgTest do
   alias Smee.SysCfg
 
   setup do
-    on_exit(fn -> Application.put_env(:smee, :cache_dir, SysCfg.default_cache_directory()) end)
+    on_exit(fn ->
+      Application.put_env(:smee, :cache_dir, SysCfg.default_cache_directory())
+      Application.put_env(:smee, :validity_days, 16)
+    end)
   end
 
   describe "strategies/0" do
@@ -59,6 +62,18 @@ defmodule SmeeSysCfgTest do
       assert ^default_directory = SysCfg.default_cache_directory()
     end
 
+  end
+
+  describe "validity_days/0" do
+
+    test "should default to 16" do
+      assert 16 = SysCfg.validity_days()
+    end
+
+    test "should be changeable using a config option" do
+      Application.put_env(:smee, :validity_days, 10)
+      assert 10 = SysCfg.validity_days()
+    end
   end
 
 end

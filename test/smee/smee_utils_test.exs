@@ -296,8 +296,37 @@ defmodule SmeeUtilsTest do
   end
 
   describe "format_xml_date/1" do
-    {:ok, dt} = DateTime.new(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
-    assert "2016-05-24T13:26:08Z" = Utils.format_xml_date(dt)
+    test "returns datetime in a suitable string for inclusion in metadata" do
+      {:ok, dt} = DateTime.new(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
+      assert "2016-05-24T13:26:08Z" = Utils.format_xml_date(dt)
+    end
+  end
+
+  describe "valid_until/1" do
+
+    test "returns same datetime in a suitable string when passed a datetime" do
+      {:ok, dt} = DateTime.new(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
+      assert "2016-05-24T13:26:08Z" = Utils.valid_until(dt)
+    end
+
+    test "when passed an integer, will return datetime string that many days in the future" do
+      now_dt = DateTime.utc_now() |> DateTime.truncate(:second)
+      {:ok, future_dt, _} = Utils.valid_until(30)  |> DateTime.from_iso8601()
+      assert DateTime.diff(future_dt, now_dt) == (30 * 24 * 60 * 60)
+    end
+
+    test "when passed 'auto' or :auto will return the datetime string for the default validity period" do
+      now_dt = DateTime.utc_now() |> DateTime.truncate(:second)
+      {:ok, future_dt, _} = Utils.valid_until("default")  |> DateTime.from_iso8601()
+      assert DateTime.diff(future_dt, now_dt) == (Smee.SysCfg.validity_days * 24 * 60 * 60)
+    end
+
+    test "when passed 'default' or :default will also return the datetime string for the default validity period" do
+      now_dt = DateTime.utc_now() |> DateTime.truncate(:second)
+      {:ok, future_dt, _} = Utils.valid_until("auto")  |> DateTime.from_iso8601()
+      assert DateTime.diff(future_dt, now_dt) == (Smee.SysCfg.validity_days * 24 * 60 * 60)
+    end
+
   end
 
 end

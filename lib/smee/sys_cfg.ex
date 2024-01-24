@@ -32,6 +32,11 @@ defmodule Smee.SysCfg do
     :filename.basedir(:user_cache, "smee")
   end
 
+  @spec validity_days() :: integer()
+  def validity_days() do
+    Application.get_env(:smee, :validity_days, 16)
+  end
+
   ################################################################################
 
 

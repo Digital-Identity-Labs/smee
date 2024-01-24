@@ -77,18 +77,20 @@ defmodule SmeeXmlMungerTest do
 
     test "returns a list of known namespace prefixes that are present in the XML (as atoms)" do
 
-      assert [:alg, :ds, :idpdisc, :init, :mdrpi, :mdui, :shibmd]
+      assert [:alg, :ds, :idpdisc, :init, :md, :mdrpi, :mdui, :shibmd]
              = XmlMunger.namespace_prefixes_used(@valid_metadata_xml)
                |> Enum.sort()
 
-      assert [:ds, :mdrpi, :mdui, :shibmd]
+      assert [:ds, :md, :mdrpi, :mdui, :shibmd]
              = XmlMunger.namespace_prefixes_used(@valid_single_metadata_xml)
                |> Enum.sort()
 
-      assert [:ds, :mdrpi, :mdui, :shibmd] = XmlMunger.namespace_prefixes_used(
-                   Entity.xml(Metadata.entity!(@valid_metadata, "https://indiid.net/idp/shibboleth"))
-                 )
-                 |> Enum.sort()
+      assert [:ds, :md, :mdrpi, :mdui, :shibmd] = XmlMunger.namespace_prefixes_used(
+                                               Entity.xml(
+                                                 Metadata.entity!(@valid_metadata, "https://indiid.net/idp/shibboleth")
+                                               )
+                                             )
+                                             |> Enum.sort()
 
     end
 
@@ -145,14 +147,16 @@ defmodule SmeeXmlMungerTest do
     end
 
     test "entity XML with a thin top returns XML with a fat top" do
-      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
+      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
              = XmlMunger.expand_entity_top(@valid_single_metadata_xml, [])
     end
 
     test "entity XML with a fat top returns the same XML, or at least with a fat top" do
-      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
+      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
              = XmlMunger.expand_entity_top(XmlMunger.expand_entity_top(@valid_single_metadata_xml, []), [])
     end
+
+    ## TODO: Tests for valid_until option, although they are tested excessively in lots of other places
 
   end
 
@@ -230,7 +234,7 @@ defmodule SmeeXmlMungerTest do
     end
 
     test "expands the top tag" do
-      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
+      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://indiid.net/idp/shibboleth\">" <> _
              = XmlMunger.process_entity_xml(@valid_single_metadata_xml, [])
     end
 
@@ -262,9 +266,11 @@ defmodule SmeeXmlMungerTest do
     end
 
     test "by default includes all known namespaces" do
-      known_namespaces = XmlCfg.namespaces() |> Enum.sort()
+      known_namespaces = XmlCfg.namespaces()
+                         |> Enum.sort()
       assert ^known_namespaces = XmlMunger.generate_aggregate_header([])
-                                 |> XmlMunger.namespaces_declared() |> Enum.sort()
+                                 |> XmlMunger.namespaces_declared()
+                                 |> Enum.sort()
     end
 
     test "by default includes an ID of '_'" do
@@ -275,15 +281,29 @@ defmodule SmeeXmlMungerTest do
       refute String.contains?(XmlMunger.generate_aggregate_header([]), ~s| Name="|)
     end
 
-    test "by default includes an expiry date 14 days in the future" do
+    test "by default includes no expiry data at all" do
+      refute String.contains?(XmlMunger.generate_aggregate_header([]), ~s| validUntil="|)
+
+    end
+
+    test "validUntil can be set with a datetime using :valid_until option" do
 
       two_weeks_away = DateTime.utc_now
                        |> DateTime.add(14, :day)
-                       |> DateTime.to_iso8601()
-                       |> String.slice(0..11)
+      expected_string = Smee.Utils.format_xml_date(two_weeks_away)
 
-      assert String.contains?(XmlMunger.generate_aggregate_header([]), ~s| validUntil="#{two_weeks_away}|)
+      assert String.contains?(XmlMunger.generate_aggregate_header(valid_until: two_weeks_away), ~s| validUntil="#{expected_string}|)
 
+    end
+
+    test "validUntil can be set to a number of days in the future by passing an integer to the option [rather circular test]" do
+      expected_string = Smee.Utils.valid_until(20)
+      assert String.contains?(XmlMunger.generate_aggregate_header(valid_until: 20), ~s| validUntil="#{expected_string}|)
+    end
+
+    test "validUntil can be set to a default number of days in the future by specifying :default [rather circular test]" do
+      expected_string = Smee.Utils.valid_until("default")
+      assert String.contains?(XmlMunger.generate_aggregate_header(valid_until: :default), ~s| validUntil="#{expected_string}|)
     end
 
     test "by default includes a six hour cache duration" do
@@ -448,6 +468,38 @@ defmodule SmeeXmlMungerTest do
       assert "<test>content</test>" = XmlMunger.process_metadata_xml("   <test>content</test>  \n")
     end
 
+  end
+
+  describe "namespaces_declared/1" do
+
+    test "returns actual namespaces that are declared in the XML, as a prefix: namespace map" do
+      assert %{
+               ds: "http://www.w3.org/2000/09/xmldsig#",
+               idpdisc: "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol",
+               init: "urn:oasis:names:tc:SAML:profiles:SSO:request-init",
+               mdrpi: "urn:oasis:names:tc:SAML:metadata:rpi",
+               mdui: "urn:oasis:names:tc:SAML:metadata:ui",
+               shibmd: "urn:mace:shibboleth:metadata:1.0",
+               example: "http://test.example.com/ns",
+               mdattr: "urn:oasis:names:tc:SAML:metadata:attribute",
+               remd: "http://refeds.org/metadata",
+               saml: "urn:oasis:names:tc:SAML:2.0:assertion",
+               xsi: "http://www.w3.org/2001/XMLSchema-instance"
+             } = XmlMunger.namespaces_declared(String.replace(@valid_metadata_xml, "xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"", "xmlns:example=\"http://test.example.com/ns\""))
+
+    end
+
+  end
+
+  describe "namespace_prefixes_declared/1" do
+
+    test "returns a list of actual namespace prefixes that are present in the XML (as atoms)" do
+
+      assert [:alg, :ds, :idpdisc, :init, :mdattr, :mdrpi, :mdui, :remd, :saml, :shibmd, :xsi]
+             = XmlMunger.namespace_prefixes_declared(@valid_metadata_xml)
+               |> Enum.sort()
+
+    end
   end
 
 end

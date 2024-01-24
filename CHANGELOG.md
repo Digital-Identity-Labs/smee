@@ -22,16 +22,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Improvements
 - A few more metadata namespaces have been added
 - `Smee.Entity.id/1` and `Smee.Entity.transformed_id/1` as helpers for getting an entityID 
+- Publishing aggregated metadata now has configurable validUntil dates. 
 
 ## Fixes
 - Should now work with OTP26 and Elixir 1.16.0 
 - Hopefully compatible with recent versions of `xmlsec1`, which has changed its behaviour and commandline.  
 - Rambo no longer needs to be specified as a compiler option and dependency on Macs.  !!! Might need to roll back this change
+- All known XML namespaces were being added to all metadata, now single entity XML should only include relevant namespaces.
+- `validUntil` can now be set in XML when publishing single entity metadata
 
 ## Other Changes
 - Namespaces in metadata are now in alphabetical order, after the default namespace
 - Updated dependencies, and hopefully loosened them for better integration compatibility with other apps 
-
+- Published aggregates do not include a validUntil date by default now, it must be set.
 
 
 ## [0.3.0] - 2023-05-04
