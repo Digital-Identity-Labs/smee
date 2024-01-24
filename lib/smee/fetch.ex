@@ -142,7 +142,7 @@ defmodule Smee.Fetch do
     type = Req.Response.get_header(response, "content-type")
            |> List.first()
 
-    if type != "application/samlmetadata+xml" do
+    if (type != "application/samlmetadata+xml") && (type != "application/xml") do
       if source.strict do
         raise "Data from #{
           source.url
