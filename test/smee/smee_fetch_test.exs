@@ -211,4 +211,26 @@ defmodule SmeeFetchTest do
 
   end
 
+  describe "probe/1" do
+
+    test "returns map in an OK tuple, containing etag and changed_at fields, if both are available" do
+      assert {:ok, %{etag: _, changed_at: _}} = Fetch.probe(@remote_aggmd_source)
+    end
+
+    test "Returns changed_at value as a DateTime" do
+      {:ok, %{etag: _, changed_at: changed_at}} = Fetch.probe(@remote_aggmd_source)
+      assert %DateTime{} = changed_at
+    end
+
+    test "Returns etag value as a binary string" do
+      {:ok, %{etag: etag, changed_at: _}} = Fetch.probe(@remote_aggmd_source)
+      assert is_binary(etag)
+    end
+
+    test "Returns an error tuple for bad sources" do
+      {:error, "Cannot probe #[Source http://metadata.example.com/metadata.xml]"} = Fetch.probe(@remote_bad_source)
+    end
+
+  end
+
 end

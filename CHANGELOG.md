@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Source, Metadata and Entity structs can now be interpolated and printed in strings, showing a type and unique URI 
   (format may change in future releases)
 - `Smee.Fetch.warm/2` will download a list of sources concurrently and warm the HTTP cache
+- `Fetch.probe\1` will return last-modified and etag information from a source
 
 ## Improvements
 - A few more metadata namespaces have been added

@@ -131,8 +131,8 @@ defmodule Smee.Fetch do
         file_path = Utils.file_url_to_path(source.url)
         case File.read(file_path) do
           {:ok, data} -> xml = metadata_from_file(file_path, data, source)
-                        {:ok, xml}
-          {:error, message} -> {:error, "Could not open and read file #{source.url} (#{message})" }
+                         {:ok, xml}
+          {:error, message} -> {:error, "Could not open and read file #{source.url} (#{message})"}
         end
       rescue
         _oops -> {:error, "Could not open and read file #{source.url}"}
@@ -171,6 +171,50 @@ defmodule Smee.Fetch do
     |> Task.await_many(:infinity)
     |> Enum.map(fn {status, url} -> {url, status} end)
     |> Map.new()
+  end
+
+  @doc """
+  Connects to a remote Source and uses HEAD HTTP method, with no caching, to fetch version/change information from headers.
+
+  An :ok tuple containing a map of etag (string) and changed_at (DateTime) will be returned if successful.
+  """
+  def probe(source) do
+    if Utils.file_url?(source.url) do
+      {:error, "Source URL #{source.url} is not a remote file!"}
+    else
+      case Req.head(source.url, http_options(source, cache: false)) do
+        {
+          :ok,
+          %{
+            status: 200,
+            headers: %{
+              "last-modified" => html_date,
+              "etag" => [etag]
+            }
+          }
+        } -> {:ok, %{etag: etag, changed_at: Utils.parse_http_datetime(html_date)}}
+        {
+          :ok,
+          %{
+            status: 200,
+            headers: %{
+              "etag" => [etag]
+            }
+          }
+        } -> {:ok, %{etag: etag, changed_at: nil}}
+        {
+          :ok,
+          %{
+            status: 200,
+            headers: %{
+              "last-modified" => html_date
+            }
+          }
+        } -> {:ok, %{etag: nil, changed_at: Utils.parse_http_datetime(html_date)}}
+        {:ok, %{status: status}} -> {:error, "Probing #{source} resulted in a #{status} status"}
+        {:error, _} -> {:error, "Cannot probe #{source}"}
+      end
+    end
   end
 
   ################################################################################

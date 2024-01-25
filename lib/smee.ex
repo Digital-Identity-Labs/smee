@@ -175,4 +175,8 @@ defmodule Smee do
     Metadata.stream_entities(metadata)
   end
 
+  def changed?(source, metadata) do
+
+  end
+
 end
