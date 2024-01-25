@@ -35,6 +35,23 @@ defmodule Smee.Fetch do
   end
 
   @doc """
+  Uses the passed Source struct to load or download the requested metadata XML, and returns a Metadata struct containing the XML
+  inside an :ok tuple.
+
+  Works with all types of Source, even MDQ services.
+
+  """
+  @spec fetch(source :: Source.t(), options :: keyword()) :: Metadata.t()
+  def fetch(source, options \\ [])
+  def fetch(%{url: "file:" <> _} = source, options) do
+    local(source, options)
+  end
+
+  def fetch(%{url: "http" <> _} = source, options) do
+    remote(source, options)
+  end
+
+  @doc """
   Uses the passed Source struct to download the requested metadata XML, and returns a Metadata struct containing
    the XML in an :ok/:error tuple.
 
@@ -96,21 +113,33 @@ defmodule Smee.Fetch do
 
     data = File.read!(file_path)
 
-    Smee.Metadata.new(
-      data,
-      type: source.type,
-      url: source.url,
-      type: source.type,
-      cert_url: source.cert_url,
-      cert_fingerprint: source.cert_fingerprint,
-      modified_at: DateTime.from_unix!(File.stat!(file_path, time: :posix).mtime),
-      downloaded_at: DateTime.utc_now(),
-      etag: Utils.sha1(data),
-      label: source.label,
-      priority: source.priority,
-      trustiness: source.trustiness,
-      tags: source.tags
-    )
+    metadata_from_file(file_path, data, source)
+
+  end
+
+  @doc """
+  Uses the passed Source struct to load the requested metadata XML, and returns a Metadata struct containing
+   the XML in an :ok tuple
+
+   Works with local Sources including MDQ services but will not accept metadata at a remote URL.
+
+  """
+  @spec local(source :: Source.t(), options :: keyword()) :: Metadata.t()
+  def local(source, _options \\ []) do
+    if Utils.file_url?(source.url) do
+      try do
+        file_path = Utils.file_url_to_path(source.url)
+        case File.read(file_path) do
+          {:ok, data} -> xml = metadata_from_file(file_path, data, source)
+                        {:ok, xml}
+          {:error, message} -> {:error, "Could not open and read file #{source.url} (#{message})" }
+        end
+      rescue
+        _oops -> {:error, "Could not open and read file #{source.url}"}
+      end
+    else
+      {:error, "Source URL #{source.url} is not a local file!"}
+    end
 
   end
 
@@ -222,8 +251,33 @@ defmodule Smee.Fetch do
             tags: source.tags
           )
         }
-      other_status when other_status in 100..999 -> {:error, :"http_#{other_status}"}
+      other_status when other_status in 100..999 ->
+        {:error, :"http_#{other_status}"}
     end
+
+  end
+
+  @spec metadata_from_file(url :: binary(), text :: binary, source :: Source.t()) :: {:ok, Metadata.t()} | {
+    :error,
+    atom()
+  }
+  defp metadata_from_file(path, data, source) do
+
+    Smee.Metadata.new(
+      data,
+      type: source.type,
+      url: source.url,
+      type: source.type,
+      cert_url: source.cert_url,
+      cert_fingerprint: source.cert_fingerprint,
+      modified_at: DateTime.from_unix!(File.stat!(path, time: :posix).mtime),
+      downloaded_at: DateTime.utc_now(),
+      etag: Utils.sha1(data),
+      label: source.label,
+      priority: source.priority,
+      trustiness: source.trustiness,
+      tags: source.tags
+    )
 
   end
 

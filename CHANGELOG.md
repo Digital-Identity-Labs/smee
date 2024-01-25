@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - A few more metadata namespaces have been added
 - `Smee.Entity.id/1` and `Smee.Entity.transformed_id/1` as helpers for getting an entityID 
 - Publishing aggregated metadata now has configurable validUntil dates. 
+- `Fetch.fetch!/2` and `Fetch.local!/2` now have `Fetch.fetch/2` and `Fetch.local/2` equivalents.
 
 ## Fixes
 - Should now work with OTP26 and Elixir 1.16.0 

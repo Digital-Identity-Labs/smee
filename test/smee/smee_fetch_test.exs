@@ -48,6 +48,31 @@ defmodule SmeeFetchTest do
   end
 
   @tag timeout: 180_000
+  describe "fetch/2" do
+
+    test "it returns a metadata struct if given a source pointing to a remote metadata URL" do
+      assert {:ok, %Metadata{}} = Fetch.fetch(@remote_aggmd_source)
+    end
+
+    test "it returns a metadata struct if given a source pointing to a local metadata file" do
+      assert{:ok, %Metadata{}} = Fetch.fetch(@local_aggmd_source2)
+    end
+
+    test "it returns a metadata struct if given a source pointing to a local metadata path" do
+      assert {:ok, %Metadata{}} = Fetch.fetch(@local_aggmd_source1)
+    end
+
+    test "it returns a metadata struct if given a source pointing to an MDQ service" do
+      assert{:ok, %Metadata{}} = Fetch.fetch(@mdq_service)
+    end
+
+    test "it raises an exception if the resource cannot be downloaded" do
+      {:error, %Mint.TransportError{reason: :nxdomain}} = Fetch.fetch(@remote_bad_source)
+    end
+
+  end
+
+  @tag timeout: 180_000
   describe "remote/2" do
 
     test "raises an exception if passed a local source" do
@@ -117,6 +142,28 @@ defmodule SmeeFetchTest do
       assert_raise File.Error,
                    fn -> Fetch.local!(@local_bad_source1)
                    end
+    end
+
+  end
+
+  describe "local/2" do
+
+    test "returns an :error tuple if passed a remote source" do
+      assert {
+               :error, "Source URL http://metadata.ukfederation.org.uk/ukfederation-metadata.xml is not a local file!"
+             } = Fetch.local(@remote_aggmd_source)
+    end
+
+    test "it returns a metadata struct if given a source pointing to a local metadata file" do
+      assert {:ok, %Metadata{}} = Fetch.local(@local_aggmd_source2)
+    end
+
+    test "it returns a metadata struct if given a source pointing to a local metadata path" do
+      assert {:ok, %Metadata{}} = Fetch.local(@local_aggmd_source1)
+    end
+
+    test "it raises an exception if the resource cannot be found" do
+      assert {:error, "Could not open and read file file:this_file_does_not_exist.xml (enoent)"} = Fetch.local(@local_bad_source1)
     end
 
   end
