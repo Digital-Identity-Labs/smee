@@ -121,4 +121,47 @@ defmodule SmeeFetchTest do
 
   end
 
+  describe "warm/2" do
+
+    test "can accept a single Source, and download it, returning a map of URL to HTTP status code" do
+      assert %{
+               "https://edugate.heanet.ie/edugate-federation-metadata-signed.xml" => 200
+             } == Fetch.warm(Smee.Source.new("https://edugate.heanet.ie/edugate-federation-metadata-signed.xml"))
+    end
+
+    test "can accept a list of sources, and download them all at once, returning a map of URL to HTTP status codes" do
+      s1 = Smee.Source.new("https://edugate.heanet.ie/edugate-federation-metadata-signed.xml")
+      s2 = Smee.Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+      assert %{
+               "https://edugate.heanet.ie/edugate-federation-metadata-signed.xml" => 200,
+               "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml" => 200
+             } == Fetch.warm([s1, s2])
+    end
+
+    test "Local files are ignored" do
+      s1 = Smee.Source.new("https://edugate.heanet.ie/edugate-federation-metadata-signed.xml")
+      assert %{
+               "https://edugate.heanet.ie/edugate-federation-metadata-signed.xml" => 200,
+             } == Fetch.warm([s1, @local_aggmd_source2])
+    end
+
+    test "Duplicate URLs are ignored" do
+      s1 = Smee.Source.new("https://edugate.heanet.ie/edugate-federation-metadata-signed.xml")
+      s2 = Smee.Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+      assert %{
+               "https://edugate.heanet.ie/edugate-federation-metadata-signed.xml" => 200,
+               "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml" => 200
+             } == Fetch.warm([s1, s2, s2])
+    end
+
+    test "Failures are fine, they are returned as a URLs with a zero status" do
+      s1 = Smee.Source.new("https://edugate.heanet.ie/edugate-federation-metadata-signed.xml")
+      assert %{
+               "https://edugate.heanet.ie/edugate-federation-metadata-signed.xml" => 200,
+               "http://metadata.example.com/metadata.xml" => 0
+             } == Fetch.warm([s1, @remote_bad_source])
+    end
+
+  end
+
 end

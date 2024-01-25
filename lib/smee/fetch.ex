@@ -114,6 +114,36 @@ defmodule Smee.Fetch do
 
   end
 
+  @doc """
+  Downloads one or more Sources in parallel and caches the result in the HTTP cache.
+
+  A map of source URLs and status codes are returned. A status code of 0 indicates a client error of some sort.
+
+  This function is useful for downloading source metadata in advance so that processing can happen immediately.
+  """
+  @spec warm(sources :: Source.t() | list(), options :: keyword()) :: map()
+  def warm(sources, _options \\ []) do
+    sources
+    |> List.wrap()
+    |> Enum.reject(fn s -> Utils.local?(s) end)
+    |> Enum.uniq_by(fn s -> s.url end)
+    |> Enum.map(
+         fn s ->
+           Task.async(
+             fn ->
+               case Req.get(Utils.fetchable_remote_xml(s), Keyword.put(http_options(s), :cache, true)) do
+                 {:ok, response} -> {response.status, s.url}
+                 {:error, _} -> {0, s.url}
+               end
+             end
+           )
+         end
+       )
+    |> Task.await_many(:infinity)
+    |> Enum.map(fn {status, url} -> {url, status} end)
+    |> Map.new()
+  end
+
   ################################################################################
 
   @spec retry_jitter(n :: integer()) :: integer()
@@ -148,7 +178,12 @@ defmodule Smee.Fetch do
           source.url
         } is not described as SAML metadata (application/samlmetadata+xml)!\nYou can disable this check by setting strict to false."
       else
-        IO.warn("Data from #{source.url} is not described as SAML metadata (application/samlmetadata+xml) - type is actually #{type}", [])
+        IO.warn(
+          "Data from #{
+            source.url
+          } is not described as SAML metadata (application/samlmetadata+xml) - type is actually #{type}",
+          []
+        )
       end
     end
 
@@ -158,7 +193,10 @@ defmodule Smee.Fetch do
 
   defp check_http_data_type!(_source, _response), do: :ok
 
-  @spec metadata_from_response(url :: binary(), response :: struct, source :: Source.t()) :: {:ok, Metadata.t()} | {:error, atom()}
+  @spec metadata_from_response(url :: binary(), response :: struct, source :: Source.t()) :: {:ok, Metadata.t()} | {
+    :error,
+    atom()
+  }
   defp metadata_from_response(url, response, source) do
 
     md_type = derive_type(source)
@@ -193,7 +231,10 @@ defmodule Smee.Fetch do
   defp http_options(source, extra_options \\ []) do
     Keyword.merge(
       [
-        headers: %{"accept" => "application/samlmetadata+xml", "Accept-Charset" => "utf-8"},
+        headers: %{
+          "accept" => "application/samlmetadata+xml",
+          "Accept-Charset" => "utf-8"
+        },
         max_redirects: source.redirects,
         cache: source.cache,
         cache_dir: SysCfg.cache_directory(),
