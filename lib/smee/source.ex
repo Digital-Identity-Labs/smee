@@ -186,8 +186,3 @@ defmodule Smee.Source do
   end
 
 end
-
-defimpl String.Chars, for: Smee.Source do
-  @moduledoc false
-  def to_string(s), do: "#[Source #{s.url}]"
-end

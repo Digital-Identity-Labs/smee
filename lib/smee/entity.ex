@@ -467,8 +467,3 @@ defmodule Smee.Entity do
   end
 
 end
-
-defimpl String.Chars, for: Smee.Entity do
-  @moduledoc false
-  def to_string(s), do: "#[Entity #{s.uri}]"
-end

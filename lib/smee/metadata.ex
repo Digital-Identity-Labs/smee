@@ -558,7 +558,3 @@ defmodule Smee.Metadata do
   end
 
 end
-defimpl String.Chars, for: Smee.Metadata do
-  @moduledoc false
-  def to_string(s), do: "#[Metadata #{s.url}]"
-end
