@@ -14,13 +14,12 @@ defmodule Smee.Entity do
 
   """
 
-  import SweetXml
-
   alias __MODULE__
   alias Smee.Utils
   alias Smee.XmlMunger
   alias Smee.Metadata
   alias Smee.Lint
+  alias Smee.XPaths
 
   @enforce_keys [:data]
 
@@ -102,7 +101,7 @@ defmodule Smee.Entity do
       metadata_uri_hash: if(md_uri, do: Smee.Utils.sha1(md_uri), else: nil),
       priority: Keyword.get(options, :priority, 5),
       trustiness: Keyword.get(options, :trustiness, 0.5),
-      tags:  Utils.tidy_tags(Keyword.get(options, :tags, []))
+      tags: Utils.tidy_tags(Keyword.get(options, :tags, []))
     }
     |> parse_data()
     |> extract_info()
@@ -149,7 +148,7 @@ defmodule Smee.Entity do
       metadata_uri_hash: md_uri_hash,
       priority: Keyword.get(options, :priority, metadata.priority),
       trustiness: Keyword.get(options, :trustiness, metadata.trustiness),
-      tags:  Utils.tidy_tags(Keyword.get(options, :tags,  metadata.tags))
+      tags: Utils.tidy_tags(Keyword.get(options, :tags, metadata.tags))
     }
     |> parse_data()
     |> extract_info()
@@ -270,11 +269,8 @@ defmodule Smee.Entity do
   """
   @spec idp?(entity :: Entity.t()) :: boolean
   def idp?(entity) do
-    case xdoc(entity)
-         |> xpath(~x"//md:IDPSSODescriptor|IDPSSODescriptor"e) do
-      nil -> false
-      _ -> true
-    end
+    xdoc(entity)
+    |> XPaths.idp?()
   end
 
 
@@ -285,11 +281,8 @@ defmodule Smee.Entity do
   """
   @spec sp?(entity :: Entity.t()) :: boolean
   def sp?(entity) do
-    case xdoc(entity)
-         |> xpath(~x"//md:SPSSODescriptor|SPSSODescriptor"e) do
-      nil -> false
-      _ -> true
-    end
+    xdoc(entity)
+    |> XPaths.sp?()
   end
 
   @doc """
@@ -442,7 +435,7 @@ defmodule Smee.Entity do
     xml_data = Entity.xml(entity)
 
     try do
-      xdoc = SweetXml.parse(xml_data, namespace_conformant: true)
+      xdoc = SweetXml.parse(xml_data, namespace_conformant: true, dtd: :none)
       struct(entity, %{xdoc: xdoc})
     rescue
       e ->
@@ -456,10 +449,7 @@ defmodule Smee.Entity do
   defp extract_info(entity) do
 
     info = entity.xdoc
-           |> xmap(
-                uri: ~x"string(/*/@entityID)"s,
-                id: ~x"string(/*/@ID)"s
-              )
+           |> XPaths.entity_ids()
 
     Map.merge(entity, info)
     |> struct(%{uri_hash: Utils.sha1(info[:uri])})

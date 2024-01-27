@@ -51,17 +51,22 @@ defmodule Smee.XmlCfg do
     xenc: "http://www.w3.org/2001/04/xmlenc#"
   }
 
+  @erlanged_saml_namespaces Enum.map(
+                              @saml_namespaces,
+                              fn {p, ns} -> {List.Chars.to_charlist(p), List.Chars.to_charlist(ns)} end
+                            )
+
   @default_namespace_prefix :md
   @default_namespace @saml_namespaces[@default_namespace_prefix]
 
 
-#  @xml_namespaces %{
-#    xi: "http://www.w3.org/2001/XInclude",
-#    xs: "http://www.w3.org/2001/XMLSchema",
-#    xsi: "http://www.w3.org/2001/XMLSchema-instance",
-#    xsd: "http://www.w3.org/2001/XMLSchema",
-#    xrd: "http://docs.oasis-open.org/ns/xri/xrd-1.0"
-#  }
+  #  @xml_namespaces %{
+  #    xi: "http://www.w3.org/2001/XInclude",
+  #    xs: "http://www.w3.org/2001/XMLSchema",
+  #    xsi: "http://www.w3.org/2001/XMLSchema-instance",
+  #    xsd: "http://www.w3.org/2001/XMLSchema",
+  #    xrd: "http://docs.oasis-open.org/ns/xri/xrd-1.0"
+  #  }
 
   @risky_eas ~w(
     http://shibboleth.net/ns/profiles
@@ -91,6 +96,18 @@ defmodule Smee.XmlCfg do
   @spec namespaces() :: map()
   def namespaces() do
     Application.get_env(:smee, :namespaces, nil) || @saml_namespaces
+  end
+
+  @spec erlang_namespaces() :: map()
+  def erlang_namespaces() do
+    if Application.get_env(:smee, :namespaces, nil) do
+      Application.get_env(:smee, :namespaces)
+      |> Enum.map(
+           fn {p, ns} -> {List.Chars.to_charlist(p), List.Chars.to_charlist(ns)} end
+         )
+    else
+      @erlanged_saml_namespaces
+    end
   end
 
   @spec namespace_prefixes() :: list(atom())
