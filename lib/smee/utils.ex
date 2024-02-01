@@ -227,6 +227,46 @@ defmodule Smee.Utils do
     |> format_xml_date()
   end
 
+  @spec before?(base_date :: DateTime.t() | Date.t(), subject_date :: DateTime.t() | Date.t()) :: boolean()
+  def before?(subject_date, comparison_date)
+  def before?(nil, _) do
+    false
+  end
+
+  def before?(subject_date, comparison_date) when is_binary(comparison_date) do
+    case Date.from_iso8601(comparison_date) do
+      {:ok, comparison_date} -> before?(subject_date, comparison_date)
+      {:error, _} -> raise "DateTime not in ISO8601 format!"
+    end
+  end
+
+  def before?(subject_date, comparison_date) do
+    Date.compare(subject_date, comparison_date) == :lt
+  end
+
+  @spec after?(base_date :: DateTime.t() | Date.t(), subject_date :: DateTime.t() | Date.t()) :: boolean()
+  def after?(subject_date, comparison_date)
+  def after?(subject_date, comparison_date) when is_binary(comparison_date) do
+    case Date.from_iso8601(comparison_date) do
+      {:ok, comparison_date} -> after?(subject_date, comparison_date)
+      {:error, _} -> raise "DateTime not in ISO8601 format!"
+    end
+  end
+
+  def after?(nil, _) do
+    false
+  end
+
+  def after?(subject_date, comparison_date) do
+    Date.compare(subject_date, comparison_date) == :gt
+  end
+
+  @spec days_ago(days ::integer()) :: Date.t()
+  def days_ago(days) do
+    Date.utc_today()
+    |> Date.add(-days)
+  end
+
   ################################################################################
 
 end

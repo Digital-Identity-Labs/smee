@@ -329,4 +329,71 @@ defmodule SmeeUtilsTest do
 
   end
 
+  describe "before/2" do
+
+    test "returns true if the subject DateTime is before the second DateTime" do
+    {:ok, dt1} = DateTime.new(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
+      dt2 = DateTime.utc_now()
+      assert Utils.before?(dt1, dt2)
+    end
+
+    test "returns false if the subject DateTime is after the second DateTime" do
+      dt1 = DateTime.utc_now()
+      {:ok, dt2} = DateTime.new(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
+      refute Utils.before?(dt1, dt2)
+    end
+
+    test "accepts a date string as the second parameter" do
+      {:ok, dt1} = DateTime.new(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
+      assert Utils.before?(dt1, "2019-05-07")
+    end
+
+    test "works with both Dates and DateTimes" do
+      {:ok, d1} = Date.new(2016, 05, 24)
+      dt1 = DateTime.utc_now()
+      d2 = Date.utc_today()
+      assert  assert Utils.before?(d1, dt1)
+      assert  assert Utils.before?(d1, d2)
+    end
+
+  end
+
+  describe "after/2" do
+
+    test "returns true if the subject DateTime is after the specified DateTime" do
+      dt1 = DateTime.utc_now()
+      {:ok, dt2} = DateTime.new(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
+      assert Utils.after?(dt1, dt2)
+    end
+
+    test "returns false if the subject DateTime is before the specified DateTime" do
+      {:ok, dt1} = DateTime.new(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
+      dt2 = DateTime.utc_now()
+      refute Utils.after?(dt1, dt2)
+    end
+
+    test "accepts a date string as the second parameter" do
+      {:ok, dt1} = DateTime.new(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
+      assert Utils.after?(dt1, "2012-05-07")
+    end
+
+    test "works with both Dates and DateTimes" do
+      {:ok, then} = Date.new(2016, 05, 24)
+      now_dt = DateTime.utc_now()
+      now_d = Date.utc_today()
+      assert assert Utils.after?(now_dt, then)
+      assert assert Utils.after?(now_d, then)
+    end
+
+  end
+
+  describe "days_ago/2" do
+
+    test "returns the Date for the specified number of days ago" do
+      date_a_week_ago = Date.utc_today() |> Date.add(-7)
+      assert ^date_a_week_ago = Utils.days_ago(7)
+    end
+
+  end
+
 end
