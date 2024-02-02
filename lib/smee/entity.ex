@@ -421,6 +421,79 @@ defmodule Smee.Entity do
     struct(entity, %{tags: Utils.tidy_tags(tags)})
   end
 
+  @doc """
+  Returns the URI for the entity's registration authority, if available, or nil.
+
+  Interfederation means that entities may be initially published in a different federation to the one *this* record is
+    currently published in. The registration authority URI, if present, shows that the entity was officially registered
+  elsewhere.
+  """
+  @spec registration_authority(entity :: Entity.t()) :: binary() | nil
+  def registration_authority(entity) do
+    Entity.xdoc(entity)
+    |> XPaths.registration()
+    |> Map.get(:authority, nil)
+  end
+
+  @doc """
+  Returns the Date of registration, if present, or nil.
+
+  See `registration_authority/1` for more information
+  """
+  @spec registered_at(entity :: Entity.t()) :: Date.t() | nil
+  def registered_at(entity) do
+    case Entity.xdoc(entity)
+         |> XPaths.registration()
+         |> Map.get(:instant, nil) do
+      nil -> nil
+      instant -> case DateTime.from_iso8601(instant) do
+                   {:ok, dt, _} -> DateTime.to_date(dt)
+                   {:error, _} -> nil
+                 end
+    end
+  end
+
+  @doc """
+  Returns a list of entity categories for this entity
+
+  Entity categories are official tags indicating that a service fits certain criteria. For instance, Research and Scholarship
+  (indicated with the URI "http://refeds.org/category/research-and-scholarship") shows that a service will behave according to
+    certain rules.
+
+  You can see a dump of all entity attributes, including entity categories, using `Smee.`Extract.list_entity_attrs/1`
+  """
+  @spec categories(entity :: Entity.t()) :: list()
+  def categories(entity) do
+    Entity.xdoc(entity)
+    |> XPaths.entity_attributes()
+    |> Map.get("http://macedir.org/entity-category", [])
+  end
+
+  @doc """
+  Returns a list of *supported* entity categories
+
+  Category support is the counterpart of entity categories, indicating that a service will make use of those categories if
+    an entity possesses them.
+  """
+  @spec category_support(entity :: Entity.t()) :: list()
+  def category_support(entity) do
+    Entity.xdoc(entity)
+    |> XPaths.entity_attributes()
+    |> Map.get("http://macedir.org/entity-category-support", [])
+  end
+
+  @doc """
+  Returns the assurance certification URIs of the entity as a list
+
+  The most common and useful assurance profile is almost certainly SIRTFI, but many others exist.
+  """
+  @spec assurance(entity :: Entity.t()) :: list()
+  def assurance(entity) do
+    Entity.xdoc(entity)
+    |> XPaths.entity_attributes()
+    |> Map.get("urn:oasis:names:tc:SAML:attribute:assurance-certification", [])
+  end
+
   ################################################################################
 
   @spec parse_data(entity :: Entity.t()) :: Entity.t()

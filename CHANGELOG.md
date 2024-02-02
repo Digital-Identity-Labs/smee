@@ -20,12 +20,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (format may change in future releases)
 - `Smee.Fetch.warm/2` will download a list of sources concurrently and warm the HTTP cache
 - `Fetch.probe\1` will return last-modified and etag information from a source
+- You can add a Smee-optimised version of SweetXML's xpath sigil to your own projects with `Smee.Sigil`
+- Entity now has functions to extract more information: `registration_authority/1`, `registered_at/1`, `categories/1`,
+  `category_support/1` and `assurance/1`.
+- New filters: `entity_category/3`, `entity_category_support/3`, `tag/3` and others
 
 ## Improvements
 - A few more metadata namespaces have been added
 - `Smee.Entity.id/1` and `Smee.Entity.transformed_id/1` as helpers for getting an entityID 
 - Publishing aggregated metadata now has configurable validUntil dates. 
 - `Fetch.fetch!/2` and `Fetch.local!/2` now have `Fetch.fetch/2` and `Fetch.local/2` equivalents.
+- XML processing and searching has (hopefully) been optimised, some code was ported back from `SmeeView` for wider use.
 
 ## Fixes
 - Should now work with OTP26 and Elixir 1.16.0 

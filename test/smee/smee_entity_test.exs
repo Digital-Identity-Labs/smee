@@ -24,6 +24,12 @@ defmodule SmeeEntityTest do
   @sp_xml File.read! "test/support/static/ukamf_test.xml"
   @sp_entity Entity.derive(@sp_xml, @valid_metadata)
 
+  @proxy_xml File.read! "test/support/static/cern.xml"
+  @proxy_entity Entity.new(@proxy_xml)
+
+  @local_adfs_xml File.read! "test/support/static/adfs.xml"
+  @local_adfs_entity Entity.new(@local_adfs_xml)
+
   describe "new/2" do
 
     test "returns an Entity when passed XML" do
@@ -598,7 +604,68 @@ defmodule SmeeEntityTest do
   end
 
   describe "Protocol Jason Encoder" do
-    "{\"compressed\":false,\"data\":\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"" <> _ = Jason.encode!(@idp_entity)
+    "{\"compressed\":false,\"data\":\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"" <> _ = Jason.encode!(
+      @idp_entity
+    )
+  end
+
+  describe "registration_authority/1" do
+
+    test "returns the registration authority URI, if present" do
+      assert "http://ukfederation.org.uk" = Entity.registration_authority(@valid_entity)
+    end
+
+    test "returns a nil if not present" do
+      assert is_nil(Entity.registration_authority(@local_adfs_entity))
+    end
+
+  end
+
+  describe "registered_at/1" do
+
+    test "returns the registration instant as a Date, if present" do
+      assert ~D[2014-11-07] = Entity.registered_at(@valid_entity)
+    end
+
+    test "returns a nil if not present" do
+      assert is_nil(Entity.registered_at(@local_adfs_entity))
+    end
+  end
+
+  describe "categories/1" do
+
+    test "returns a list of entity categories" do
+      assert ["http://refeds.org/category/research-and-scholarship"] = Entity.categories(@proxy_entity)
+    end
+
+    test "returns an empty list if no entity categories are present" do
+      assert [] = Entity.categories(@local_adfs_entity)
+    end
+
+  end
+
+  describe "category_support/1" do
+
+    test "returns a list of entity supported entity categories" do
+      assert ["http://refeds.org/category/research-and-scholarship"] = Entity.category_support(@proxy_entity)
+    end
+
+    test "returns an empty list if no entity category support is present" do
+      assert [] = Entity.category_support(@local_adfs_entity)
+    end
+
+  end
+
+  describe "assurance/1" do
+
+    test "returns a list of assurance profile URIs" do
+      assert ["https://refeds.org/sirtfi"] = Entity.assurance(@proxy_entity)
+    end
+
+    test "returns an empty list if no assurance URIs are present" do
+      assert [] = Entity.assurance(@local_adfs_entity)
+    end
+
   end
 
 end
