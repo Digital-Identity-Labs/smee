@@ -10,6 +10,8 @@ defmodule SmeeXPathsTest do
   @sp_xdoc Entity.new(@sp_xml).xdoc
   @proxy_xml File.read! "test/support/static/cern.xml"
   @proxy_xdoc Entity.new(@proxy_xml).xdoc
+  @local_adfs_xml File.read! "test/support/static/adfs.xml"
+  @local_adfs_xdoc Entity.new(@local_adfs_xml).xdoc
 
   describe "entity_ids/1" do
 
@@ -78,6 +80,10 @@ defmodule SmeeXPathsTest do
 
     test "returns :instant string in a map, if present in parsed XML" do
       assert %{instant: "2014-11-07T16:35:40Z"} = XPaths.registration(@idp_xdoc)
+    end
+
+    test "returns nil (not a map) if no registration section is present at all" do
+      assert is_nil(XPaths.registration(@local_adfs_xdoc))
     end
 
   end

@@ -61,7 +61,7 @@ defmodule Smee.XPaths do
     end
   end
 
-  @spec registration(xdoc :: tuple()) :: map()
+  @spec registration(xdoc :: tuple()) :: map() | nil
   def registration(xdoc) do
     SweetXml.xpath(
       xdoc,
