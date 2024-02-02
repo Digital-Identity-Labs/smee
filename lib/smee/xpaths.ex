@@ -45,7 +45,7 @@ defmodule Smee.XPaths do
 
   end
 
-  @spec idp?(xdoc :: tuple()) :: map()
+  @spec idp?(xdoc :: tuple()) :: boolean()
   def idp?(xdoc) do
     case SweetXml.xpath(xdoc, @is_idp_p) do
       nil -> false
@@ -53,7 +53,7 @@ defmodule Smee.XPaths do
     end
   end
 
-  @spec sp?(xdoc :: tuple()) :: map()
+  @spec sp?(xdoc :: tuple()) :: boolean()
   def sp?(xdoc) do
     case SweetXml.xpath(xdoc, @is_sp_p) do
       nil -> false
