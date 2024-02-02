@@ -17,6 +17,7 @@ defmodule CompatibilityEdugateTest do
 
   describe "aggregate service" do
 
+    @tag timeout: 180_000
     test "Can download and verify metadata" do
       assert @min_count < Smee.source(
                             @aggregate_url,
@@ -32,6 +33,7 @@ defmodule CompatibilityEdugateTest do
 
   describe "Metadata" do
 
+    @tag timeout: 180_000
     test "all entities can be parsed in a namespace-aware manner without errors" do
       assert is_list(Smee.source(@aggregate_url)
                   |> Smee.fetch!()

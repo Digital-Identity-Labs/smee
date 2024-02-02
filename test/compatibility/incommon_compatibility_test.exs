@@ -22,6 +22,7 @@ defmodule CompatibilityIncommonTest do
 
   describe "aggregate service" do
 
+    @tag timeout: 180_000
     test "Can download and verify metadata" do
       assert @min_count < Smee.source(
                             @aggregate_url,
@@ -37,6 +38,7 @@ defmodule CompatibilityIncommonTest do
 
   describe "MDQ Service" do
 
+    @tag timeout: 180_000
     test "can list all entities" do
       assert @min_count < MDQ.source(@mdq_url)
                           |> MDQ.list!()
@@ -58,6 +60,7 @@ defmodule CompatibilityIncommonTest do
 
   describe "Metadata" do
 
+    @tag timeout: 180_000
     test "all entities can be parsed in a namespace-aware manner without errors" do
       assert is_list(
                Smee.source(@aggregate_url)
