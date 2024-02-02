@@ -3,7 +3,7 @@ defmodule Smee.Security do
   `Smee.Security` uses XML signatures to provide anti-tampering and origin authentication features.
 
   Most metadata from national research and education networks is signed to add an extra layer of security for users:
-    altered metadata can create security and privacy vulnerabilities for organsations.
+    altered metadata can create security and privacy vulnerabilities for organisations.
 
   At the moment only signature verification on Metadata structs is supported.
   """
