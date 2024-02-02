@@ -308,7 +308,7 @@ defmodule SmeeFilterTest do
 
   end
 
-  describe "new/2" do
+  describe "fresh/2" do
 
     test "only entities registered in the last week will remain" do
       two_days_ago = DateTime.utc_now()
@@ -325,7 +325,7 @@ defmodule SmeeFilterTest do
              ] = Stream.concat(
                    [[tweaked_sp, @idp_entity, @local_adfs_entity, @proxy_entity]]
                  )
-                 |> Filter.new()
+                 |> Filter.fresh()
                  |> Enum.to_list()
     end
 
@@ -346,7 +346,7 @@ defmodule SmeeFilterTest do
              ] = Stream.concat(
                    [[tweaked_sp, @idp_entity, @local_adfs_entity, @proxy_entity]]
                  )
-                 |> Filter.new(false)
+                 |> Filter.fresh(false)
                  |> Enum.to_list()
     end
 

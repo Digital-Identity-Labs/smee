@@ -186,8 +186,8 @@ defmodule Smee.Filter do
 
   The filter is positive by default but can be inverted by specifying `false`
   """
-  @spec new(enum :: Enumerable.t(), bool :: boolean()) :: Enumerable.t()
-  def new(enum, bool \\ true) do
+  @spec fresh(enum :: Enumerable.t(), bool :: boolean()) :: Enumerable.t()
+  def fresh(enum, bool \\ true) do
     enum
     |> Stream.filter(
          fn e ->
