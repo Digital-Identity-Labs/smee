@@ -82,8 +82,9 @@ defmodule SmeeXPathsTest do
       assert %{instant: "2014-11-07T16:35:40Z"} = XPaths.registration(@idp_xdoc)
     end
 
-    test "returns nil (not a map) if no registration section is present at all" do
-      assert is_nil(XPaths.registration(@local_adfs_xdoc))
+    test "returns an empty map if no registration section is present at all" do
+      empty_map = %{}
+      assert ^empty_map = XPaths.registration(@local_adfs_xdoc)
     end
 
   end

@@ -61,14 +61,15 @@ defmodule Smee.XPaths do
     end
   end
 
-  @spec registration(xdoc :: tuple()) :: map() | nil
+  @spec registration(xdoc :: tuple()) :: map()
   def registration(xdoc) do
-    SweetXml.xpath(
+    first = SweetXml.xpath(
       xdoc,
       @ra_p,
       @ra_x
     )
     |> List.first()
+    first || %{}
   end
 
 end
