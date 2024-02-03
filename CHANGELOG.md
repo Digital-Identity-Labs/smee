@@ -4,12 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.0] - 24-01-
+## [0.4.0] - 24-02-
 
 ## Breaking Changes
 - Smee is now not compatible with Windows, at least until this is supported by the Rambo package. We've had to chose between
   Windows support and easier use with modern Macs. If new versions of Rambo support Windows compilation again, Windows
   compatibility can return. !!! Might need to roll back this change
+- XML in Metadata structs is now back to being the original metadata, with comments, signatures, etc.
 
 ## New Features
 - Smee now uses its own cache directory for downloaded files, and that cache can be purged with `Smee.Sys.reset_cache/0`
@@ -24,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Entity now has functions to extract more information: `registration_authority/1`, `registered_at/1`, `categories/1`,
   `category_support/1` and `assurance/1`.
 - New filters: `entity_category/3`, `entity_category_support/3`, `tag/3` and others
+- Since `Smee.Metadata.xml/1` now returns the original XML, `Smee.Metadata.xml_processed/2` has been added to return
+  tweaked versions of the XML. Presently only one processing option is available `:strip`
 
 ## Improvements
 - A few more metadata namespaces have been added
@@ -38,6 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rambo no longer needs to be specified as a compiler option and dependency on Macs.  !!! Might need to roll back this change
 - All known XML namespaces were being added to all metadata, now single entity XML should only include relevant namespaces.
 - `validUntil` can now be set in XML when publishing single entity metadata
+- XML in Metadata structs, and returned by `Smee.Metadata.xml/1`, is now identical to the input XML, which no longer 
+  breaks verification with certificates. 
 
 ## Other Changes
 - Namespaces in metadata are now in alphabetical order, after the default namespace

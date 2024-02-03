@@ -111,7 +111,7 @@ defmodule Smee.Metadata do
   @spec new(data :: binary(), options :: keyword()) :: Metadata.t()
   def new(data, options \\ []) when is_binary(data) do
 
-    data = XmlMunger.process_metadata_xml(data)
+    data = XmlMunger.prepare_xml(data)
     url = Utils.normalize_url(Keyword.get(options, :url, nil))
     dlt = Keyword.get(options, :downloaded_at, DateTime.utc_now())
     dhash = Smee.Utils.sha1(data)
@@ -132,7 +132,7 @@ defmodule Smee.Metadata do
       verified: false,
       priority: Keyword.get(options, :priority, 5),
       trustiness: Keyword.get(options, :trustiness, 0.5),
-      tags:  Utils.tidy_tags(Keyword.get(options, :tags, []))
+      tags: Utils.tidy_tags(Keyword.get(options, :tags, []))
     }
     |> fix_type()
     |> extract_info()
@@ -232,9 +232,27 @@ defmodule Smee.Metadata do
     |> Map.merge(%{data: :zlib.gunzip(metadata.data), compressed: false})
   end
 
+
   @doc """
   Returns a parsed Erlang `xmerl` structure representing the metadata XML, for use with `xmerl`, `SweetXML` and other
     tools.
+
+  Using this is *not recommended* as it will create a very, very large `xmerl` structure. The `Smee.Transform` and `Smee.Extract`
+    modules may be more efficient for working with large metadata files, and the best approach is to stream and work with
+  `Smee.Entity` records using `Smee.Metadata.stream_entities/2`
+
+  Unlike the similar function for `Entity` it is not possible to cache this in the struct, so it will
+  be regenerated every time.
+  """
+  @spec xdoc(entity :: Metadata.t()) :: tuple()
+  def xdoc(entity) do
+    parse_data(entity)
+  end
+
+  @doc """
+  Returns the XML for the metadata, unchanged, and decompressed.
+
+  The XML is returned as a binary string - it may be **very** large, and larger than the struct it comes from.
   """
   @spec xml(metadata :: Metadata.t()) :: binary()
   def xml(%{data: problem}) when is_nil(problem) or problem == "" do
@@ -248,6 +266,25 @@ defmodule Smee.Metadata do
 
   def xml(metadata) do
     metadata.data
+  end
+
+  @doc """
+  Returns the XML for the metadata, decompressed, after a processing stage.
+
+  Available processing options:
+    * `:default` and `:none` - Nothing is changed, so it will be the same output as 'Smee.Metadata.xml/1`
+    * `:strip` - XML has comments removed, signature removed, and XML declaration removed.
+
+  The XML is returned as a binary string - it may be **very** large.
+  """
+  @spec xml_processed(metadata :: Metadata.t(), process_type :: binary()) :: binary()
+  def xml_processed(metadata, process_type \\ :default) do
+    case(process_type) do
+      :default -> xml(metadata)
+      :none -> xml(metadata)
+      :strip -> XmlMunger.process_metadata_xml(xml(metadata))
+      _ -> raise "Unknown processing type '#{process_type}'"
+    end
   end
 
   @doc """
@@ -506,11 +543,11 @@ defmodule Smee.Metadata do
 
   @spec split_to_stream(metadata :: Metadata.t()) :: Enumerable.t()
   defp split_to_stream(%{type: :aggregate} = metadata) do
-    XmlMunger.split_aggregate_to_stream(metadata.data)
+    XmlMunger.split_aggregate_to_stream(xml_processed(metadata, :default))
   end
 
   defp split_to_stream(%{type: :single} = metadata) do
-    XmlMunger.split_single_to_stream(metadata.data)
+    XmlMunger.split_single_to_stream(xml_processed(metadata,:default))
   end
 
   @spec extract_id(xml_fragment :: binary()) :: binary()
@@ -557,4 +594,24 @@ defmodule Smee.Metadata do
     Extract.list_ids(metadata)
   end
 
+  @spec parse_data(metadata :: Metadata.t()) :: tuple()
+  defp parse_data(%{compressed: true} = metadata) do
+    metadata
+    |> decompress()
+    |> parse_data()
+  end
+
+  defp parse_data(metadata) do
+
+    xml_data = Metadata.xml(metadata)
+
+    try do
+      SweetXml.parse(xml_data, namespace_conformant: true, dtd: :none)
+    rescue
+      e ->
+        reraise "cannot process data for #{metadata.uri}! Error is: #{e.message}\n Data is:\n #{xml_data}",
+                __STACKTRACE__
+    end
+
+  end
 end

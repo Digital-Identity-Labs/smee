@@ -7,7 +7,6 @@ defmodule SmeeMetadataTest do
   alias Smee.Source
   alias Smee.Fetch
   alias Smee.XmlMunger
-  #  alias Smee.Utils
 
   # @arbitrary_dt DateTime.new!(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
   @valid_metadata_file "test/support/static/aggregate.xml"
@@ -67,17 +66,16 @@ defmodule SmeeMetadataTest do
              )
     end
 
-    test "data defaults to a trimmed version of passed data param" do
-      data = XmlMunger.process_metadata_xml(@valid_metadata_xml)
-      assert %Metadata{data: ^data} = Metadata.new(@valid_metadata_xml)
+    test "data defaults to a trimmed version of passed data param (literally - only external spaces removed)" do
+      assert %Metadata{data: @valid_metadata_xml} = Metadata.new("  #{@valid_metadata_xml}  ")
     end
 
     test "size is set automatically to the bytesize of the data" do
-      assert %Metadata{size: 39_222} = Metadata.new(@valid_metadata_xml)
+      assert %Metadata{size: 39_363} = Metadata.new(@valid_metadata_xml)
     end
 
     test "data_hash is set automatically to the sha1 hash of the data" do
-      assert %Metadata{data_hash: "3e5e9ba036e3b1915a2004830828284cccec36f6"} = Metadata.new(@valid_metadata_xml)
+      assert %Metadata{data_hash: "7bb9e69f7b5490f679e70b9fc4e4b14d2022ab83"} = Metadata.new(@valid_metadata_xml)
     end
 
     test "type defaults to :aggregate" do
@@ -105,7 +103,7 @@ defmodule SmeeMetadataTest do
     end
 
     test "etag defaults to the data hash" do
-      assert %Metadata{etag: "3e5e9ba036e3b1915a2004830828284cccec36f6"} = Metadata.new(@valid_metadata_xml)
+      assert %Metadata{etag: "7bb9e69f7b5490f679e70b9fc4e4b14d2022ab83"} = Metadata.new(@valid_metadata_xml)
     end
 
     test "label defaults to nil" do
@@ -218,12 +216,12 @@ defmodule SmeeMetadataTest do
     end
 
     test "data cannot be set using an option" do
-      data = XmlMunger.process_metadata_xml(@valid_metadata_xml)
+      data = @valid_metadata_xml
       assert %Metadata{data: ^data} = Metadata.new(@valid_metadata_xml, data: "This shouldn't be set")
     end
 
     test "hashes cannot be set using an option" do
-      assert %Metadata{data_hash: "3e5e9ba036e3b1915a2004830828284cccec36f6"} = Metadata.new(
+      assert %Metadata{data_hash: "7bb9e69f7b5490f679e70b9fc4e4b14d2022ab83"} = Metadata.new(
                @valid_metadata_xml,
                data_hash: "WRONG"
              )
@@ -234,7 +232,7 @@ defmodule SmeeMetadataTest do
     end
 
     test "size cannot be set using an option" do
-      assert %Metadata{size: 39_222} = Metadata.new(@valid_metadata_xml, size: 100)
+      assert %Metadata{size: 39_363} = Metadata.new(@valid_metadata_xml, size: 100)
     end
 
     test "verified cannot be set using an option" do
@@ -246,7 +244,7 @@ defmodule SmeeMetadataTest do
     #    end
 
     test "tags can be set with options" do
-      assert %Metadata{tags: ["bar", "foo"]} =  Metadata.new(@valid_metadata_xml, tags: ["foo", "bar"])
+      assert %Metadata{tags: ["bar", "foo"]} = Metadata.new(@valid_metadata_xml, tags: ["foo", "bar"])
     end
 
 
@@ -302,32 +300,9 @@ defmodule SmeeMetadataTest do
              )
     end
 
-    #    test "data defaults to a trimmed version of passed data param" do
-    #      data = Metadata.entities(@valid_metadata)
-    #             |> Smee.Publish.xml()
-    #      # assert %Metadata{data: ^data} = Metadata.derive(Metadata.entities(@valid_metadata))
-    #      assert %Metadata{data: ^data} = Metadata.derive(Metadata.entities(@valid_metadata))
-    #      ## Test can't work because comparison data will have different datetime strings in it!
-    #      ## Leaving as a compile error to nag me to allow options in publish so date can be set
-    #    end
-    # See Issue #6
-
     test "size is set automatically to the bytesize of the data" do
       assert %Metadata{size: 40_940} = Metadata.derive(Metadata.entities(@valid_metadata))
     end
-
-    #    test "data_hash is set automatically to the sha1 hash of the data" do
-    #      data = String.trim(
-    #        Metadata.entities(@valid_metadata)
-    #        |> Smee.Publish.xml
-    #      )
-    #      sha1 = Utils.sha1(data)
-    #      #assert %Metadata{data_hash: ^sha1} = Metadata.derive(Metadata.entities(@valid_metadata))
-    #      assert %Metadata{data_hash: ^sha1} = Metadata.derive(Metadata.entities(@valid_metadata))
-    #      ## Test can't work because comparison data will have different datetime strings in it!
-    #      ## Leaving as a compile error to nag me to allow options in publish so date can be set
-    #    end
-    # See Issue #6
 
     test "type defaults to :aggregate" do
       assert %Metadata{type: :aggregate} = Metadata.derive(Metadata.entities(@valid_metadata))
@@ -495,7 +470,7 @@ defmodule SmeeMetadataTest do
     #    end
 
     test "tags can be set with options" do
-      assert %Metadata{tags: ["bar", "foo"]} =  Metadata.new(@valid_metadata_xml, tags: ["foo", "bar"])
+      assert %Metadata{tags: ["bar", "foo"]} = Metadata.new(@valid_metadata_xml, tags: ["foo", "bar"])
     end
 
   end
@@ -509,12 +484,12 @@ defmodule SmeeMetadataTest do
 
     test "updated metadata has the correct bytesize" do
       bad_metadata = struct(@valid_metadata, %{size: 0})
-      assert %Metadata{size: 39_222} = Metadata.update(bad_metadata)
+      assert %Metadata{size: 39_363} = Metadata.update(bad_metadata)
     end
 
     test "updated metadata has the correct data hash" do
       bad_entity = struct(@valid_metadata, %{data_hash: "LE SIGH..."})
-      assert %Metadata{data_hash: "3e5e9ba036e3b1915a2004830828284cccec36f6"} = Metadata.update(bad_entity)
+      assert %Metadata{data_hash: "7bb9e69f7b5490f679e70b9fc4e4b14d2022ab83"} = Metadata.update(bad_entity)
     end
 
     test "updated metadata without new XML does not change count value" do
@@ -575,7 +550,7 @@ defmodule SmeeMetadataTest do
 
     test "Bytesize remains the same, original size" do
       compressed_metadata = Metadata.compress(@valid_metadata)
-      assert %Metadata{size: 39_222} = compressed_metadata
+      assert %Metadata{size: 39_363} = compressed_metadata
     end
 
     test "The compressed flag is set" do
@@ -600,7 +575,7 @@ defmodule SmeeMetadataTest do
 
     test "Bytesize remains the same, original size" do
       compressed_metadata = Metadata.compress(@valid_metadata)
-      assert %Metadata{size: 39_222} = Metadata.decompress(compressed_metadata)
+      assert %Metadata{size: 39_363} = Metadata.decompress(compressed_metadata)
     end
 
     test "The compressed flag is unset" do
@@ -613,17 +588,15 @@ defmodule SmeeMetadataTest do
 
   describe "xml/1" do
 
-    test "returns xml data string for the Metadata" do
-      xml = XmlMunger.process_metadata_xml(@valid_metadata_xml)
-      assert ^xml = Metadata.xml(@valid_metadata)
+    test "returns xml data string for the Metadata, as it was when originally loaded or downloaded" do
+
+      assert @valid_metadata_xml = Metadata.xml(@valid_metadata)
     end
 
-    test "returns xml data with no comments in it at all" do
-      assert String.contains?(@valid_metadata_xml, "<!--")
-      assert String.contains?(@valid_metadata_xml, "-->")
-      assert 1 = (length(String.split(@valid_metadata_xml, "<!--")) - 1)
-      refute String.contains?(Metadata.xml(@valid_metadata), "<!--")
-      refute String.contains?(Metadata.xml(@valid_metadata), "-->")
+    test "can handle compressed XML" do
+      assert @valid_metadata_xml = @valid_metadata
+                                   |> Metadata.compress()
+                                   |> Metadata.xml()
     end
 
     test "raises an exception if there is no data" do
@@ -634,6 +607,72 @@ defmodule SmeeMetadataTest do
       )
 
     end
+
+  end
+
+  describe "xml_processed/2" do
+
+    test "by default, with no processor selected, returns original XML" do
+      assert @valid_metadata_xml = Metadata.xml_processed(@valid_metadata)
+    end
+
+    test "returns original XML if :default or :none are specified" do
+      assert @valid_metadata_xml = Metadata.xml_processed(@valid_metadata, :default)
+      assert @valid_metadata_xml = Metadata.xml_processed(@valid_metadata, :none)
+    end
+
+    test "returns xml data string for the Metadata, if passed :strip" do
+      xml = XmlMunger.process_metadata_xml(@valid_metadata_xml)
+      assert ^xml = Metadata.xml_processed(@valid_metadata, :strip)
+    end
+
+    test "returns xml data with no comments in it at all, if passed :strip param" do
+      assert String.contains?(@valid_metadata_xml, "<!--")
+      assert String.contains?(@valid_metadata_xml, "-->")
+      assert 1 = (length(String.split(@valid_metadata_xml, "<!--")) - 1)
+      refute String.contains?(Metadata.xml_processed(@valid_metadata, :strip), "<!--")
+      refute String.contains?(Metadata.xml_processed(@valid_metadata, :strip), "-->")
+    end
+
+    test "remove the XML declaration, if passed :strip param" do
+      refute String.contains?(
+               Metadata.xml_processed(@valid_metadata, :strip),
+               "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
+             )
+    end
+
+    test "raises an exception if there is no data" do
+
+      assert_raise(
+        RuntimeError,
+        fn -> Metadata.xml_processed(struct(@valid_metadata, %{data: nil})) end
+      )
+
+    end
+
+  end
+
+  describe "xdoc/1" do
+
+    import Smee.Sigils
+
+    test "returns parsed xmerl data if XML binary string is present in the struct" do
+      xdoc = Metadata.xdoc(@valid_metadata)
+      assert is_tuple(xdoc)
+      assert %{uri: "http://example.com/federation"} = xdoc
+                                                       |> SweetXml.xmap(uri: ~x"string(/*/@Name)"s)
+    end
+
+    test "returns parsed xmerl data even if XML has been compressed" do
+      xdoc = @valid_metadata
+             |> Metadata.compress()
+             |> Metadata.xdoc()
+
+      assert is_tuple(xdoc)
+      assert %{uri: "http://example.com/federation"} = xdoc
+                                                       |> SweetXml.xmap(uri: ~x"string(/*/@Name)"s)
+    end
+
 
   end
 
@@ -835,7 +874,7 @@ defmodule SmeeMetadataTest do
   end
 
   describe "Protocol Jason Encoder" do
-    "{\"compressed\":false,\"data\":\"<EntitiesDescriptor" <> _ = Jason.encode!(@valid_metadata)
+    "{\"compressed\":false,\"data\":\"" <> _ = Jason.encode!(@valid_metadata)
   end
 
 end
