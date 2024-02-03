@@ -543,11 +543,11 @@ defmodule Smee.Metadata do
 
   @spec split_to_stream(metadata :: Metadata.t()) :: Enumerable.t()
   defp split_to_stream(%{type: :aggregate} = metadata) do
-    XmlMunger.split_aggregate_to_stream(xml_processed(metadata, :default))
+    XmlMunger.split_aggregate_to_stream(xml_processed(metadata, :strip))
   end
 
   defp split_to_stream(%{type: :single} = metadata) do
-    XmlMunger.split_single_to_stream(xml_processed(metadata,:default))
+    XmlMunger.split_single_to_stream(xml_processed(metadata, :strip))
   end
 
   @spec extract_id(xml_fragment :: binary()) :: binary()
