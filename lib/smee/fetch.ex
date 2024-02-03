@@ -156,18 +156,7 @@ defmodule Smee.Fetch do
     |> List.wrap()
     |> Enum.reject(fn s -> Utils.local?(s) end)
     |> Enum.uniq_by(fn s -> s.url end)
-    |> Enum.map(
-         fn s ->
-           Task.async(
-             fn ->
-               case Req.get(Utils.fetchable_remote_xml(s), Keyword.put(http_options(s), :cache, true)) do
-                 {:ok, response} -> {response.status, s.url}
-                 {:error, _} -> {0, s.url}
-               end
-             end
-           )
-         end
-       )
+    |> Enum.map(fn s -> warm_get_task(s) end)
     |> Task.await_many(:infinity)
     |> Enum.map(fn {status, url} -> {url, status} end)
     |> Map.new()
@@ -342,6 +331,18 @@ defmodule Smee.Fetch do
         retry_delay: &retry_jitter/1
       ],
       extra_options
+    )
+  end
+
+  @spec warm_get_task(source :: Source.t()) :: Task.t()
+  defp warm_get_task(source) do
+    Task.async(
+      fn ->
+        case Req.get(Utils.fetchable_remote_xml(source), Keyword.put(http_options(source), :cache, true)) do
+          {:ok, response} -> {response.status, source.url}
+          {:error, _} -> {0, source.url}
+        end
+      end
     )
   end
 

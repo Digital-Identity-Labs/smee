@@ -24,12 +24,12 @@ defmodule Smee.Security.Xmlsec1 do
   @spec build_command(metadata :: Metadata.t(), cert_file :: binary()) :: list()
   defp build_command(_metadata, cert_file) do
     @base_command ++
-      version_dependent_options() ++
-      [
-        "--pubkey-cert-pem",
-        cert_file,
-        "-"
-      ]
+    version_dependent_options() ++
+    [
+      "--pubkey-cert-pem",
+      cert_file,
+      "-"
+    ]
   end
 
   @spec debug_command(command :: list()) :: binary()
@@ -50,9 +50,10 @@ defmodule Smee.Security.Xmlsec1 do
 
   @spec version_dependent_options() :: list(binary())
   defp version_dependent_options do
-    cond do
-      new_opts?() -> ["--lax-key-search"]
-      true -> []
+    if new_opts?() do
+      ["--lax-key-search"]
+    else
+      []
     end
   end
 
@@ -75,14 +76,21 @@ defmodule Smee.Security.Xmlsec1 do
         _ -> "Unknown error"
       end
 
-    if [_, major, minor, _patch] = Regex.run(~r/.*(\d+)[.](\d+)[.](\d+)/, output) do
-      cond do
-        major > 1 -> true
-        major == 1 && minor > 29 -> true
-        true -> false
-      end
-    else
-      false
+    case Regex.run(~r/.*(\d+)[.](\d+)[.](\d+)/, output) do
+      nil -> false
+      [_, major, minor, _patch] -> version_check(major, minor)
+      _ -> false
+    end
+
+  end
+
+  @spec version_check(major :: integer(), minor :: integer()) :: boolean()
+  defp version_check(major, minor) do
+    cond do
+      major > 1 -> true
+      major == 1 && minor > 29 -> true
+      true -> false
     end
   end
+
 end

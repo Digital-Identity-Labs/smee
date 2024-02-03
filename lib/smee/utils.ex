@@ -203,14 +203,14 @@ defmodule Smee.Utils do
     |> Enum.sort()
   end
 
-  @spec format_xml_date(dt :: %DateTime{}) :: binary()
+  @spec format_xml_date(dt :: DateTime.t()) :: binary()
   def format_xml_date(dt) do
     dt
     |> DateTime.truncate(:second)
     |> DateTime.to_iso8601()
   end
 
-  @spec valid_until(dt :: %DateTime{} | binary() | atom() | integer()) :: binary()
+  @spec valid_until(dt :: DateTime.t() | binary() | atom() | integer()) :: binary()
   def valid_until(flag) when flag in [:auto, "auto", :default, "default"] do
     Smee.SysCfg.validity_days()
     |> valid_until()

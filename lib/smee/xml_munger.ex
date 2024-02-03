@@ -308,7 +308,7 @@ defmodule Smee.XmlMunger do
   @spec valid_until_attrblock(options :: keyword()) :: binary()
   defp valid_until_attrblock(options) do
     vu = Keyword.get(options, :valid_until, nil)
-    if (vu), do: ~s|validUntil="#{Utils.valid_until(vu)}"|, else: ""
+    if vu, do: ~s|validUntil="#{Utils.valid_until(vu)}"|, else: ""
   end
 
   @spec publisher_block(options :: keyword()) :: binary()
