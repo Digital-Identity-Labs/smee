@@ -17,17 +17,17 @@ defmodule Mix.Tasks.Deps.Smee do
 
     case :os.type do
       {_, :nt} -> IO.error @manual_text
-      {:unix, :darwin} -> IO.cmd("brew install xmlsec1 libxml2 libxslt")
+      {:unix, :darwin} -> IO.cmd("brew install xmlsec1 libxml2 libxslt", [])
       {:unix, :linux} -> issue = File.read!("/etc/issue")
                          cond do
                            String.contains?(issue, "Debian") ->
-                             IO.cmd("sudo apt-get install xmlsec1 libxml2-utils xsltproc")
+                             IO.cmd("sudo apt-get install xmlsec1 libxml2-utils xsltproc", [])
                            String.contains?(issue, "Ubuntu") ->
-                             IO.cmd("sudo apt-get install xmlsec1 libxml2-utils xsltproc")
+                             IO.cmd("sudo apt-get install xmlsec1 libxml2-utils xsltproc", [])
                            String.contains?(issue, "Red Hat") ->
-                             IO.cmd("sudo yum install xmlsec1 libxml2 libxslt")
+                             IO.cmd("sudo yum install xmlsec1 libxml2 libxslt", [])
                            String.contains?(issue, "Alpine") ->
-                             IO.cmd("sudo apk add --update --no-cache libxslt xmlsec libxml2-utils")
+                             IO.cmd("sudo apk add --update --no-cache libxslt xmlsec libxml2-utils", [])
                            true ->
                              IO.error @manual_text
                          end
