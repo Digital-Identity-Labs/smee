@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   tweaked versions of the XML. Presently only one processing option is available `:strip`
 
 ## Improvements
+- Speed improvements: processing Metadata into Entity structs is now twice as fast
 - A few more metadata namespaces have been added
 - `Smee.Entity.id/1` and `Smee.Entity.transformed_id/1` as helpers for getting an entityID 
 - Publishing aggregated metadata now has configurable validUntil dates. 
