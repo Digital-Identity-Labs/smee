@@ -167,6 +167,7 @@ defmodule Smee.Fetch do
 
   An :ok tuple containing a map of etag (string) and changed_at (DateTime) will be returned if successful.
   """
+  @spec probe(sources :: Source.t()) :: {:ok, map()} | {:error, any()}
   def probe(source) do
     if Utils.file_url?(source.url) do
       {:error, "Source URL #{source.url} is not a remote file!"}
