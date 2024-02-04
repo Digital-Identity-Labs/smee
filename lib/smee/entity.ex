@@ -460,7 +460,7 @@ defmodule Smee.Entity do
   (indicated with the URI "http://refeds.org/category/research-and-scholarship") shows that a service will behave according to
     certain rules.
 
-  You can see a dump of all entity attributes, including entity categories, using `Smee.`Extract.list_entity_attrs/1`
+  You can see a dump of all entity attributes, including entity categories, using `Smee.Extract.list_entity_attrs/1`
   """
   @spec categories(entity :: Entity.t()) :: list()
   def categories(entity) do

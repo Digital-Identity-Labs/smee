@@ -7,9 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.0] - 24-02-
 
 ## Breaking Changes
-- Smee is now not compatible with Windows, at least until this is supported by the Rambo package. We've had to chose between
-  Windows support and easier use with modern Macs. If new versions of Rambo support Windows compilation again, Windows
-  compatibility can return. !!! Might need to roll back this change
 - XML in Metadata structs is now back to being the original metadata, with comments, signatures, etc.
 
 ## New Features

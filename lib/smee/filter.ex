@@ -7,7 +7,7 @@ defmodule Smee.Filter do
   process larger metadata files is **strongly discouraged**.
 
   By default these functions include matching entities and exclude those that do not match, but this an be reversed.
-  By default `Smee.Filter.idp/3` will exclude entities that are no IdPs. But by specifying `false` as the third
+  By default `Smee.Filter.idp/2` will exclude entities that are no IdPs. But by specifying `false` as the third
   parameter the filter will be inverted and exclude entities that have an IdP role.
 
   """

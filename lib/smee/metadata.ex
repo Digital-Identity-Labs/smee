@@ -272,7 +272,7 @@ defmodule Smee.Metadata do
   Returns the XML for the metadata, decompressed, after a processing stage.
 
   Available processing options:
-    * `:default` and `:none` - Nothing is changed, so it will be the same output as 'Smee.Metadata.xml/1`
+    * `:default` and `:none` - Nothing is changed, so it will be the same output as `Smee.Metadata.xml/1`
     * `:strip` - XML has comments removed, signature removed, and XML declaration removed.
 
   The XML is returned as a binary string - it may be **very** large.
