@@ -31,7 +31,7 @@ defmodule Smee.Entity do
                uri: nil | binary(),
                uri_hash: nil | binary(),
                data: nil | binary(),
-               xdoc: nil | binary(),
+               xdoc: nil | tuple(),
                data_hash: nil | binary(),
                valid_until: nil | DateTime.t(),
                label: nil | binary(),
@@ -416,7 +416,7 @@ defmodule Smee.Entity do
 
   Tags are arbitrary classifiers, initially inherited from source and metadata
   """
-  @spec tag(entity :: Entity.t(), tags :: list() | nil | binary()) :: list(binary())
+  @spec tag(entity :: Entity.t(), tags :: list() | nil | binary()) :: Entity.t()
   def tag(entity, tags) do
     struct(entity, %{tags: Utils.tidy_tags(tags)})
   end

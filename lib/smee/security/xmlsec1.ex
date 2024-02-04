@@ -84,11 +84,15 @@ defmodule Smee.Security.Xmlsec1 do
 
   end
 
-  @spec version_check(major :: integer(), minor :: integer()) :: boolean()
+  @spec version_check(major :: integer() | binary(), minor :: integer() | binary()) :: boolean()
+  defp version_check(major, minor) when is_binary(major) or is_binary(minor) do
+    version_check(String.to_integer("#{major}"), String.to_integer("#{minor}"))
+  end
+
   defp version_check(major, minor) do
     cond do
-      major > 1 -> true
       major == 1 && minor > 29 -> true
+      major > 1 -> true
       true -> false
     end
   end

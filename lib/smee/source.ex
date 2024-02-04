@@ -142,7 +142,7 @@ defmodule Smee.Source do
 
   Tags are arbitrary strings. They will be inherited by metadata and entities derived from this source.
   """
-  @spec tag(source :: Source.t(), tags :: list() | nil | binary()) :: list(binary())
+  @spec tag(source :: Source.t(), tags :: list() | nil | binary()) :: Source.t()
   def tag(source, tags) do
     struct(source, %{tags: Utils.tidy_tags(tags)})
   end

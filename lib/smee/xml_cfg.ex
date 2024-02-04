@@ -98,7 +98,7 @@ defmodule Smee.XmlCfg do
     Application.get_env(:smee, :namespaces, nil) || @saml_namespaces
   end
 
-  @spec erlang_namespaces() :: map()
+  @spec erlang_namespaces() :: list(tuple())
   def erlang_namespaces() do
     if Application.get_env(:smee, :namespaces, nil) do
       Application.get_env(:smee, :namespaces)

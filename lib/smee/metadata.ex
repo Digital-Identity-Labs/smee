@@ -277,7 +277,7 @@ defmodule Smee.Metadata do
 
   The XML is returned as a binary string - it may be **very** large.
   """
-  @spec xml_processed(metadata :: Metadata.t(), process_type :: binary()) :: binary()
+  @spec xml_processed(metadata :: Metadata.t(), process_type :: atom()) :: binary()
   def xml_processed(metadata, process_type \\ :default) do
     case(process_type) do
       :default -> xml(metadata)
@@ -484,7 +484,7 @@ defmodule Smee.Metadata do
 
   Tags are arbitrary classifiers, initially inherited from sources
   """
-  @spec tag(metadata :: Metadata.t(), tags :: list() | nil | binary()) :: list(binary())
+  @spec tag(metadata :: Metadata.t(), tags :: list() | nil | binary()) :: Metadata.t()
   def tag(metadata, tags) do
     struct(metadata, %{tags: Utils.tidy_tags(tags)})
   end

@@ -41,7 +41,7 @@ defmodule Smee.Fetch do
   Works with all types of Source, even MDQ services.
 
   """
-  @spec fetch(source :: Source.t(), options :: keyword()) :: Metadata.t()
+  @spec fetch(source :: Source.t(), options :: keyword()) :: {:ok, Metadata.t()} | {:error, any()}
   def fetch(source, options \\ [])
   def fetch(%{url: "file:" <> _} = source, options) do
     local(source, options)
@@ -58,7 +58,7 @@ defmodule Smee.Fetch do
      Works with remote Sources including MDQ services but will not accept metadata in a local file.
 
   """
-  @spec remote(source :: Source.t(), options :: keyword()) :: {:ok, Metadata.t()} | {:error, binary()}
+  @spec remote(source :: Source.t(), options :: keyword()) :: {:ok, Metadata.t()} | {:error, any()}
   def remote(source, _options \\ []) do
 
     if Utils.file_url?(source.url), do: raise "Source URL #{source.url} is not using HTTP!"
@@ -124,7 +124,7 @@ defmodule Smee.Fetch do
    Works with local Sources including MDQ services but will not accept metadata at a remote URL.
 
   """
-  @spec local(source :: Source.t(), options :: keyword()) :: Metadata.t()
+  @spec local(source :: Source.t(), options :: keyword()) :: {:ok, Metadata.t()} | {:error, any()}
   def local(source, _options \\ []) do
     if Utils.file_url?(source.url) do
       try do
@@ -290,10 +290,7 @@ defmodule Smee.Fetch do
 
   end
 
-  @spec metadata_from_file(url :: binary(), text :: binary, source :: Source.t()) :: {:ok, Metadata.t()} | {
-    :error,
-    atom()
-  }
+  @spec metadata_from_file(url :: binary(), text :: binary, source :: Source.t()) :: Metadata.t()
   defp metadata_from_file(path, data, source) do
 
     Smee.Metadata.new(
