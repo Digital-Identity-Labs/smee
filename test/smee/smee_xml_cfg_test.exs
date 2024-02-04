@@ -39,4 +39,18 @@ defmodule SmeeXmlCfgTest do
 
   end
 
+  describe "erlang_namespaces/0" do
+
+    test "by default should return an Erlang data structure equivalent to the default namespaces map" do
+      assert [
+               {~c"eduidmd", ~c"http://eduid.cz/schema/metadata/1.0"},
+               {~c"eidas", ~c"http://eidas.europa.eu/saml-extensions"},
+               {~c"ukfedlabel", ~c"http://ukfederation.org.uk/2006/11/label"},
+               {~c"saml1md", ~c"urn:mace:shibboleth:metadata:1.0"} | _
+             ] = XmlCfg.erlang_namespaces()
+    end
+
+  end
+
+
 end
