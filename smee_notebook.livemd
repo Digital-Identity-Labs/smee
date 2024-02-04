@@ -3,8 +3,8 @@
 # Smee Workbook
 
 ```elixir
-Mix.install([{:smee, ">= 0.2.0"}, {:rambo, "~> 0.3.4"}])
-alias Smee.{Metadata, Entity, Source, MDQ}
+Mix.install([{:smee, ">= 0.4.0"}, {:rambo, "~> 0.3.4"}])
+alias Smee.{Metadata, Entity, Source, MDQ, Filter, Sigil, Publish, Transform, Extract, Fetch}
 ```
 
 ## Requirements - Please Read!
@@ -38,10 +38,9 @@ cern_idp =
   |> MDQ.lookup!("https://cern.ch/login")
 ```
 
-## List all IdPs
+## List the EntityIDs of all IdPs in a federation
 
 ```elixir
-alias Smee.{Source, Fetch, Filter, Metadata}
 
 "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
 |> Source.new()
@@ -50,5 +49,21 @@ alias Smee.{Source, Fetch, Filter, Metadata}
 |> Filter.idp()
 |> Stream.map(fn e -> e.uri end)
 |> Enum.to_list()
+
+```
+
+### Create an aggregate that only contains SPs with SIRTFI, that were registered over the previous 12 months
+
+```elixir
+alias Smee.{Source, Fetch, Filter, Metadata, Publish}
+
+"http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
+|> Source.new()
+|> Fetch.remote!()
+|> Metadata.stream_entities()
+|> Filter.days(365)
+|> Filter.sp()
+|> Filter.assurance("https://refeds.org/sirtfi")
+|> Publish.xml()
 
 ```
