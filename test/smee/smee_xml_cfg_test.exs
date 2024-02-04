@@ -43,10 +43,14 @@ defmodule SmeeXmlCfgTest do
 
     test "by default should return an Erlang data structure equivalent to the default namespaces map" do
       assert [
+               {~c"alg", ~c"urn:oasis:names:tc:SAML:metadata:algsupport"},
+               {~c"algsupport", ~c"urn:oasis:names:tc:SAML:metadata:algsupport"},
+               {~c"auth", ~c"http://docs.oasis-open.org/wsfed/authorization/200706"},
+               {~c"disco", ~c"urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"},
+               {~c"ds", ~c"http://www.w3.org/2000/09/xmldsig#"},
+               {~c"dsig", ~c"http://www.w3.org/2000/09/xmldsig#"},
                {~c"eduidmd", ~c"http://eduid.cz/schema/metadata/1.0"},
-               {~c"eidas", ~c"http://eidas.europa.eu/saml-extensions"},
-               {~c"ukfedlabel", ~c"http://ukfederation.org.uk/2006/11/label"},
-               {~c"saml1md", ~c"urn:mace:shibboleth:metadata:1.0"} | _
+               {~c"eidas", ~c"http://eidas.europa.eu/saml-extensions"} | _
              ] = XmlCfg.erlang_namespaces()
     end
 

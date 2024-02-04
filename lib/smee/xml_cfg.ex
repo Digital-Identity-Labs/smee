@@ -55,6 +55,7 @@ defmodule Smee.XmlCfg do
                               @saml_namespaces,
                               fn {p, ns} -> {List.Chars.to_charlist(p), List.Chars.to_charlist(ns)} end
                             )
+                            |> Enum.sort()
 
   @default_namespace_prefix :md
   @default_namespace @saml_namespaces[@default_namespace_prefix]
@@ -105,6 +106,7 @@ defmodule Smee.XmlCfg do
       |> Enum.map(
            fn {p, ns} -> {List.Chars.to_charlist(p), List.Chars.to_charlist(ns)} end
          )
+      |> Enum.sort()
     else
       @erlanged_saml_namespaces
     end
