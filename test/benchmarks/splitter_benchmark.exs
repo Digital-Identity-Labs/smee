@@ -6,11 +6,9 @@ big_md = Smee.Source.new("http://metadata.ukfederation.org.uk/ukfederation-metad
 Benchee.run(
   %{
     "old_small" => fn -> Smee.Metadata.stream_entities(small_md) |> Stream.each(fn e -> e.uri end) |> Stream.run() end,
-    "old_big" => fn -> Smee.Metadata.stream_entities(big_md) |> Stream.each(fn e -> e.uri end) |> Stream.run() end,
-    "new_small" => fn -> Smee.Metadata.stream_entities(small_md, true) |> Stream.each(fn e -> e.uri end) |> Stream.run() end,
-    "new_big" => fn -> Smee.Metadata.stream_entities(big_md, true) |> Stream.each(fn e -> e.uri end) |> Stream.run() end,
+    "old_big" => fn -> Smee.Metadata.stream_entities(big_md) |> Stream.each(fn e -> e.uri end) |> Stream.run() end
   },
   time: 30,
   memory_time: 10,
-  parallel: 5
+  parallel: 1
 )
