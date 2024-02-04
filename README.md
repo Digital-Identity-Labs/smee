@@ -38,6 +38,7 @@ Smee contain more tools for handling SAML metadata, such as:
 * `Smee.Transform` - processing and editing entity XML
 * `Smee.Publish` - Formatting and outputting metadata in various formats
 * `Smee.Stats` - Simple stats for entity streams
+* `Smee.Sigils` - An ~x sigil for XPaths optimized for use with SAML
 
 ## Extensions and Extras
 
@@ -72,7 +73,7 @@ alias Smee.{Source, Fetch, Filter, Metadata}
 
 ```
 
-### Create an aggregate that only contains SPs 
+### Create an aggregate that only contains SPs with SIRTFI, that were registered over the previous 12 months 
 
 ```elixir
 alias Smee.{Source, Fetch, Filter, Metadata, Publish}
@@ -81,7 +82,9 @@ alias Smee.{Source, Fetch, Filter, Metadata, Publish}
 |> Source.new()
 |> Fetch.remote!()
 |> Metadata.stream_entities()
+|> Filter.days(365)
 |> Filter.sp()
+|> Filter.assurance("https://refeds.org/sirtfi")
 |> Publish.xml()
 
 ```
@@ -113,7 +116,7 @@ by adding `Smee` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:Smee, "~> 0.2.0"}
+    {:Smee, "~> 0.4.0"}
   ]
 end
 ```
@@ -145,7 +148,8 @@ relies on a small compiled shim that is provided pre-compiled for various archit
 - Version 0.3.4 of Rambo has an additional problem: it does not ship with a precompiled binary for M1 Macs, *and it also does
   not automatically build one*. Smee works around that with an explicit compile step in `mix.exs`, but it prevent Smee from
   being used in Elixir .exs scripts on M1 Macs unless you copy the compiled shim from Smee into your script's build directory.
-  Hopefully this will be fixed in later versions of Rambo.
+  Hopefully this will be fixed in later versions of Rambo. 
+- If you are using a modern M1/M2/M3 Mac you may need to explicitly include Rambo as a dependency in your project.
 
 ## Uses
 
@@ -209,7 +213,7 @@ If you are comfortable working with Python but Smee's Elixir code is unfamiliar 
 
 ## Copyright and License
 
-Copyright (c) 2023 Digital Identity Ltd, UK
+Copyright (c) 2023, 2024 Digital Identity Ltd, UK
 
 Smee is Apache 2.0 licensed.
 
