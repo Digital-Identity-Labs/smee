@@ -6,7 +6,7 @@ defmodule Smee.MixProject do
       app: :smee,
       version: "0.4.0",
       elixir: "~> 1.14",
-      description: "SAML Metadata Extractor, Etc",
+      description: "SAML Metadata Extractor, Etc: A library for processing large collections of SAML metadata",
       package: package(),
       name: "Smee",
       source_url: "https://github.com/Digital-Identity-Labs/smee",
@@ -43,7 +43,7 @@ defmodule Smee.MixProject do
   defp deps do
     [
       {:req, "~> 0.4"},
-      {:sweet_xml, "~> 0.7.3"},
+      {:sweet_xml, "~> 0.7"},
       {:rambo, "~> 0.3.4"},
       {:briefly, "~> 0.5.0"},
       {:easy_ssl, git: "https://github.com/Digital-Identity-Labs/EasySSL", ref: "87ece602a3510ad60b7bba1755b6a32d5eb1141b"},
