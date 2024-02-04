@@ -91,7 +91,7 @@ defmodule Smee.Security.Xmlsec1 do
 
   defp version_check(major, minor) do
     cond do
-      major == 1 && minor > 29 -> true
+      major == 1 && minor >= 3 -> true
       major > 1 -> true
       true -> false
     end
