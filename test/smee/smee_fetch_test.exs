@@ -1,5 +1,5 @@
 defmodule SmeeFetchTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
 
   alias Smee.Fetch
   alias Smee.Metadata
@@ -21,6 +21,7 @@ defmodule SmeeFetchTest do
   @tag timeout: 180_000
   describe "fetch!/2" do
 
+    @tag timeout: 180_000
     test "it returns a metadata struct if given a source pointing to a remote metadata URL" do
       assert %Metadata{} = Fetch.fetch!(@remote_aggmd_source)
     end
@@ -33,6 +34,7 @@ defmodule SmeeFetchTest do
       assert %Metadata{} = Fetch.fetch!(@local_aggmd_source1)
     end
 
+    @tag timeout: 180_000
     test "it returns a metadata struct if given a source pointing to an MDQ service" do
       assert %Metadata{} = Fetch.fetch!(@mdq_service)
     end
@@ -50,6 +52,7 @@ defmodule SmeeFetchTest do
   @tag timeout: 180_000
   describe "fetch/2" do
 
+    @tag timeout: 180_000
     test "it returns a metadata struct if given a source pointing to a remote metadata URL" do
       assert {:ok, %Metadata{}} = Fetch.fetch(@remote_aggmd_source)
     end
@@ -62,6 +65,7 @@ defmodule SmeeFetchTest do
       assert {:ok, %Metadata{}} = Fetch.fetch(@local_aggmd_source1)
     end
 
+    @tag timeout: 180_000
     test "it returns a metadata struct if given a source pointing to an MDQ service" do
       assert{:ok, %Metadata{}} = Fetch.fetch(@mdq_service)
     end
@@ -72,7 +76,6 @@ defmodule SmeeFetchTest do
 
   end
 
-  @tag timeout: 180_000
   describe "remote/2" do
 
     test "raises an exception if passed a local source" do
@@ -81,10 +84,12 @@ defmodule SmeeFetchTest do
                    end
     end
 
+    @tag timeout: 180_000
     test "it returns a metadata struct in a tuple if given a source pointing to a remote metadata URL" do
       assert {:ok, %Metadata{}} = Fetch.remote(@remote_aggmd_source)
     end
 
+    @tag timeout: 180_000
     test "it returns a metadata struct in a tuple if given a source pointing to an MDQ service" do
       assert {:ok, %Metadata{}} = Fetch.remote(@mdq_service)
     end
@@ -104,10 +109,12 @@ defmodule SmeeFetchTest do
                    end
     end
 
+    @tag timeout: 180_000
     test "it returns a metadata struct in a tuple if given a source pointing to a remote metadata URL" do
       assert%Metadata{} = Fetch.remote!(@remote_aggmd_source)
     end
 
+    @tag timeout: 180_000
     test "it returns a metadata struct in a tuple if given a source pointing to an MDQ service" do
       assert %Metadata{} = Fetch.remote!(@mdq_service)
     end

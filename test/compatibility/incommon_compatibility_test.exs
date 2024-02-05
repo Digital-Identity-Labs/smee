@@ -1,5 +1,5 @@
 defmodule CompatibilityIncommonTest do
-  use ExUnit.Case
+  use ExUnit.Case, async: false
   import SweetXml
 
   @moduletag :compatibility
