@@ -46,7 +46,7 @@ defmodule Smee.MixProject do
       {:sweet_xml, "~> 0.7"},
       {:rambo, "~> 0.3.4"},
       {:briefly, "~> 0.5.0"},
-      {:easy_ssl, git: "https://github.com/Digital-Identity-Labs/EasySSL", ref: "87ece602a3510ad60b7bba1755b6a32d5eb1141b"},
+      #{:easy_ssl, "~> 1.3"},
       {:xmerl_xml_indent, "~> 0.2.0"},
       {:xmlixer, "~> 0.1.1"},
       {:castore, ">= 1.0.5"},

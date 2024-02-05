@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Namespaces in Metadata are now in alphabetical order, after the default namespace
 - Updated dependencies, and hopefully loosened them for better integration compatibility with other apps 
 - Published aggregates do not include a validUntil date by default now, it must be set.
+- Temporarily includes a copy of [EasySSL](https://github.com/CaliDog/EasySSL)
 
 
 ## [0.3.0] - 2023-05-04

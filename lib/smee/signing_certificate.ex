@@ -122,7 +122,7 @@ defmodule Smee.SigningCertificate do
 
     try do
       cert_info = File.read!(path)
-                  |> EasySSL.parse_pem()
+                  |> Smee.EasySSL.parse_pem()
 
       src_fingerprint = normalize_fingerprint(fingerprint)
       actual_fingerprint = normalize_fingerprint(cert_info.fingerprint)

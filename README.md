@@ -197,6 +197,9 @@ Other sources and inspirations:
 
 * [The XSLT package for Elixir](https://github.com/johnhamelink/xslt)
 
+Smee temporarily includes a copy of [EasySSL](https://github.com/CaliDog/EasySSL) (MIT Licensed) that was required to
+fix an Erlang 26 compatibility issue. This will revert to a normal dependency when an update is released.
+
 ## Documentation
 
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
