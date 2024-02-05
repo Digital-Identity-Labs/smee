@@ -23,14 +23,26 @@ On Macs: `brew install xmlsec1 libxml2 libxslt`
 
 ## Grabbing some metadata with Smee
 
+This may take awhile, it's a large file, but the download will be cached making later runs much quicker
+
 ```elixir
-xml =
+metadata =
   Smee.source("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
   |> Smee.fetch!()
-  |> Smee.Metadata.xml()
 ```
 
-## Using MDQ from SmeeFeds
+## Viewing metadata XML
+
+Assuming you've downloaded the metadata into a variable called `metadata`
+
+```elixir
+  Smee.Metadata.xml(metadata)
+  |> IO.puts()
+```
+
+## Using MDQ 
+
+This should be very quick, as only one entity record is downloaded
 
 ```elixir
 cern_idp =
@@ -39,6 +51,8 @@ cern_idp =
 ```
 
 ## List the EntityIDs of all IdPs in a federation
+
+An example of streaming entities from a Metadata struct and passing the stream through filters
 
 ```elixir
 
@@ -53,6 +67,8 @@ cern_idp =
 ```
 
 ### Create an aggregate that only contains SPs with SIRTFI, that were registered over the previous 12 months
+
+Another contrived streaming and filtering example, this time to build a new metadata file.
 
 ```elixir
 alias Smee.{Source, Fetch, Filter, Metadata, Publish}
