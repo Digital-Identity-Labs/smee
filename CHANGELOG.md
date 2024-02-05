@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.0] - 24-02-
+## [0.4.0] - 24-02-05
 
 ## Breaking Changes
 - XML in Metadata structs is now back to being the original metadata, with comments, signatures, etc.
@@ -16,34 +16,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Source, Metadata and Entity structs are now truncated for `inspect`, omitting data and parsed XML, for easier debugging
 - Source, Metadata and Entity structs can now be interpolated and printed in strings, showing a type and unique URI 
   (format may change in future releases)
+- Source, Metadata and Entity structs now have `Jason`-compatible JSON export
 - `Smee.Fetch.warm/2` will download a list of sources concurrently and warm the HTTP cache
-- `Fetch.probe\1` will return last-modified and etag information from a source
+- `Fetch.probe/1` will return last-modified and etag information from a Source
 - You can add a Smee-optimised version of SweetXML's xpath sigil to your own projects with `Smee.Sigil`
 - Entity now has functions to extract more information: `registration_authority/1`, `registered_at/1`, `categories/1`,
   `category_support/1` and `assurance/1`.
 - New filters: `entity_category/3`, `entity_category_support/3`, `tag/3` and others
 - Since `Smee.Metadata.xml/1` now returns the original XML, `Smee.Metadata.xml_processed/2` has been added to return
-  tweaked versions of the XML. Presently only one processing option is available `:strip`
+  tweaked versions of the XML. Presently only one processing option is available, `:strip`, which removes comments, etc.
+- `Smee.Entity.id/1` and `Smee.Entity.transformed_id/1` as helpers for getting an entityID
 
 ## Improvements
 - Speed improvements: processing Metadata into Entity structs is now twice as fast
-- A few more metadata namespaces have been added
-- `Smee.Entity.id/1` and `Smee.Entity.transformed_id/1` as helpers for getting an entityID 
+- A few more metadata namespaces have been added to the default list
 - Publishing aggregated metadata now has configurable validUntil dates. 
 - `Fetch.fetch!/2` and `Fetch.local!/2` now have `Fetch.fetch/2` and `Fetch.local/2` equivalents.
 - XML processing and searching has (hopefully) been optimised, some code was ported back from `SmeeView` for wider use.
 
 ## Fixes
 - Should now work with OTP26 and Elixir 1.16.0 
-- Hopefully compatible with recent versions of `xmlsec1`, which has changed its behaviour and commandline.  
-- Rambo no longer needs to be specified as a compiler option and dependency on Macs.  !!! Might need to roll back this change
+- Hopefully compatible with recent versions of `xmlsec1`, which has changed its behaviour and commandline options.
 - All known XML namespaces were being added to all metadata, now single entity XML should only include relevant namespaces.
 - `validUntil` can now be set in XML when publishing single entity metadata
 - XML in Metadata structs, and returned by `Smee.Metadata.xml/1`, is now identical to the input XML, which no longer 
   breaks verification with certificates. 
 
 ## Other Changes
-- Namespaces in metadata are now in alphabetical order, after the default namespace
+- Namespaces in Metadata are now in alphabetical order, after the default namespace
 - Updated dependencies, and hopefully loosened them for better integration compatibility with other apps 
 - Published aggregates do not include a validUntil date by default now, it must be set.
 
@@ -87,9 +87,10 @@ XML storage and publishing bugfixes and small improvements, plus some breaking A
 - More namespaces are available
 
 
-
 ## [0.1.0] - 2023-04-11
 Initial release
 
+[0.4.0]: https://github.com/Digital-Identity-Labs/smee/compare/0.3.0...0.4.0
+[0.3.0]: https://github.com/Digital-Identity-Labs/smee/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/Digital-Identity-Labs/smee/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/Digital-Identity-Labs/smee/compare/releases/tag/0.1.0
