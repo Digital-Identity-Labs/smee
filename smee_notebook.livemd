@@ -81,5 +81,6 @@ alias Smee.{Source, Fetch, Filter, Metadata, Publish}
 |> Filter.sp()
 |> Filter.assurance("https://refeds.org/sirtfi")
 |> Publish.xml()
+|> IO.puts()
 
 ```
