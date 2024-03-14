@@ -600,11 +600,11 @@ defmodule SmeeEntityTest do
   end
 
   describe "Protocol String.Chars.to_string/1" do
-    "#[Entity https://indiid.net/idp/shibboleth]" = "#{@idp_entity}"
+    assert "#[Entity https://indiid.net/idp/shibboleth]" = "#{@idp_entity}"
   end
 
   describe "Protocol Jason Encoder" do
-    "{\"compressed\":false,\"data\":\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"" <> _ = Jason.encode!(
+    assert "{\"compressed\":false,\"data\":\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"" <> _ = Jason.encode!(
       @idp_entity
     )
   end
