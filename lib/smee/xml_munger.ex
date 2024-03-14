@@ -17,14 +17,14 @@ defmodule Smee.XmlMunger do
 
   @xml_declaration ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n|
   @xml_decl_pattern ~r|^<\?xml.*\?>\n*|ifUm
-  @top_tag_pattern ~r|<(md:)?EntityDescriptor.*?>|ms
+  @top_tag_pattern ~r|<([a-z-0-9]+:)?EntityDescriptor.*?>|ms
   #@single_pattern @top_tag_pattern
   # @aggregate_pattern ~r|^<(md:)?EntitiesDescriptor.*?>|ms
-  @bot_tag_pattern ~r|</(md:)?EntityDescriptor>\z|ms
-  @uri_extractor_pattern ~r|<(md:)?EntityDescriptor.*entityID="(.+)".*>|mUs
+  @bot_tag_pattern ~r|</([a-z-0-9]+:)?EntityDescriptor>\z|ms
+  @uri_extractor_pattern ~r|<([a-z-0-9]+:)?EntityDescriptor.*entityID="(.+)".*>|mUs
   @signature_pattern ~r|<Signature\s.*.+</Signature>|msU
-  @split_pattern ~r|(<(md:)?EntityDescriptor)|
-  @entities_descriptor_pattern ~r|<(md:)?EntitiesDescriptor.*?>|s
+  @split_pattern ~r|(<([a-z-0-9]+:)?EntityDescriptor)|
+  @entities_descriptor_pattern ~r|<([a-z-0-9]+:)?EntitiesDescriptor.*?>|s
   @comments_pattern ~r|<!--[\s\S]*?-->|
 
   @spec xml_declaration() :: binary()

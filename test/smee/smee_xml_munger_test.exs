@@ -193,6 +193,13 @@ defmodule SmeeXmlMungerTest do
 
     end
 
+    test "can cope with unusual namespaces" do
+      xml = String.replace(@valid_single_metadata_xml, "<EntityDescriptor", "<q1:EntityDescriptor")
+      IO.puts xml
+      assert "https://indiid.net/idp/shibboleth" = XmlMunger.extract_uri!(xml)
+
+    end
+
   end
 
   describe "remove_signature/1" do
