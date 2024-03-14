@@ -40,7 +40,8 @@ defmodule Smee.Entity do
                changes: integer(),
                priority: integer(),
                trustiness: float(),
-               tags: list(binary())
+               tags: list(binary()),
+               id: nil | binary(),
              }
 
   @derive {Jason.Encoder, except: [:xdoc]}
@@ -62,7 +63,8 @@ defmodule Smee.Entity do
     changes: 0,
     priority: 5,
     trustiness: 0.5,
-    tags: []
+    tags: [],
+    id: nil
   ]
 
   @doc """
@@ -521,11 +523,9 @@ defmodule Smee.Entity do
   @spec extract_info(entity :: Entity.t()) :: Entity.t()
   defp extract_info(entity) do
 
-    info = entity.xdoc
-           |> XPaths.entity_ids()
+    info = XPaths.entity_ids(entity.xdoc)
 
-    Map.merge(entity, info)
-    |> struct(%{uri_hash: Utils.sha1(info[:uri])})
+    struct(entity, %{uri: info[:uri], id: Utils.normalise_mdid(info[:id]), uri_hash: Utils.sha1(info[:uri])})
 
   end
 

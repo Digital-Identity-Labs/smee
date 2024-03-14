@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.1]
 
 ### Fixes
+- Entity metadata IDs (rather then Entity IDs) have been fixed
 - Non-compliant validUntil dates that lack a timezone offset will be processed as UTC now with a warning rather than an exception.
 
 ## [0.4.0] - 24-02-05

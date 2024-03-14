@@ -87,6 +87,10 @@ defmodule SmeeEntityTest do
       assert %Entity{tags: []} = Entity.new(@valid_xml)
     end
 
+    test "id defaults to nil" do
+      assert %Entity{id: nil} = Entity.new(@valid_xml)
+    end
+
     test "downloaded_at can be set with options" do
       %Entity{downloaded_at: @arbitrary_dt} = Entity.new(@valid_xml, downloaded_at: @arbitrary_dt)
     end
@@ -254,6 +258,10 @@ defmodule SmeeEntityTest do
                                                            |> xmap(
                                                                 uri: ~x"string(/*/@entityID)"s
                                                               )
+    end
+
+    test "id defaults to nil" do
+      assert %Entity{id: nil} = Entity.new(@valid_xml)
     end
 
   end
