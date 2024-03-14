@@ -267,6 +267,26 @@ defmodule Smee.Utils do
     |> Date.add(-days)
   end
 
+  @spec normalise_mdid(id :: binary() | nil | integer() | atom()) :: binary()
+  def normalise_mdid(nil) do
+    nil
+  end
+
+  def normalise_mdid("") do
+    nil
+  end
+
+  def normalise_mdid(id) when is_atom(id) do
+    Atom.to_string(id)
+  end
+
+  def normalise_mdid(id) when is_integer(id) do
+    Integer.to_string(id)
+  end
+
+  def normalise_mdid(id) do
+    String.trim(id)
+  end
   ################################################################################
 
 end

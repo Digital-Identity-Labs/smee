@@ -310,20 +310,26 @@ defmodule SmeeUtilsTest do
     end
 
     test "when passed an integer, will return datetime string that many days in the future" do
-      now_dt = DateTime.utc_now() |> DateTime.truncate(:second)
-      {:ok, future_dt, _} = Utils.valid_until(30)  |> DateTime.from_iso8601()
+      now_dt = DateTime.utc_now()
+               |> DateTime.truncate(:second)
+      {:ok, future_dt, _} = Utils.valid_until(30)
+                            |> DateTime.from_iso8601()
       assert DateTime.diff(future_dt, now_dt) == (30 * 24 * 60 * 60)
     end
 
     test "when passed 'auto' or :auto will return the datetime string for the default validity period" do
-      now_dt = DateTime.utc_now() |> DateTime.truncate(:second)
-      {:ok, future_dt, _} = Utils.valid_until("default")  |> DateTime.from_iso8601()
+      now_dt = DateTime.utc_now()
+               |> DateTime.truncate(:second)
+      {:ok, future_dt, _} = Utils.valid_until("default")
+                            |> DateTime.from_iso8601()
       assert DateTime.diff(future_dt, now_dt) == (Smee.SysCfg.validity_days * 24 * 60 * 60)
     end
 
     test "when passed 'default' or :default will also return the datetime string for the default validity period" do
-      now_dt = DateTime.utc_now() |> DateTime.truncate(:second)
-      {:ok, future_dt, _} = Utils.valid_until("auto")  |> DateTime.from_iso8601()
+      now_dt = DateTime.utc_now()
+               |> DateTime.truncate(:second)
+      {:ok, future_dt, _} = Utils.valid_until("auto")
+                            |> DateTime.from_iso8601()
       assert DateTime.diff(future_dt, now_dt) == (Smee.SysCfg.validity_days * 24 * 60 * 60)
     end
 
@@ -332,7 +338,7 @@ defmodule SmeeUtilsTest do
   describe "before/2" do
 
     test "returns true if the subject DateTime is before the second DateTime" do
-    {:ok, dt1} = DateTime.new(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
+      {:ok, dt1} = DateTime.new(~D[2016-05-24], ~T[13:26:08.003], "Etc/UTC")
       dt2 = DateTime.utc_now()
       assert Utils.before?(dt1, dt2)
     end
@@ -390,8 +396,33 @@ defmodule SmeeUtilsTest do
   describe "days_ago/2" do
 
     test "returns the Date for the specified number of days ago" do
-      date_a_week_ago = Date.utc_today() |> Date.add(-7)
+      date_a_week_ago = Date.utc_today()
+                        |> Date.add(-7)
       assert ^date_a_week_ago = Utils.days_ago(7)
+    end
+
+  end
+
+  describe "normalise_mdid/1" do
+
+    test "returns nil given an empty string" do
+      assert is_nil(Utils.normalise_mdid(""))
+    end
+
+    test "returns nil given a nil" do
+      assert is_nil(Utils.normalise_mdid(nil))
+    end
+
+    test "returns a string given a string" do
+      assert "hello" = Utils.normalise_mdid("hello")
+    end
+
+    test "returns a string given an atom" do
+      assert "world" = Utils.normalise_mdid(:world)
+    end
+
+    test "returns a string given an integer" do
+      assert "5" = Utils.normalise_mdid(5)
     end
 
   end
