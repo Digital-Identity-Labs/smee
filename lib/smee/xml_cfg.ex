@@ -32,6 +32,7 @@ defmodule Smee.XmlCfg do
     oaf: "http://schemas.eduserv.org.uk/openathens-federation/1.0",
     privacy: "http://docs.oasis-open.org/wsfed/privacy/200706",
     pyff: "http://pyff.io/NS",
+    q1: "urn:oasis:names:tc:SAML:2.0:metadata",
     refeds: "http://refeds.org/metadata",
     remd: "http://refeds.org/metadata",
     req: "urn:oasis:names:tc:SAML:profiles:SSO:request-init",
@@ -48,7 +49,12 @@ defmodule Smee.XmlCfg do
     ukfedlabel: "http://ukfederation.org.uk/2006/11/label",
     wayf: "http://sdss.ac.uk/2006/06/WAYF",
     wsa: "http://www.w3.org/2005/08/addressing",
-    xenc: "http://www.w3.org/2001/04/xmlenc#"
+    xenc: "http://www.w3.org/2001/04/xmlenc#",
+    xi: "http://www.w3.org/2001/XInclude",
+    xrd: "http://docs.oasis-open.org/ns/xri/xrd-1.0",
+    xs: "http://www.w3.org/2001/XMLSchema",
+    xsd: "http://www.w3.org/2001/XMLSchema",
+    xsi: "http://www.w3.org/2001/XMLSchema-instance",
   }
 
   @erlanged_saml_namespaces Enum.map(
