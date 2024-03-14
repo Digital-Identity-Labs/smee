@@ -4,12 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.1]
+
+### Fixes
+- Non-compliant validUntil dates that lack a timezone offset will be processed as UTC now with a warning rather than an exception.
+
 ## [0.4.0] - 24-02-05
 
-## Breaking Changes
+### Breaking Changes
 - XML in Metadata structs is now back to being the original metadata, with comments, signatures, etc.
 
-## New Features
+### New Features
 - Smee now uses its own cache directory for downloaded files, and that cache can be purged with `Smee.Sys.reset_cache/0`
 - Sources, Metadata and Entity structs now have tags, and `tag/2` and `tags/1` functions to get and set them. Tags are inherited.
 - Sources have optional `id` and `fedid` keys to help manage them in larger applications
@@ -27,14 +32,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   tweaked versions of the XML. Presently only one processing option is available, `:strip`, which removes comments, etc.
 - `Smee.Entity.id/1` and `Smee.Entity.transformed_id/1` as helpers for getting an entityID
 
-## Improvements
+### Improvements
 - Speed improvements: processing Metadata into Entity structs is now twice as fast
 - A few more metadata namespaces have been added to the default list
 - Publishing aggregated metadata now has configurable validUntil dates. 
 - `Fetch.fetch!/2` and `Fetch.local!/2` now have `Fetch.fetch/2` and `Fetch.local/2` equivalents.
 - XML processing and searching has (hopefully) been optimised, some code was ported back from `SmeeView` for wider use.
 
-## Fixes
+### Fixes
 - Should now work with OTP26 and Elixir 1.16.0 
 - Hopefully compatible with recent versions of `xmlsec1`, which has changed its behaviour and commandline options.
 - All known XML namespaces were being added to all metadata, now single entity XML should only include relevant namespaces.
@@ -42,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - XML in Metadata structs, and returned by `Smee.Metadata.xml/1`, is now identical to the input XML, which no longer 
   breaks verification with certificates. 
 
-## Other Changes
+### Other Changes
 - Namespaces in Metadata are now in alphabetical order, after the default namespace
 - Updated dependencies, and hopefully loosened them for better integration compatibility with other apps 
 - Published aggregates do not include a validUntil date by default now, it must be set.
@@ -51,7 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.3.0] - 2023-05-04
 
-## Breaking Changes
+### Breaking Changes
 - `Smee.Transform.strip_comments` has been removed because comments are now *always* removed from Metadata structs
 
 - Metadata type is now set automatically

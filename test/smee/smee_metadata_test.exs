@@ -247,6 +247,14 @@ defmodule SmeeMetadataTest do
       assert %Metadata{tags: ["bar", "foo"]} = Metadata.new(@valid_metadata_xml, tags: ["foo", "bar"])
     end
 
+    test "parsing can survive a badly formatted not-quite-iso8601 DateTime lacking an offset" do
+      raw_xml = String.replace(
+        @valid_metadata_xml,
+        "cacheDuration=\"PT6H0M0.000S\">",
+        "cacheDuration=\"PT6H0M0.000S\" validUntil=\"2024-03-27T00:06:57.780708\" >"
+      )
+      assert %Metadata{valid_until: ~U[2024-03-27 00:06:57.780708Z]} = Metadata.new(raw_xml)
+    end
 
   end
 

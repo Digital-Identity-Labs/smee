@@ -567,8 +567,13 @@ defmodule Smee.Metadata do
   end
 
   defp tweak_valid_until(date) when is_binary(date) and byte_size(date) > 1 do
-    {:ok, dt, 0} = DateTime.from_iso8601(date)
-    dt
+    case  DateTime.from_iso8601(date) do
+      {:ok, dt, 0} ->
+        dt
+      {:error, :missing_offset} ->
+        IO.warn("DateTime formatted without a Z offset found in metadata, retrying as UTC", [])
+        (if String.ends_with?(date, "Z"), do: raise("Bad date format!"), else: tweak_valid_until(date <> "Z"))
+    end
   end
 
   @spec fix_type(metadata :: Metadata.t()) :: Metadata.t()
