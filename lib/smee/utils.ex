@@ -198,8 +198,8 @@ defmodule Smee.Utils do
     tags
     |> List.wrap()
     |> List.flatten()
-    |> Enum.uniq()
     |> Enum.map(fn tag -> "#{tag}" end)
+    |> Enum.uniq()
     |> Enum.sort()
   end
 

@@ -293,6 +293,10 @@ defmodule SmeeUtilsTest do
       assert ["1", "a", "b", "c", "d"] = Utils.tidy_tags([1, :a, "b", "c", :d])
     end
 
+    test "should return a list without duplicate tags, including mixed types" do
+      assert ["1", "3", "two"] = Utils.tidy_tags([1, 1, "1", "two", :two, "3", "3"])
+    end
+
   end
 
   describe "format_xml_date/1" do
