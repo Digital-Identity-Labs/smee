@@ -16,6 +16,7 @@ defmodule Smee.XmlCfg do
     hoksso: "urn:oasis:names:tc:SAML:2.0:profiles:holder-of-key:SSO:browser",
     idpdisc: "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol",
     init: "urn:oasis:names:tc:SAML:profiles:SSO:request-init",
+    m: "urn:oasis:names:tc:SAML:2.0:metadata",
     md: "urn:oasis:names:tc:SAML:2.0:metadata",
     mdattr: "urn:oasis:names:tc:SAML:metadata:attribute",
     mdrpi: "urn:oasis:names:tc:SAML:metadata:rpi",
