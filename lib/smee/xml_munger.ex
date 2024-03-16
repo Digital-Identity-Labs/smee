@@ -22,10 +22,14 @@ defmodule Smee.XmlMunger do
   # @aggregate_pattern ~r|^<(md:)?EntitiesDescriptor.*?>|ms
   @bot_tag_pattern ~r|</([a-z-0-9]+:)?EntityDescriptor>\z|ms
   @uri_extractor_pattern ~r|<([a-z-0-9]+:)?EntityDescriptor.*entityID="(.+)".*>|mUs
-  @signature_pattern ~r|<Signature\s.*.+</Signature>|msU
+  @signature_pattern ~r|<([a-z-0-9]+:)?Signature.*.+</([a-z-0-9]+:)?Signature>|msU
   @split_pattern ~r|(<([a-z-0-9]+:)?EntityDescriptor)|
   @entities_descriptor_pattern ~r|<([a-z-0-9]+:)?EntitiesDescriptor.*?>|s
   @comments_pattern ~r|<!--[\s\S]*?-->|
+  @top_eds_pattern ~r|<([a-z-0-9]+:)?EntitiesDescriptor.*?>|s
+  @bot_eds_pattern ~r|</([a-z-0-9]+:)?EntitiesDescriptor.*?>|s
+  @all_eds_pattern ~r|</*([a-z-0-9]+:)?EntitiesDescriptor.*?>|s
+  @blanks_pattern ~r|(\n\n)+|
 
   @spec xml_declaration() :: binary()
   def xml_declaration() do
@@ -52,7 +56,7 @@ defmodule Smee.XmlMunger do
 
   @spec namespaces_declared(xml :: binary()) :: map()
   def namespaces_declared(xml) do
-   # text = if (String.length(xml) > 10000), do: String.slice(xml, 0..10000), else: xml
+    # text = if (String.length(xml) > 10000), do: String.slice(xml, 0..10000), else: xml
     text = xml
     Regex.scan(~r/\sxmlns:([0-9a-z\-]+)[=]"(\S+)"/, text, capture: :all_but_first)
     |> Enum.sort()
@@ -174,6 +178,8 @@ defmodule Smee.XmlMunger do
     |> remove_xml_declaration()
     |> remove_signature()
     |> remove_comments()
+    |> remove_groups()
+    |> remove_blank_lines()
   end
 
   @spec trim_entity_xml(xml :: binary()) :: binary()
@@ -247,21 +253,44 @@ defmodule Smee.XmlMunger do
     xml = remove_xml_declaration(xml)
           |> remove_comments()
 
-    # IO.puts String.slice(xml, 0..1000)
-
     ## This is 10 times faster than the more elegant regex version and also clearer. It's still a bodge tho.
     cond do
       String.starts_with?(xml, "<Entities") -> :aggregate
       String.starts_with?(xml, "<md:Entities") -> :aggregate
+      # TODO: Need a regex really, like @entities_descriptor_pattern
       String.starts_with?(xml, "<Entity") -> :single
       String.starts_with?(xml, "<md:Entity") -> :single
       true -> :unknown
     end
   end
 
+  @spec remove_comments(xml :: binary()) :: binary()
   def remove_comments(xml) do
     Regex.replace(@comments_pattern, prepare_xml(xml), "", global: true)
     |> prepare_xml()
+  end
+
+  @spec remove_groups(xml :: binary()) :: binary()
+  def remove_groups(xml) do
+    if contains_entities_groups?(xml) do
+      [top] = Regex.run(@top_eds_pattern, xml, global: false)
+      [bottom] = Regex.run(@bot_eds_pattern, xml, global: false)
+      middle = Regex.replace(@all_eds_pattern, xml, "", global: true)
+      top <> middle <> bottom
+    else
+      xml
+    end
+  end
+
+  @spec remove_blank_lines(xml :: binary()) :: binary()
+  def remove_blank_lines(xml) do
+    Regex.replace(@blanks_pattern, xml, "", global: true)
+  end
+
+  @spec remove_blank_lines(xml :: binary()) :: boolean()
+  def contains_entities_groups?(xml) do
+    Regex.scan(@all_eds_pattern, xml)
+    |> Enum.count() > 2
   end
 
   ################################################################################
@@ -347,7 +376,7 @@ defmodule Smee.XmlMunger do
   end
 
   @spec strip_leading(fx :: binary(), n :: integer) :: binary()
-  defp strip_leading(fx, 0) do
+  defp  strip_leading(fx, 0) do
     fx
     |> String.split(@split_pattern, include_captures: true)
     |> Enum.drop(1)

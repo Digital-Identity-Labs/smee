@@ -19,10 +19,16 @@ defmodule SmeeXmlMungerTest do
   @valid_metadata @valid_metadata_file
                   |> Smee.Source.new()
                   |> Smee.Fetch.local!()
+  @complex_metadata_file "test/support/static/complex.xml"
+  @complex_metadata_xml File.read! @complex_metadata_file
+  #  @complex_metadata @complex_metadata_file
+  #                    |> Smee.Source.new()
+  #                    |> Smee.Fetch.local!()
 
   #  @big_live_metadata "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
   #                     |> Smee.Source.new()
   #                     |> Smee.fetch!()
+  @all_eds_pattern ~r|</*([a-z-0-9]+:)?EntitiesDescriptor.*?>|s
 
   describe "xml_declaration/0" do
 
@@ -86,11 +92,14 @@ defmodule SmeeXmlMungerTest do
                |> Enum.sort()
 
       assert [:ds, :md, :mdrpi, :mdui, :shibmd] = XmlMunger.namespace_prefixes_used(
-                                               Entity.xml(
-                                                 Metadata.entity!(@valid_metadata, "https://indiid.net/idp/shibboleth")
-                                               )
-                                             )
-                                             |> Enum.sort()
+                                                    Entity.xml(
+                                                      Metadata.entity!(
+                                                        @valid_metadata,
+                                                        "https://indiid.net/idp/shibboleth"
+                                                      )
+                                                    )
+                                                  )
+                                                  |> Enum.sort()
 
     end
 
@@ -195,16 +204,14 @@ defmodule SmeeXmlMungerTest do
 
     test "can cope with unusual namespaces" do
       xml = String.replace(@valid_single_metadata_xml, "<EntityDescriptor", "<q1:EntityDescriptor")
-      IO.puts xml
       assert "https://indiid.net/idp/shibboleth" = XmlMunger.extract_uri!(xml)
-
     end
 
   end
 
   describe "remove_signature/1" do
 
-    test "remove the signature from entity XML" do
+    test "removes the signature from entity XML" do
       assert String.contains?(@signed_metadata_xml, "<Signature")
       refute String.contains?(XmlMunger.remove_signature(@signed_metadata_xml), "<Signature")
       assert String.contains?(
@@ -219,6 +226,15 @@ defmodule SmeeXmlMungerTest do
       assert String.contains?(
                XmlMunger.remove_signature(@signed_metadata_xml),
                "validUntil=\"2018-06-09T15:17:36.931Z\">\n\n\t<!--\n\t\tThis is a Shibboleth IdP"
+             )
+    end
+
+    test "removes a namespaced signature from metadata XML" do
+      assert String.contains?(@complex_metadata_xml, "<ds:Signature")
+      refute String.contains?(XmlMunger.remove_signature(@complex_metadata_xml), "<ds:Signature")
+      assert String.contains?(
+               XmlMunger.remove_signature(@complex_metadata_xml),
+               "xmldsig-core-schema.xsd\">\n  \n\n\n  <EntityDescriptor"
              )
     end
 
@@ -299,7 +315,10 @@ defmodule SmeeXmlMungerTest do
                        |> DateTime.add(14, :day)
       expected_string = Smee.Utils.format_xml_date(two_weeks_away)
 
-      assert String.contains?(XmlMunger.generate_aggregate_header(valid_until: two_weeks_away), ~s| validUntil="#{expected_string}|)
+      assert String.contains?(
+               XmlMunger.generate_aggregate_header(valid_until: two_weeks_away),
+               ~s| validUntil="#{expected_string}|
+             )
 
     end
 
@@ -310,7 +329,10 @@ defmodule SmeeXmlMungerTest do
 
     test "validUntil can be set to a default number of days in the future by specifying :default [rather circular test]" do
       expected_string = Smee.Utils.valid_until("default")
-      assert String.contains?(XmlMunger.generate_aggregate_header(valid_until: :default), ~s| validUntil="#{expected_string}|)
+      assert String.contains?(
+               XmlMunger.generate_aggregate_header(valid_until: :default),
+               ~s| validUntil="#{expected_string}|
+             )
     end
 
     test "by default includes a six hour cache duration" do
@@ -475,6 +497,19 @@ defmodule SmeeXmlMungerTest do
       assert "<test>content</test>" = XmlMunger.process_metadata_xml("   <test>content</test>  \n")
     end
 
+    test "removes multiple blank lines" do
+      assert "<test>\ncontent\n</test>" = XmlMunger.process_metadata_xml("   <test>\n\n\ncontent\n\n\n</test>\n\n\n")
+    end
+
+    test "removes groups (embedded EntityDescriptors)" do
+
+      assert 8 = Regex.scan(@all_eds_pattern, @complex_metadata_xml)
+                 |> Enum.count()
+
+      assert 2 = Regex.scan(@all_eds_pattern, XmlMunger.process_metadata_xml(@complex_metadata_xml))
+                 |> Enum.count()
+
+    end
   end
 
   describe "namespaces_declared/1" do
@@ -492,7 +527,13 @@ defmodule SmeeXmlMungerTest do
                remd: "http://refeds.org/metadata",
                saml: "urn:oasis:names:tc:SAML:2.0:assertion",
                xsi: "http://www.w3.org/2001/XMLSchema-instance"
-             } = XmlMunger.namespaces_declared(String.replace(@valid_metadata_xml, "xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"", "xmlns:example=\"http://test.example.com/ns\""))
+             } = XmlMunger.namespaces_declared(
+               String.replace(
+                 @valid_metadata_xml,
+                 "xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"",
+                 "xmlns:example=\"http://test.example.com/ns\""
+               )
+             )
 
     end
 
@@ -507,6 +548,38 @@ defmodule SmeeXmlMungerTest do
                |> Enum.sort()
 
     end
+  end
+
+  describe "remove_groups/1" do
+
+    test "remove all but the top opening and closing EntityDescriptor tags" do
+      assert 8 = Regex.scan(@all_eds_pattern, @complex_metadata_xml)
+                 |> Enum.count()
+
+      assert 2 = Regex.scan(@all_eds_pattern, XmlMunger.remove_groups(@complex_metadata_xml))
+                 |> Enum.count()
+    end
+
+  end
+
+  describe "remove_blank_lines/1" do
+
+    test "Removes excess blank lines from text" do
+      assert "<test>\ncontent\n</test>\n" = XmlMunger.remove_blank_lines("<test>\n\n\ncontent\n\n\n</test>\n\n\n")
+    end
+
+  end
+
+  describe "contains_entities_groups?/1" do
+
+    test "returns true if there are more than 1 pair of EntityDescriptor tags" do
+      assert XmlMunger.contains_entities_groups?(@complex_metadata_xml)
+    end
+
+    test "returns false if there is 1 pair of EntityDescriptor tags" do
+      refute XmlMunger.contains_entities_groups?(@valid_metadata_file)
+    end
+    
   end
 
 end
