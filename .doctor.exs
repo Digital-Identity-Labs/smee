@@ -17,7 +17,8 @@
     Smee.SigningCertificate,
     Smee.Security.Xmlsectool,
     Smee.Security.Xmlsec1,
-    Smee.Security.Mdqt
+    Smee.Security.Mdqt,
+    Smee.EasySSL
   ],
   ignore_paths: [],
   min_module_doc_coverage: 40,
