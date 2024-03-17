@@ -510,6 +510,11 @@ defmodule SmeeXmlMungerTest do
                  |> Enum.count()
 
     end
+
+    test "process valid XML should still be valid XML" do
+      assert {:ok, _} = XmlMunger.process_metadata_xml(@complex_metadata_xml) |> Smee.Lint.well_formed() ## TODO: change to validate when ID issue is fixed
+    end
+
   end
 
   describe "namespaces_declared/1" do
@@ -579,7 +584,7 @@ defmodule SmeeXmlMungerTest do
     test "returns false if there is 1 pair of EntityDescriptor tags" do
       refute XmlMunger.contains_entities_groups?(@valid_metadata_file)
     end
-    
+
   end
 
 end
