@@ -4,14 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.1]
+## [0.4.1] - 17-03-24
+
+A bug-fix released after testing with an updated collection of SmeeFeds test data: Smee is now tested with 66 federations. 
 
 ### Fixes
 - XMLMunger can now cope with unusual namespaces better: this fixes an error when streaming entities from CAFE (and possibly others)
 - Entity metadata IDs (rather then Entity IDs) have been fixed
 - Non-compliant validUntil dates that lack a timezone offset will be processed as UTC now with a warning rather than an exception.
 - Tags should now be unique (previously passing atoms and strings could lead to duplicates)
-- Additional namespaces found in the wild during testing have been included. 
+- Additional namespaces found in the wild during testing have been included
+- Signatures are now properly removed (or at least, more often removed) before streaming
+- Excess line endings are removed from pre-processed XML
+- Streaming can cope with embedded EntityDescriptor groups
 
 ## [0.4.0] - 24-02-05
 
@@ -100,6 +105,7 @@ XML storage and publishing bugfixes and small improvements, plus some breaking A
 ## [0.1.0] - 2023-04-11
 Initial release
 
+[0.4.1]: https://github.com/Digital-Identity-Labs/smee/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/Digital-Identity-Labs/smee/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/Digital-Identity-Labs/smee/compare/0.2.0...0.3.0
 [0.2.0]: https://github.com/Digital-Identity-Labs/smee/compare/0.1.0...0.2.0

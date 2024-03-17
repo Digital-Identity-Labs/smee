@@ -3,7 +3,7 @@
 # Smee Workbook
 
 ```elixir
-Mix.install([{:smee, ">= 0.4.0"}, {:rambo, "~> 0.3.4"}])
+Mix.install([{:smee, ">= 0.4.1"}, {:rambo, "~> 0.3.4"}])
 alias Smee.{Metadata, Entity, Source, MDQ, Filter, Sigil, Publish, Transform, Extract, Fetch}
 ```
 

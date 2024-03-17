@@ -116,7 +116,7 @@ by adding `Smee` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:Smee, "~> 0.4.0"}
+    {:Smee, "~> 0.4.1"}
   ]
 end
 ```
