@@ -318,7 +318,7 @@ defmodule Smee.Fetch do
       [
         headers: %{
           "accept" => "application/samlmetadata+xml",
-          "Accept-Charset" => "utf-8"
+          "accept-charset" => "utf-8"
         },
         max_redirects: source.redirects,
         cache: source.cache,
