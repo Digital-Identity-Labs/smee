@@ -4,7 +4,7 @@ defmodule Smee.MixProject do
   def project do
     [
       app: :smee,
-      version: "0.4.1",
+      version: "0.5.0",
       elixir: "~> 1.14",
       description: "SAML Metadata Extractor, Etc: A library for processing large collections of SAML metadata",
       package: package(),
