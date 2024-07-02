@@ -1,0 +1,167 @@
+{
+	"description": "Schema for JSON data fed in to the new Discovery Server - see sstc-saml-metadata-ui (oasis standard)",
+	"type": "array",
+	"items": {
+		"entityID": "entity ID of the IdP",
+		"DisplayNames": {
+			"description" : "All of the <mdui:DisplayName> items. Defined in the spec as: Localized names for the entity operating in the containing role.",				
+			"type": "array",
+			"items": {
+				"type": "object",
+				"description" : "The contents of one <mdui:DisplayName> entry",
+				"properties": {
+					"value": {
+						"description": "The content value",
+						"type": "string",
+						"optional": false
+					},
+					"lang": {
+						"description": "The contents of the lang atribute - that is the locale for this name",
+						"type": "string",
+						"optional": false
+					}
+				}
+			}
+		},
+
+		"Descriptions": {
+			"description" : "All of the <mdui:Description> items. Defined in the spec as: Localized descriptions of the entity operating in the containing role.",				
+			"type": "array",
+			"items": {
+				"type": "object",
+				"description" : "The contents of one <mdui:Description> entry",
+				"properties": {
+					"value": {
+						"description": "The content value",
+						"type": "string",
+						"optional": false
+					},
+					"lang": {
+						"description": "The contents of the lang atribute - that is the locale for this description",
+						"type": "string",
+						"optional": false
+					}
+				}
+			}
+		},
+
+
+		"Keywords": {
+			"description" : "All of the <mdui:Keywords> items. Defined in the spec as: Localized search keywords, tags, categories, or labels for the containing role.",				
+			"type": "array",
+			"items": {
+				"type": "object",
+				"description" : "The contents of one <mdui:Keywords> entry",
+				"properties": {
+					"value": {
+						"description": "The content value",
+						"type": "string",
+						"optional": false
+					},
+					"lang": {
+						"description": "The contents of the lang atribute - that is the locale for this description",
+						"type": "string",
+						"optional": false
+					}
+				}
+			}
+		},
+
+
+		"Logos": {
+			"description" : "All of the <mdui:Logo> items. Defined in the spec as: Localized logo graphic for the entity operating in the containing role.",				
+			"type": "array",
+			"items": {
+				"type": "object",
+				"description" : "The contents of one <mdui:Logo> entry",
+				"properties": {
+					"value": {
+						"description": "The content value",
+						"type": "string",
+						"optional": false
+					},
+					"height": {
+						"description": "The height in pixels",
+						"type": "string",
+						"optional": false
+					},
+					"width": {
+						"description": "The width in pixels",
+						"type": "string",
+						"optional": false
+					},
+					"lang": {
+						"description": "The contents of the lang atribute - that is the locale for this Logo",
+						"type": "string",
+						"optional": true
+					}
+				}
+			}
+		},
+						
+		"InformationURLs": {
+			"description" : "All of the <mdui:InformationURL> items. Defined in the spec as: URLs to localized information about the entity operating in the containing role.",				
+			"type": "array",
+			"items": {
+				"type": "object",
+				"description" : "The contents of one <mdui:InformationURL> entry",
+				"properties": {
+					"value": {
+						"description": "The content value",
+						"type": "string",
+						"optional": false
+					},
+					"lang": {
+						"description": "The contents of the lang atribute - that is the locale for this InformationURL",
+						"type": "string",
+						"optional": false
+					}
+				}
+			}
+		},
+						
+		"PrivacyStatementURLs": {
+			"description" : "All of the <mdui:PrivacyStatementURL> items. Defined in the spec as: URLs to localized information about the privacy practices of the entity operating in the containing role.",				
+			"type": "array",
+			"items": {
+ 				"type": "object",
+				"description" : "The contents of one <mdui:PrivacyStatementURL> entry",
+				"properties": {
+					"value": {
+						"description": "The content value",
+						"type": "string",
+						"optional": false
+					},
+					"lang": {
+						"description": "The contents of the lang atribute - that is the locale for this PrivacyStatementURL",
+						"type": "string",
+						"optional": false
+					}
+				}
+			}
+		},
+    
+    "EntityAttributes": {
+			"description" : "The Entity Attributes and their values associated with the Entity.",				
+			"type": "array",
+			"items": {
+				"type": "object",
+				"description" : "The contents of one EntityAttribute",
+				"properties": {
+					"name": {
+						"description": "The Attribute Id",
+						"type": "string",
+						"optional": false
+					},
+					"values": {
+            "description": "The list of values associated with this Entity Attribute",
+						"type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+	}
+}
