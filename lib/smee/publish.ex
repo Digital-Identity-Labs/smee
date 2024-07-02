@@ -24,19 +24,19 @@ defmodule Smee.Publish do
   alias Smee.Publish.CSV
   alias Smee.Publish.Aggregate
 
-  def stream(entities, options) do
+  def stream(entities, options \\ []) do
     apply(select_backend(options), :stream, [entities, options])
   end
 
-  def text(entities, options) do
+  def text(entities, options \\ []) do
     apply(select_backend(options), :text, [entities, options])
   end
 
-  def file(entities, options) do
+  def file(entities, options \\ []) do
     apply(select_backend(options), :file, [entities, options])
   end
 
-  def estimated_size(entities, options) do
+  def estimated_size(entities, options \\ []) do
     apply(select_backend(options), :estimated_size, [entities, options])
   end
 
@@ -44,6 +44,11 @@ defmodule Smee.Publish do
 
   @doc """
   Returns a streamed index file, a plain text list of entity IDs.
+
+    > #### Soft Deprecation {: .warning}
+    >
+    > Will be later deprecated in favor of `stream/2`.
+
   """
   @deprecated "Use Publish.stream/2 instead"
   @spec index_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
