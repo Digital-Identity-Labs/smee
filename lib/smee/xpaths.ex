@@ -77,6 +77,46 @@ defmodule Smee.XPaths do
     ]
   ]
 
+  @about_xmap [
+    id: ~x"string(/*/@entityID)"s,
+    displaynames: [
+      ~x"//md:IDPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:DisplayName | //md:SPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:DisplayName"le,
+      lang: ~x"string(@xml:lang)"s,
+      text: ~x"./text()"s
+    ],
+    org_names: [
+      ~x"//md:Organization/md:OrganizationDisplayName"le,
+      lang: ~x"string(@xml:lang)"s,
+      text: ~x"./text()"s
+    ],
+    logos: [
+      ~x"//md:IDPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:Logo | //md:SPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:Logo"el,
+      url: ~x"./text()"s,
+      height: ~x"string(/*/@height)"s,
+      width: ~x"string(/*/@width)"s,
+      lang: ~x"@xml:lang"s
+    ],
+    contacts: [
+      ~x"//md:ContactPerson"l,
+      type: ~x"string(@contactType)"s,
+      rtype: ~x"string(@remd:contactType)"s,
+      givenname: ~x"string(//md:GivenName[1])"s,
+      surname: ~x"string(//md:SurName[1])"s,
+      email: ~x"string(//md:EmailAddress[1])"s,
+    ],
+    info_urls: [
+      ~x"//md:IDPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:InformationURL | //md:SPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:InformationURL"le,
+      lang: ~x"string(@xml:lang)"s,
+      url: ~x"./text()"s
+    ],
+    org_urls: [
+      ~x"//md:Organization/md:OrganizationURL"le,
+      lang: ~x"string(@xml:lang)"s,
+      url: ~x"./text()"s
+    ]
+
+  ]
+
   @spec entity_ids(xdoc :: tuple()) :: map()
   def entity_ids(xdoc) do
     SweetXml.xpath(
@@ -141,6 +181,23 @@ defmodule Smee.XPaths do
     )
 
   end
+
+  @spec about(xdoc :: tuple()) :: map()
+  def about(xdoc) do
+    extracted = xdoc
+                |> SweetXml.xmap(@about_xmap)
+    Map.merge(
+      extracted,
+      %{
+        displaynames: ml_text_map(extracted.displaynames),
+        org_names: ml_text_map(extracted.org_names),
+        info_urls: ml_text_map(extracted.info_urls, :url),
+        org_urls: ml_text_map(extracted.org_urls, :url),
+      }
+    )
+
+  end
+
 
   defp ml_text_map(ml_list, vk \\ :text) do
     ml_list
