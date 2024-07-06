@@ -86,7 +86,7 @@ defmodule Smee.Publish.CSV do
     nil
   end
 
-  defp extract_contact(about_data, "support") do
+  defp extract_contact(about_data, "sirtfi") do
     about_data.contacts
     |> Enum.find(%{}, fn e -> Map.get(e, :type) == "other" and Map.get(e, :rtype) == "http://refeds.org/metadata/contactType/security" end)
     |> Map.get(:email)
