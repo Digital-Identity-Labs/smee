@@ -86,16 +86,18 @@ defmodule Smee.Publish.CSV do
     nil
   end
 
-  defp extract_contact(about_data, "sirtfi") do
+  defp extract_contact(about_data, "support") do
     about_data.contacts
     |> Enum.find(%{}, fn e -> Map.get(e, :type) == "other" and Map.get(e, :rtype) == "http://refeds.org/metadata/contactType/security" end)
     |> Map.get(:email)
+    |> tidy_mail()
   end
 
   defp extract_contact(about_data, ctype) do
     about_data.contacts
     |> Enum.find(%{}, fn e -> Map.get(e, :type) == ctype end)
     |> Map.get(:email)
+    |> tidy_mail()
   end
 
   defp extract_info_url(about_data, lang) do
@@ -111,6 +113,14 @@ defmodule Smee.Publish.CSV do
 
   defp get_one(data, lang) when is_list(data) do
     List.first(data)
+  end
+
+  defp tidy_mail(nil) do
+    nil
+  end
+
+  defp tidy_mail(email_address) do
+    String.replace_prefix(email_address, "mailto:", "")
   end
 
   defp roles(entity) do
