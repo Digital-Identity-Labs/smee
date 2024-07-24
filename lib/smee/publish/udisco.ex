@@ -17,8 +17,8 @@ defmodule Smee.Publish.Udisco do
 
   end
 
-  @spec estimate_size(entities :: Enumerable.t(), options :: keyword()) :: integer()
-  def estimate_size(entities, options \\ []) do
+  @spec size(entities :: Enumerable.t(), options :: keyword()) :: integer()
+  def size(entities, options \\ []) do
     stream(entities, options)
     |> Stream.map(fn x -> byte_size(x) end)
     |> Enum.reduce(0, fn x, acc -> x + acc end)
@@ -75,10 +75,11 @@ defmodule Smee.Publish.Udisco do
   defp extract_logo(disco_data, lang) do
     disco_data.logos
     |> Enum.reject(fn l -> String.starts_with?(l.url, "data:") end)
+    |> Enum.reject(fn l -> l.width > 500 end)
     |> Enum.filter(fn l -> l.lang in [lang, "en", "", nil] end)
     |> Enum.sort_by(& &1.width)
     |> Enum.map(fn l -> Map.get(l, :url, nil) end)
-    |> List.first()
+    |> List.last()
   end
 
   defp extract_ips(disco_data, lang) do

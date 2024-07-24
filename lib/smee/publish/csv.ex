@@ -1,4 +1,4 @@
-defmodule Smee.Publish.CSV do
+defmodule Smee.Publish.Csv do
 
 
   @moduledoc false
@@ -28,8 +28,8 @@ defmodule Smee.Publish.CSV do
 
   end
 
-  @spec estimate_size(entities :: Enumerable.t(), options :: keyword()) :: integer()
-  def estimate_size(entities, options \\ []) do
+  @spec size(entities :: Enumerable.t(), options :: keyword()) :: integer()
+  def size(entities, options \\ []) do
     stream(entities, options)
     |> Stream.map(fn x -> byte_size(x) end)
     |> Enum.reduce(0, fn x, acc -> x + acc end)

@@ -14,15 +14,14 @@ defmodule Smee.Publish do
 
   alias Smee.Entity
   alias Smee.XmlMunger
-  alias Smee.Publish.Aggregate
   alias Smee.Publish.Disco
   alias Smee.Publish.Udisco
+  alias Smee.Publish.Udest
   alias Smee.Publish.Thiss
   alias Smee.Publish.Index
-  alias Smee.Publish.MDQ
   alias Smee.Publish.Markdown
-  alias Smee.Publish.CSV
-  alias Smee.Publish.Aggregate
+  alias Smee.Publish.Csv
+  alias Smee.Publish.SamlXml
 
   def stream(entities, options \\ []) do
     apply(select_backend(options), :stream, [entities, options])
@@ -36,8 +35,8 @@ defmodule Smee.Publish do
     apply(select_backend(options), :file, [entities, options])
   end
 
-  def estimated_size(entities, options \\ []) do
-    apply(select_backend(options), :estimated_size, [entities, options])
+  def size(entities, options \\ []) do
+    apply(select_backend(options), :size, [entities, options])
   end
 
   ############# Deprecated ################
@@ -107,15 +106,15 @@ defmodule Smee.Publish do
 
   defp select_backend(options) do
     case options[:type] do
-      :aggregate -> Aggregate
+      :metadata -> SamlXml
       :disco -> Disco
       :udisco -> Udisco
+      :udest -> Udest
       :thiss -> Thiss
       :index -> Index
-      :mdq -> MDQ
       :markdown -> Markdown
-      :csv -> CSV
-      nil -> Aggregate
+      :csv -> Csv
+      nil -> SamlXml
       _ -> raise "Unknown publishing format '#{options[:type]}'"
     end
   end

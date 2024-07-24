@@ -48,8 +48,8 @@ defmodule Smee.XPaths do
     logos: [
       ~x"//md:IDPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:Logo"el,
       url: ~x"./text()"s,
-      height: ~x"string(/*/@height)"s,
-      width: ~x"string(/*/@width)"s,
+      height: ~x"string(/*/@height)"i,
+      width: ~x"string(/*/@width)"i,
       lang: ~x"@xml:lang"s
     ],
     ip_hints: ~x"//md:IDPSSODescriptor/md:Extensions/mdui:DiscoHints/mdui:IPHint/text()"ls,
@@ -117,6 +117,64 @@ defmodule Smee.XPaths do
 
   ]
 
+  @dest_xmap [
+    id: ~x"string(/*/@entityID)"s,
+    displaynames: [
+      ~x"//md:SPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:DisplayName"le,
+      lang: ~x"string(@xml:lang)"s,
+      text: ~x"./text()"s
+    ],
+    org_names: [
+      ~x"//md:Organization/md:OrganizationDisplayName"le,
+      lang: ~x"string(@xml:lang)"s,
+      text: ~x"./text()"s
+    ],
+    descriptions: [
+      ~x"//md:SPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:Description"le,
+      lang: ~x"string(@xml:lang)"s,
+      text: ~x"./text()"s
+    ],
+    logos: [
+      ~x"//md:SPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:Logo"el,
+      url: ~x"./text()"s,
+      height: ~x"string(/*/@height)"i,
+      width: ~x"string(/*/@width)"i,
+      lang: ~x"@xml:lang"s
+    ],
+    entity_attributes: [
+      ~x"//md:Extensions/mdattr:EntityAttributes/saml:Attribute"le,
+      name: ~x"string(@Name)"s,
+      values: ~x"string(saml:AttributeValue)"ls
+    ],
+    info_urls: [
+      ~x"//md:SPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:InformationURL"le,
+      lang: ~x"string(@xml:lang)"s,
+      url: ~x"./text()"s
+    ],
+    privacy_urls: [
+      ~x"///md:SPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:PrivacyURL"le,
+      lang: ~x"string(@xml:lang)"s,
+      url: ~x"./text()"s
+    ],
+    org_urls: [
+      ~x"//md:Organization/md:OrganizationURL"le,
+      lang: ~x"string(@xml:lang)"s,
+      url: ~x"./text()"s
+    ],
+    disco_urls: [
+      ~x"//md:SPSSODescriptor/Extensions/idpdisc:DiscoveryResponse"le,
+      binding: ~x"string(@Binding)"s,
+      location: ~x"string(@Location)"s,
+      index: ~x"string(@index)"s,
+    ],
+    login_urls: [
+      ~x"//md:SPSSODescriptor/Extensions/init:RequestInitiator"le,
+      binding: ~x"string(@Binding)"s,
+      location: ~x"string(@Location)"s
+    ]
+  ]
+
+
   @spec entity_ids(xdoc :: tuple()) :: map()
   def entity_ids(xdoc) do
     SweetXml.xpath(
@@ -182,6 +240,27 @@ defmodule Smee.XPaths do
 
   end
 
+  @spec dest(xdoc :: tuple()) :: map()
+  def dest(xdoc) do
+    extracted = xdoc
+                |> SweetXml.xmap(@dest_xmap)
+    Map.merge(
+      extracted,
+      %{
+        displaynames: ml_text_map(extracted.displaynames),
+        descriptions: ml_text_map(extracted.descriptions),
+        org_names: ml_text_map(extracted.org_names),
+        info_urls: ml_text_map(extracted.info_urls, :url),
+        privacy_urls: ml_text_map(extracted.privacy_urls, :url),
+        org_urls: ml_text_map(extracted.org_urls, :url),
+        entity_attributes: ea_format(extracted.entity_attributes),
+        login_urls: only_locations(extracted.login_urls),
+        disco_urls: only_locations(extracted.disco_urls),
+      }
+    )
+
+  end
+
   @spec about(xdoc :: tuple()) :: map()
   def about(xdoc) do
     extracted = xdoc
@@ -207,6 +286,12 @@ defmodule Smee.XPaths do
 
   defp ea_format(data) do
     Enum.reduce(data, %{}, fn r, acc -> Map.put(acc, r.name, Map.get(acc, r[:name], []) ++ r[:values]) end)
+  end
+
+ defp only_locations(data, attr \\ :location) do
+   data
+   |> Enum.map(fn r -> r[attr] end)
+   |> Enum.reject(fn u -> is_nil(u) end)
   end
 
 end
