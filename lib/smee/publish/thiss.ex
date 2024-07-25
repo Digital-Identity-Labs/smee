@@ -1,4 +1,4 @@
-defmodule Smee.Publish.Thissco do
+defmodule Smee.Publish.Thiss do
 
   @moduledoc false
 
@@ -11,7 +11,6 @@ defmodule Smee.Publish.Thissco do
   @spec stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
   def stream(entities, options \\ []) do
     entities
-    |> Filter.idp()
     |> Stream.map(fn e -> build_record(e) end)
     |> Enum.to_list()
     |> Jason.encode_to_iodata!()
@@ -34,11 +33,21 @@ defmodule Smee.Publish.Thissco do
   ############################################################
   defp build_record(entity, lang \\ "en") do
 
+    role = if Entity.idp?(entity), do: :idp, else: :sp
+
+    entxmapper(entity, role, lang)
+    |> Enum.reject(fn {k, v} -> (v == false) or is_nil(v) or (is_list(v) and length(v) == 0)  end)
+    |> Map.new()
+    |> Apex.ap()
+  end
+
+  defp entxmapper(entity, role, lang \\ "en")
+  defp entxmapper(entity, :idp, lang) do
     disco_data = Entity.xdoc(entity)
                  |> Smee.XPaths.disco()
 
     %{
-      id: "{sha1}#{Utils.sha1(disco_data.id)}",
+      id: "{sha1}#{entity.uri_hash}",
       title: extract_name(disco_data, lang),
       desc: extract_description(disco_data, lang),
       title_langs: disco_data.displaynames,
@@ -56,9 +65,25 @@ defmodule Smee.Publish.Thissco do
       keywords: extract_keywords(disco_data, lang),
       privacy_statement_url: extract_info(disco_data, lang),
     }
-    |> Enum.reject(fn {k, v} -> (v == false) or is_nil(v) or (is_list(v) and length(v) == 0)  end)
-    |> Map.new()
-    |> Apex.ap()
+  end
+
+  defp entxmapper(entity, :sp, lang) do
+    disco_data = Entity.xdoc(entity)
+                 |> Smee.XPaths.dest()
+
+    %{
+      id: "{sha1}#{entity.uri_hash}",
+      title: extract_name(disco_data, lang),
+      desc: extract_description(disco_data, lang),
+      title_langs: disco_data.displaynames,
+      desc_langs: disco_data.descriptions,
+      auth: "saml",
+      entity_id: disco_data.id,
+      entityID: disco_data.id,
+      type: "sp",
+      entity_icon_url: extract_logo(disco_data, lang),
+      privacy_statement_url: extract_info(disco_data, lang),
+    }
   end
 
   defp extract_name(disco_data, lang) do
@@ -97,7 +122,6 @@ defmodule Smee.Publish.Thissco do
 
   defp extract_logo(disco_data, lang) do
     logo = disco_data.logos
-           |> Apex.ap()
            |> Enum.filter(fn l -> l.lang in [lang, "en", "", nil] end)
            |> Enum.sort_by(& &1.width)
            |> List.last()
@@ -105,8 +129,8 @@ defmodule Smee.Publish.Thissco do
     if logo do
       %{
         url: logo.url,
-        width: logo.width,
-        height: logo.height
+        width: "#{logo.width}",
+        height: "#{logo.height}"
       }
     else
       nil
