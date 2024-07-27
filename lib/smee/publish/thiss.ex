@@ -8,17 +8,27 @@ defmodule Smee.Publish.Thiss do
   alias Smee.XPaths
   alias Smee.Utils
 
+  @spec extract(entity :: Entity.t(), options :: keyword()) :: struct()
+  def extract(entity, options \\ []) do
+    entity
+    |> build_record(Keyword.get(options, :lang, "en"))
+  end
+
   @spec stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
   def stream(entities, options \\ []) do
     entities
-    |> Stream.map(fn e -> build_record(e) end)
+    |> Stream.map(fn e -> extract(e, options) end)
     |> Enum.to_list()
     |> Jason.encode_to_iodata!()
-
   end
 
-  @spec size(entities :: Enumerable.t(), options :: keyword()) :: integer()
-  def size(entities, options \\ []) do
+  def stream_extracts(entities, options \\ []) do
+    entities
+    |> Stream.map(fn e -> extract(e, options) end)
+  end
+
+  @spec est_length(entities :: Enumerable.t(), options :: keyword()) :: integer()
+  def est_length(entities, options \\ []) do
     stream(entities, options)
     |> Stream.map(fn x -> byte_size(x) end)
     |> Enum.reduce(0, fn x, acc -> x + acc end)
@@ -38,7 +48,6 @@ defmodule Smee.Publish.Thiss do
     entxmapper(entity, role, lang)
     |> Enum.reject(fn {k, v} -> (v == false) or is_nil(v) or (is_list(v) and length(v) == 0)  end)
     |> Map.new()
-    |> Apex.ap()
   end
 
   defp entxmapper(entity, role, lang \\ "en")

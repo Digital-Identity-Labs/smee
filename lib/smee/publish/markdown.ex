@@ -38,8 +38,8 @@ defmodule Smee.Publish.Markdown do
     |> Enum.reduce(0, fn x, acc -> x + acc end)
   end
 
-  @spec text(entities :: Enumerable.t(), options :: keyword()) :: binary()
-  def text(entities, options \\ []) do
+  @spec est_length(entities :: Enumerable.t(), options :: keyword()) :: binary()
+  def est_length(entities, options \\ []) do
     stream(entities, options)
     |> Enum.join("\n")
   end

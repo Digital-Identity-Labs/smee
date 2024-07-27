@@ -3,13 +3,31 @@ defmodule Smee.Publish do
   @moduledoc """
   Publish exports streams or lists of entity structs into various formats.
 
-  At present the output formats are SAML XML (individual and collections) and simple index text files. Formats can be
-  output as binary strings or streamed. Streamed output can be useful for web services, allowing gradual downloads generated
+  Formats can be output as binary strings or streamed. Streamed output can be useful for web services, allowing gradual downloads generated
   on-the-fly with no need to render a very large document in advance.
 
   Options:
-  * `valid_until` - pass a DateTime to set the validUntil attribute for the entity metadata. Alternatively, an integer can be
+    * `:format` - The publishing format - defaults to `:saml` for SAML metadata. See below for other options
+    * `:valid_until` - pass a DateTime to set the validUntil attribute for the entity metadata. Alternatively, an integer can be
     passed to request a validity of n days, or "default" and "auto" to use the default validity period.
+    * `:wrap` - If set to true (the default) published streams and text data will be valid complete. When false, the top
+    and bottom of the file will be missing, so it can be easily embedded or concatenated with other data
+    * `:aggregate` - when true (the default for streams) streams will be published as aggregated data, or a single file. When false,
+      streams will be returned as a list of individual records or files. When Individual entities are passed, this defaults
+      to false.
+
+  Publishing formats:
+    *`:csv` - a brief CSV summary of the entities
+    *`:disco` - Shibboleth DiscoFeed format JSON, used by the Embedded Discovery Service and others
+    *`:index` - a plain text format containing entity ID and an optional name on each line
+    *`:markdown` - a simple Markdown table summarising the entities
+    *`:saml` - SAML2 metadata
+    *`:thiss` - Entity information in the JSON format used by THISS software such as the Seamless Access discover service
+    *`:udest` - A compact JSON format for SPs, used by Little Disco discovery service
+    *`:udisco` - An efficient JSON format used by Little Disco as an alternative to `:disco`/DiscoFeed
+
+
+
   """
 
   alias Smee.Entity
@@ -23,20 +41,54 @@ defmodule Smee.Publish do
   alias Smee.Publish.Csv
   alias Smee.Publish.SamlXml
 
+  @spec types() :: list(atom())
+  def types() do
+    [
+    :csv,
+    :disco,
+    :index,
+    :markdown,
+    :saml,
+    :thiss,
+    :udest,
+    :udisco
+    ]
+  end
+
+  def extract(entity, options \\ []) do
+    options = Keyword.merge([lang: "en"], options)
+              |> Keywords.take([:lang, :valid_until, :format])
+    apply(select_backend(options), :extract, [entity, options])
+  end
+
   def stream(entities, options \\ []) do
+    options = Keyword.merge([lang: "en", wrap: true], options)
+              |> Keywords.take([:lang, :valid_until, :wrap, :format])
     apply(select_backend(options), :stream, [entities, options])
   end
 
   def text(entities, options \\ []) do
+    options = Keyword.merge([lang: "en"], options)
+              |> Keywords.take([:lang, :valid_until, :format])
     apply(select_backend(options), :text, [entities, options])
   end
 
-  def file(entities, options \\ []) do
-    apply(select_backend(options), :file, [entities, options])
+  def data(entities, options \\ []) do
+    options = Keyword.merge([lang: "en"], options)
+              |> Keywords.take([:lang, :valid_until, :format])
+    apply(select_backend(options), :text, [entities, options])
   end
 
-  def size(entities, options \\ []) do
-    apply(select_backend(options), :size, [entities, options])
+  def write(entities, options \\ []) do
+    options = Keyword.merge([lang: "en", dir: "publish", naming: :default ], options)
+              |> Keywords.take([:lang, :valid_until, :dir, :naming, :format])
+    apply(select_backend(options), :write, [entities, options])
+  end
+
+  def est_length(entities, options \\ []) do
+    options = Keyword.merge([lang: "en"], options)
+              |> Keywords.take([:lang, :valid_until, :format])
+    apply(select_backend(options), :est_length, [entities, options])
   end
 
   ############# Deprecated ################
@@ -105,17 +157,18 @@ defmodule Smee.Publish do
   ################################################################################
 
   defp select_backend(options) do
-    case options[:type] do
-      :metadata -> SamlXml
+    case options[:format] do
+      :csv -> Csv
       :disco -> Disco
-      :udisco -> Udisco
-      :udest -> Udest
-      :thiss -> Thiss
       :index -> Index
       :markdown -> Markdown
-      :csv -> Csv
+      :metadata -> SamlXml
+      :saml -> SamlXml
+      :thiss -> Thiss
+      :udest -> Udest
+      :udisco -> Udisco
       nil -> SamlXml
-      _ -> raise "Unknown publishing format '#{options[:type]}'"
+      _ -> raise "Unknown publishing format '#{options[:format]}'"
     end
   end
 

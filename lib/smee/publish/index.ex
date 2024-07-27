@@ -17,8 +17,8 @@ defmodule Smee.Publish.Index do
   @doc """
   Returns the estimated size of a streamed index file without generating it in advance.
   """
-  @spec size(entities :: Enumerable.t(), options :: keyword()) :: integer()
-  def size(entities, options \\ []) do
+  @spec est_length(entities :: Enumerable.t(), options :: keyword()) :: integer()
+  def est_length(entities, options \\ []) do
     stream(entities, options)
     |> Stream.map(fn x -> byte_size(x) end)
     |> Enum.reduce(0, fn x, acc -> x + acc end)
