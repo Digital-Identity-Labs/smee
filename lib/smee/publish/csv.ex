@@ -1,12 +1,19 @@
 defmodule Smee.Publish.Csv do
 
 
+  use Smee.Publish.Common
+
   @moduledoc false
 
   alias Smee.Entity
   alias Smee.Filter
   alias Smee.XmlMunger
   alias Smee.XPaths
+
+  @spec format() :: atom()
+  def format() do
+    :csv
+  end
 
   @spec stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
   def stream(entities, options \\ []) do
@@ -28,8 +35,8 @@ defmodule Smee.Publish.Csv do
 
   end
 
-  @spec est_length(entities :: Enumerable.t(), options :: keyword()) :: integer()
-  def est_length(entities, options \\ []) do
+  @spec eslength(entities :: Enumerable.t(), options :: keyword()) :: integer()
+  def eslength(entities, options \\ []) do
     stream(entities, options)
     |> Stream.map(fn x -> byte_size(x) end)
     |> Enum.reduce(0, fn x, acc -> x + acc end)

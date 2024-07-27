@@ -41,8 +41,8 @@ defmodule Smee.Publish do
   alias Smee.Publish.Csv
   alias Smee.Publish.SamlXml
 
-  @spec types() :: list(atom())
-  def types() do
+  @spec formats() :: list(atom())
+  def formats() do
     [
     :csv,
     :disco,
@@ -85,10 +85,10 @@ defmodule Smee.Publish do
     apply(select_backend(options), :write, [entities, options])
   end
 
-  def est_length(entities, options \\ []) do
+  def eslength(entities, options \\ []) do
     options = Keyword.merge([lang: "en"], options)
               |> Keywords.take([:lang, :valid_until, :format])
-    apply(select_backend(options), :est_length, [entities, options])
+    apply(select_backend(options), :eslength, [entities, options])
   end
 
   ############# Deprecated ################
@@ -113,7 +113,7 @@ defmodule Smee.Publish do
   @deprecated "Use Publish.estimated_size/2 instead"
   @spec estimate_index_size(entities :: Enumerable.t(), options :: keyword()) :: integer()
   def estimate_index_size(entities, options \\ []) do
-    Index.est_length(entities, options)
+    Index.eslength(entities, options)
   end
 
   @doc """
@@ -140,7 +140,7 @@ defmodule Smee.Publish do
   @deprecated "Use Publish.estimated_size/2 instead"
   @spec estimate_xml_size(entities :: Enumerable.t(), options :: keyword()) :: integer()
   def estimate_xml_size(entities, options \\ []) do
-    SamlXml.est_length(entities, options)
+    SamlXml.eslength(entities, options)
   end
 
   @doc """

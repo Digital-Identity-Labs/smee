@@ -2,8 +2,17 @@ defmodule Smee.Publish.Index do
 
   @moduledoc false
 
+  use Smee.Publish.Common
+
+  use Smee.Publish.Common
+
   alias Smee.Entity
   alias Smee.XmlMunger
+
+  @spec format() :: atom()
+  def format() do
+    :index
+  end
 
   @doc """
   Returns a streamed index file, a plain text list of entity IDs.
@@ -17,8 +26,8 @@ defmodule Smee.Publish.Index do
   @doc """
   Returns the estimated size of a streamed index file without generating it in advance.
   """
-  @spec est_length(entities :: Enumerable.t(), options :: keyword()) :: integer()
-  def est_length(entities, options \\ []) do
+  @spec eslength(entities :: Enumerable.t(), options :: keyword()) :: integer()
+  def eslength(entities, options \\ []) do
     stream(entities, options)
     |> Stream.map(fn x -> byte_size(x) end)
     |> Enum.reduce(0, fn x, acc -> x + acc end)

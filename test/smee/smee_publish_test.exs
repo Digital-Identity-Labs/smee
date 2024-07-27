@@ -33,6 +33,14 @@ defmodule SmeePublishTest do
   xmlns:ukfedlabel="http://ukfederation.org.uk/2006/11/label"
   xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"]
 
+  describe "formats/0" do
+
+    test "returns a list of supported publishing formats" do
+      assert [:csv, :disco, :index, :markdown, :saml, :thiss, :udest, :udisco] = Publish.formats()
+    end
+
+  end
+
 
   describe "index_stream/2" do
 

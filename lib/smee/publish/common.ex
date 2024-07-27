@@ -1,35 +1,53 @@
 defmodule Smee.Publish.Common do
 
-  @moduledoc false
+  defmacro __using__(opts) do
+    quote do
 
-  alias Smee.Entity
-  alias Smee.XmlMunger
+      @moduledoc false
 
-  @spec single(entity :: Entity.t(), options :: keyword()) :: list(binary())
-  defp single(entity, options) do
-    xml = Entity.xml(entity) |> XmlMunger.expand_entity_top(options)
-    [xml]
+      alias Smee.Entity
+      alias Smee.XmlMunger
+
+      @spec format() :: atom()
+      def format() do
+        :none
+      end
+
+      @spec extract(entity :: Entity.t(), options :: keyword()) :: struct()
+      def extract(entity, options \\ []) do
+        %{}
+      end
+
+      @spec stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
+      def stream(entities, _options \\ []) do
+        Stream.concat([], [])
+      end
+
+      @spec eslength(entities :: Enumerable.t(), options :: keyword()) :: integer()
+      def eslength(entities, options \\ []) do
+        0
+      end
+
+      @spec text(entities :: Enumerable.t(), options :: keyword()) :: binary()
+      def text(entities, options \\ []) do
+        ""
+      end
+
+      @spec data(entities :: Enumerable.t(), options :: keyword()) :: binary()
+      def data(entities, options \\ []) do
+        text(entities, options)
+      end
+
+      @spec write(entities :: Enumerable.t(), options :: keyword()) :: list(binary())
+      def write(entities, options \\ []) do
+        []
+      end
+
+      defoverridable [format: 0, extract: 2, stream: 2, eslength: 2, text: 2, data: 2, write: 2]
+
+    end
   end
 
-  @spec aggregate_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
-  defp aggregate_stream(entities, options) do
 
-    options = Keyword.put(options, :now, DateTime.utc_now)
-
-    xml_declaration = [XmlMunger.xml_declaration]
-    header_stream = [XmlMunger.generate_aggregate_header(options)]
-    footer_stream = [XmlMunger.generate_aggregate_footer(options)]
-
-    estream = entities
-              |> Stream.map(
-                   fn e ->
-                     Entity.xml(e)
-                     |> XmlMunger.trim_entity_xml(uri: e.uri)
-                   end
-                 )
-
-    Stream.concat([xml_declaration, header_stream, estream, footer_stream])
-    |> Stream.map(fn e -> e end)
-  end
 
 end
