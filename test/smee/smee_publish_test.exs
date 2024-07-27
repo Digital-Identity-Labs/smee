@@ -11,6 +11,28 @@ defmodule SmeePublishTest do
   @valid_metadata Source.new("test/support/static/aggregate.xml")
                   |> Smee.fetch!()
 
+  @xml_declaration ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n|
+
+  @agg_ns ~w[xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+  xmlns:alg="urn:oasis:names:tc:SAML:metadata:algsupport"
+  xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+  xmlns:eduidmd="http://eduid.cz/schema/metadata/1.0"
+  xmlns:hoksso="urn:oasis:names:tc:SAML:2.0:profiles:holder-of-key:SSO:browser"
+  xmlns:idpdisc="urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol"
+  xmlns:init="urn:oasis:names:tc:SAML:profiles:SSO:request-init"
+  xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+  xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute"
+  xmlns:mdrpi="urn:oasis:names:tc:SAML:metadata:rpi"
+  xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui"
+  xmlns:pyff="http://pyff.io/NS"
+  xmlns:remd="http://refeds.org/metadata"
+  xmlns:req-attr="urn:oasis:names:tc:SAML:protocol:ext:req-attr"
+  xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+  xmlns:shibmd="urn:mace:shibboleth:metadata:1.0"
+  xmlns:taat="http://www.eenet.ee/EENet/urn"
+  xmlns:ukfedlabel="http://ukfederation.org.uk/2006/11/label"
+  xmlns:xenc="http://www.w3.org/2001/04/xmlenc#"]
+
 
   describe "index_stream/2" do
 

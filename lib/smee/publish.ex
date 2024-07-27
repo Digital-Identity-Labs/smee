@@ -113,7 +113,7 @@ defmodule Smee.Publish do
   @deprecated "Use Publish.estimated_size/2 instead"
   @spec estimate_index_size(entities :: Enumerable.t(), options :: keyword()) :: integer()
   def estimate_index_size(entities, options \\ []) do
-    Index.estimate_size(entities, options)
+    Index.est_length(entities, options)
   end
 
   @doc """
@@ -131,10 +131,8 @@ defmodule Smee.Publish do
   @deprecated "Use Publish.stream/2 instead"
   @spec xml_stream(entities :: Entity.t() | Enumerable.t(), options :: keyword()) :: Enumerable.t()
   def xml_stream(entities, options \\ []) do
-    Aggregate.stream(entities, options)
+    SamlXml.stream(entities, options)
   end
-
-
 
   @doc """
   Returns the estimated size of a streamed SAML metadata XML file without generating it in advance.
@@ -142,7 +140,7 @@ defmodule Smee.Publish do
   @deprecated "Use Publish.estimated_size/2 instead"
   @spec estimate_xml_size(entities :: Enumerable.t(), options :: keyword()) :: integer()
   def estimate_xml_size(entities, options \\ []) do
-    Aggregate.estimate_size(entities, options)
+    SamlXml.est_length(entities, options)
   end
 
   @doc """
@@ -151,7 +149,7 @@ defmodule Smee.Publish do
   @deprecated "Use Publish.text/2 instead"
   @spec xml(entities :: Enumerable.t(), options :: keyword()) :: binary()
   def xml(entities, options \\ []) do
-    Aggregate.text(entities, options)
+    SamlXml.text(entities, options)
   end
 
   ################################################################################
