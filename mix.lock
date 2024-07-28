@@ -35,4 +35,5 @@
   "telemetry": {:hex, :telemetry, "1.2.1", "68fdfe8d8f05a8428483a97d7aab2f268aaff24b49e0f599faa091f1d4e7f61c", [:rebar3], [], "hexpm", "dad9ce9d8effc621708f99eac538ef1cbe05d6a874dd741de2e689c47feafed5"},
   "xmerl_xml_indent": {:hex, :xmerl_xml_indent, "0.2.0", "788522ced8e60a9dc5541a04410685d2278dfe004af01e1a032bd4b069fa602f", [:mix], [], "hexpm", "fff73c0cefabecc01b2cad78fea3d9d0fd54f81ff566c7dc0b99046afe719bca"},
   "xmlixer": {:hex, :xmlixer, "0.1.1", "235fab6f84bebca5641fa4a84c074867c95aa1875c296bb8e786668071c0598e", [:mix], [], "hexpm", "da876ca3fbcf40dd26838475eec267a872b1f9bfba5aa86e2779d10c16353b82"},
+  "zarex": {:hex, :zarex, "1.0.5", "58239e3ee5d75f343262bb4df5cf466555a1c689f920e5d3651a9333972f7c7e", [:mix], [], "hexpm", "9fb72ef0567c2b2742f5119a1ba8a24a2fabb21b8d09820aefbf3e592fa9a46a"},
 }

@@ -6,6 +6,7 @@ defmodule Smee.Publish.Common do
       @moduledoc false
 
       alias Smee.Entity
+      alias Smee.Utils
 
       @spec format() :: atom()
       def format() do
@@ -15,6 +16,11 @@ defmodule Smee.Publish.Common do
       @spec ext() :: atom()
       def ext() do
         "txt"
+      end
+
+      @spec id_type() :: atom()
+      def id_type() do
+        :hash
       end
 
       @spec filter(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
@@ -97,17 +103,20 @@ defmodule Smee.Publish.Common do
 
       @spec write_aggregate(entities :: Enumerable.t(), options :: keyword()) :: list(binary())
       def write_aggregate(entities, options \\ []) do
+        options = Keyword.merge([to: File.cwd()], options)
+        :ok = check_dir!(options)
         filename = aggregate_filename(options)
         file = File.stream!(filename)
 
         entities
         |> aggregate_stream(options)
         |> Enum.into(file)
-        filename
+        Path.absname(filename)
       end
 
       @spec write_items(entities :: Enumerable.t(), options :: keyword()) :: list(binary())
       def write_items(entities, options \\ []) do
+        options = Keyword.merge([to: File.cwd()], options)
         :ok = check_dir!(options)
 
         entities
@@ -116,33 +125,38 @@ defmodule Smee.Publish.Common do
              fn {id, item} ->
                filename = item_filename(id, options)
                File.write!(filename, item)
-#               if options[:alias] do
-#
-#               end
-               filename
+               if options[:alias] && options[:id] in [:entity_id, :uri] do
+                 IO.puts filename
+                 IO.puts item_aliasname(id, options)
+                File.ln_s!(Path.basename(filename), item_aliasname(id, options))
+               end
+               Path.absname(filename)
              end
            )
         |> Enum.to_list()
       end
 
       def item_id(entity, i, options) do
-        entity.uri_hash
+        case (options[:id] || id_type()) do
+          :hash -> entity.uri_hash
+          :entity_id -> entity.uri
+          :uri -> entity.uri
+          :number -> i
+          :mdq -> "{sha1}#{entity.uri_hash}"
+          _ -> entity.uri_hash
+        end
       end
 
       def item_filename(id, options) do
-        default_item_filename(id, options)
+        Path.join("#{options[:to]}", "#{sanitize_filename(id, options)}.#{ext()}")
+      end
+
+      def item_aliasname(id, options) do
+        Path.join("#{options[:to]}", "#{Utils.sha1(id)}.#{ext()}")
       end
 
       def aggregate_filename(options) do
-        options[:to] || default_aggregate_filename(options)
-      end
-
-      def default_item_filename(id, options) do
-        "#{options[:to]}/#{format()}_#{id}.#{ext()}"
-      end
-
-      def default_aggregate_filename(options) do
-        "#{options[:to]}/#{format()}_aggregate.#{ext()}"
+        (options[:filename] || Path.join("#{options[:to]}", "#{format()}_aggregate.#{ext()}"))
       end
 
       def check_dir!(options) do
@@ -152,6 +166,18 @@ defmodule Smee.Publish.Common do
         else
           File.mkdir_p(dir)
           :ok
+        end
+      end
+
+      def sanitize_filename(filename, options) do
+        if options[:id] in [:hash, :number, :mdq, nil] do
+          filename
+        else
+          filename = filename
+                     |> String.replace_leading("https://", "")
+                     |> String.replace_leading("http://", "")
+                     |> String.replace([".", "/"], "_")
+          Zarex.sanitize(filename)
         end
       end
 
