@@ -8,9 +8,12 @@ defmodule Smee.Publish.Progress do
     :progress
   end
 
-  def encoder(entities, options \\ []) do
-    entities
-    |> Stream.map(fn e -> "." end)
+  def encode(data, options \\ []) do
+   "."
+  end
+
+  def separator(options) do
+    ""
   end
 
 end
