@@ -98,12 +98,12 @@ defmodule Smee.Publish.Common do
       def items(entities, options \\ []) do
         entities
         |> items_stream(options)
-        |> Enum.to_map()
+        |> Map.new()
       end
 
       @spec write_aggregate(entities :: Enumerable.t(), options :: keyword()) :: list(binary())
       def write_aggregate(entities, options \\ []) do
-        options = Keyword.merge([to: File.cwd()], options)
+        options = Keyword.merge([to: File.cwd!()], options)
         :ok = check_dir!(options)
         filename = aggregate_filename(options)
         file = File.stream!(filename)
@@ -116,7 +116,7 @@ defmodule Smee.Publish.Common do
 
       @spec write_items(entities :: Enumerable.t(), options :: keyword()) :: list(binary())
       def write_items(entities, options \\ []) do
-        options = Keyword.merge([to: File.cwd()], options)
+        options = Keyword.merge([to: File.cwd!()], options)
         :ok = check_dir!(options)
 
         entities
@@ -164,7 +164,7 @@ defmodule Smee.Publish.Common do
         if File.exists?(dir) && !File.dir?(dir) do
           raise "specify to: directory exists but is not a directory!"
         else
-          File.mkdir_p(dir)
+          File.mkdir_p!(dir)
           :ok
         end
       end
