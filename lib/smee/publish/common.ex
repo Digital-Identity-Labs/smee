@@ -128,7 +128,7 @@ defmodule Smee.Publish.Common do
                if options[:alias] && options[:id] in [:entity_id, :uri] do
                  IO.puts filename
                  IO.puts item_aliasname(id, options)
-                File.ln_s!(Path.basename(filename), item_aliasname(id, options))
+                 File.ln_s!(Path.basename(filename), item_aliasname(id, options))
                end
                Path.absname(filename)
              end
@@ -177,7 +177,8 @@ defmodule Smee.Publish.Common do
                      |> String.replace_leading("https://", "")
                      |> String.replace_leading("http://", "")
                      |> String.replace([".", "/"], "_")
-          Zarex.sanitize(filename)
+                     |> String.remove_trailing("_")
+                     |> Zarex.sanitize()
         end
       end
 
