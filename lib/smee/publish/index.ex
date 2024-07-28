@@ -13,6 +13,10 @@ defmodule Smee.Publish.Index do
     :index
   end
 
+  def ext() do
+    "txt"
+  end
+
   def extract(entity, options \\ []) do
 
     if options[:labels] do
@@ -30,13 +34,11 @@ defmodule Smee.Publish.Index do
     end
   end
 
-  def encoder(entities, options \\ []) do
+  def encode(record, options \\ []) do
     if options[:labels] do
-      entities
-      |> Stream.map(fn e -> "#{e.id}|#{e.label}" end)
+      "#{record.id}|#{record.label}"
     else
-      entities
-      |> Stream.map(fn e -> "#{e.id}" end)
+      "#{record.id}"
     end
   end
 
