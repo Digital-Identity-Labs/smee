@@ -104,7 +104,7 @@ defmodule Smee.Publish do
   @deprecated "Use Publish.stream/2 instead"
   @spec index_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
   def index_stream(entities, options \\ []) do
-    Index.stream(entities, options)
+    Index.aggregate_stream(entities, options)
   end
 
   @doc """
@@ -122,7 +122,7 @@ defmodule Smee.Publish do
   @deprecated "Use Publish.text/2 instead"
   @spec index(entities :: Enumerable.t(), options :: keyword()) :: binary()
   def index(entities, options \\ []) do
-    Index.text(entities, options)
+    Index.aggregate(entities, options)
   end
 
   @doc """
@@ -131,7 +131,7 @@ defmodule Smee.Publish do
   @deprecated "Use Publish.stream/2 instead"
   @spec xml_stream(entities :: Entity.t() | Enumerable.t(), options :: keyword()) :: Enumerable.t()
   def xml_stream(entities, options \\ []) do
-    SamlXml.stream(entities, options)
+    SamlXml.aggregate_stream(entities, options)
   end
 
   @doc """
@@ -149,7 +149,7 @@ defmodule Smee.Publish do
   @deprecated "Use Publish.text/2 instead"
   @spec xml(entities :: Enumerable.t(), options :: keyword()) :: binary()
   def xml(entities, options \\ []) do
-    SamlXml.text(entities, options)
+    SamlXml.aggregate(entities, options)
   end
 
   ################################################################################

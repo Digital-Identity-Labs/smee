@@ -15,14 +15,14 @@ defmodule Smee.Publish.SamlXml do
   @doc """
   Returns a streamed SAML metadata XML file
   """
-  @spec stream(entities :: Entity.t() | Enumerable.t(), options :: keyword()) :: Enumerable.t()
-  def stream(entity, options \\ [])
-  def stream(%Entity{} = entity, options) do
+  @spec aggregate_stream(entities :: Entity.t() | Enumerable.t(), options :: keyword()) :: Enumerable.t()
+  def aggregate_stream(entity, options \\ [])
+  def aggregate_stream(%Entity{} = entity, options) do
     single(entity, options)
   end
 
-  def stream(entities, options) do
-    aggregate_stream(entities, options)
+  def aggregate_stream(entities, options) do
+    aggregate_stream2(entities, options)
   end
 
   @doc """
@@ -30,7 +30,7 @@ defmodule Smee.Publish.SamlXml do
   """
   @spec eslength(entities :: Enumerable.t(), options :: keyword()) :: integer()
   def eslength(entities, options \\ []) do
-    stream(entities, options)
+    aggregate_stream(entities, options)
     |> Stream.map(fn x -> byte_size(x) end)
     |> Enum.reduce(0, fn x, acc -> x + acc end)
   end
@@ -38,9 +38,9 @@ defmodule Smee.Publish.SamlXml do
   @doc """
   Returns a SAML metadata XML file, potentially very large.
   """
-  @spec text(entities :: Enumerable.t(), options :: keyword()) :: binary()
-  def text(entities, options \\ []) do
-    stream(entities, options)
+  @spec aggregate(entities :: Enumerable.t(), options :: keyword()) :: binary()
+  def aggregate(entities, options \\ []) do
+    aggregate_stream(entities, options)
     |> Enum.join("\n")
   end
 
@@ -52,8 +52,8 @@ defmodule Smee.Publish.SamlXml do
     [xml]
   end
 
-  @spec aggregate_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
-  defp aggregate_stream(entities, options) do
+  @spec aggregate_stream2(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
+  defp aggregate_stream2(entities, options) do
 
     options = Keyword.put(options, :now, DateTime.utc_now)
 
