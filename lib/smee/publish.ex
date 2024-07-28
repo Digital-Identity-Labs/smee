@@ -57,37 +57,37 @@ defmodule Smee.Publish do
 
   def extract(entity, options \\ []) do
     options = Keyword.merge([lang: "en"], options)
-              |> Keywords.take([:lang, :valid_until, :format])
+              |> Keyword.take([:lang, :valid_until, :format])
     apply(select_backend(options), :extract, [entity, options])
   end
 
   def stream(entities, options \\ []) do
     options = Keyword.merge([lang: "en", wrap: true], options)
-              |> Keywords.take([:lang, :valid_until, :wrap, :format])
+              |> Keyword.take([:lang, :valid_until, :wrap, :format])
     apply(select_backend(options), :stream, [entities, options])
   end
 
   def text(entities, options \\ []) do
     options = Keyword.merge([lang: "en"], options)
-              |> Keywords.take([:lang, :valid_until, :format])
+              |> Keyword.take([:lang, :valid_until, :format])
     apply(select_backend(options), :text, [entities, options])
   end
 
   def data(entities, options \\ []) do
     options = Keyword.merge([lang: "en"], options)
-              |> Keywords.take([:lang, :valid_until, :format])
+              |> Keyword.take([:lang, :valid_until, :format])
     apply(select_backend(options), :text, [entities, options])
   end
 
   def write(entities, options \\ []) do
     options = Keyword.merge([lang: "en", dir: "publish", naming: :default ], options)
-              |> Keywords.take([:lang, :valid_until, :dir, :naming, :format])
+              |> Keyword.take([:lang, :valid_until, :dir, :naming, :format])
     apply(select_backend(options), :write, [entities, options])
   end
 
   def eslength(entities, options \\ []) do
     options = Keyword.merge([lang: "en"], options)
-              |> Keywords.take([:lang, :valid_until, :format])
+              |> Keyword.take([:lang, :valid_until, :format])
     apply(select_backend(options), :eslength, [entities, options])
   end
 

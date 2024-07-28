@@ -4,43 +4,44 @@ defmodule Smee.Publish.Index do
 
   use Smee.Publish.Common
 
-  use Smee.Publish.Common
-
   alias Smee.Entity
   alias Smee.XmlMunger
+  alias Smee.Publish.Extract
 
   @spec format() :: atom()
   def format() do
     :index
   end
 
-  @doc """
-  Returns a streamed index file, a plain text list of entity IDs.
-  """
-  @spec stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
-  def stream(entities, _options \\ []) do
-    entities
-    |> Stream.map(fn e -> "#{e.uri}\n" end)
+  def extract(entity, options \\ []) do
+
+    if options[:labels] do
+      about_data = Entity.xdoc(entity)
+                   |> Smee.XPaths.about()
+      %{
+        id: entity.uri,
+        label: Extract.name(about_data, options[:lang])
+      }
+    else
+      %{
+        id: entity.uri,
+        label: ""
+      }
+    end
   end
 
-  @doc """
-  Returns the estimated size of a streamed index file without generating it in advance.
-  """
-  @spec eslength(entities :: Enumerable.t(), options :: keyword()) :: integer()
-  def eslength(entities, options \\ []) do
-    stream(entities, options)
-    |> Stream.map(fn x -> byte_size(x) end)
-    |> Enum.reduce(0, fn x, acc -> x + acc end)
+  def encoder(entities, options \\ []) do
+    if options[:labels] do
+      entities
+      |> Stream.map(fn e -> "#{e.id}|#{e.label}" end)
+    else
+      entities
+      |> Stream.map(fn e -> "#{e.id}" end)
+    end
   end
 
-  @doc """
-  Returns an index text document
-  """
-  @spec text(entities :: Enumerable.t(), options :: keyword()) :: binary()
-  def text(entities, options \\ []) do
-    stream(entities, options)
-    |> Enum.to_list
-    |> Enum.join("\n")
+  def separator(options) do
+    "\n"
   end
 
 
