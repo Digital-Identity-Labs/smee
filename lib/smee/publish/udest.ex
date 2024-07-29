@@ -28,6 +28,7 @@ defmodule Smee.Publish.Udest do
                  |> Smee.XPaths.dest()
 
     lang = options[:lang]
+
     %{
       id: dest_data.id,
       name: Extract.name(dest_data, lang),

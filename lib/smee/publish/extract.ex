@@ -151,6 +151,33 @@ defmodule Smee.Publish.Extract do
     get_one(dest_data.privacy_urls, lang)
   end
 
+  def domains(disco_data, lang) do
+    (disco_data.scopes ++ disco_data.domain_hints)
+    |> Enum.uniq()
+    |> Enum.reject(fn d -> String.length(d) > 20 end)
+    |> Enum.sort_by(&String.length/1)
+    |> Enum.take(5)
+  end
+
+  def ips(disco_data, lang) do
+    disco_data.ip_hints || []
+  end
+
+  def geos(disco_data, lang) do
+    (disco_data.geo_hints || [])
+    |> Enum.map(fn s -> String.replace_prefix(s, "geo:", "") end)
+  end
+
+  def keywords(disco_data, lang) do
+    get_one(disco_data.keywords, lang)
+  end
+
+  def hide(disco_data, lang) do
+    "http://refeds.org/category/hide-from-discovery" in (
+      disco_data.entity_attributes["http://macedir.org/entity-category"] || [])
+  end
+
+
   ####
 
   def get_one(data, lang \\ "en")
