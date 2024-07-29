@@ -16,7 +16,7 @@ defmodule Smee.Publish.Csv do
 
   @spec ext() :: atom()
   def ext() do
-    "txt"
+    "csv"
   end
 
   def extract(entity, options \\ []) do
