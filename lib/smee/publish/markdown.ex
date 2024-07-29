@@ -5,142 +5,61 @@ defmodule Smee.Publish.Markdown do
   use Smee.Publish.Common
 
   alias Smee.Entity
-  alias Smee.Filter
-  alias Smee.XmlMunger
-  alias Smee.XPaths
+  alias Smee.Publish.Extract
 
   @spec format() :: atom()
   def format() do
     :markdown
   end
 
-  @spec stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
-  def stream(entities, options \\ []) do
-
-    top = ["| ID | Name | Roles | Logo | Info URL | Contact |\n|----|-----|-----|-----------|--------|---------|"]
-
-    estream = entities
-    |> Stream.map(fn e -> build_record(e) end)
-    |> Enum.map(
-         fn f ->
-           [ "",
-             f[:id],
-             f[:name],
-             f[:roles],
-             f[:logo],
-             f[:info_url],
-             f[:contact]
-           ]  |> Enum.join("| ")
-         end
-       )
-
-    Stream.concat(top, estream)
-
+  @spec ext() :: atom()
+  def ext() do
+    "md"
   end
 
-  @spec eslength(entities :: Enumerable.t(), options :: keyword()) :: integer()
-  def eslength(entities, options \\ []) do
-    stream(entities, options)
-    |> Stream.map(fn x -> byte_size(x) end)
-    |> Enum.reduce(0, fn x, acc -> x + acc end)
-  end
 
-  @spec text(entities :: Enumerable.t(), options :: keyword()) :: binary()
-  def text(entities, options \\ []) do
-    stream(entities, options)
-    |> Enum.join("\n")
-  end
-
-  ############################################################
-  defp build_record(entity, lang \\ "en", ctype \\ "support") do
-
+  def extract(entity, options \\ []) do
     about_data = Entity.xdoc(entity)
                  |> Smee.XPaths.about()
 
+    lang = options[:lang]
+    ctype = options[:contact] || "support"
+
     %{
       id: about_data.id,
-      name: extract_name(about_data, lang),
-      roles: roles(entity),
-      logo: extract_logo(about_data, lang),
-      info_url: extract_info_url(about_data, lang),
-      contact: extract_contact(about_data, ctype)
+      name: Extract.name(about_data, lang),
+      roles: Extract.roles(entity),
+      info_url: Extract.info_url(about_data, lang),
+      contact: Extract.contact(about_data, ctype)
     }
     |> Enum.reject(fn {k, v} -> (v == false) or is_nil(v) or (is_list(v) and length(v) == 0)  end)
-    |> Enum.map(fn {k, v} -> {k, String.replace(v, "|", "")} end)
     |> Map.new()
+
   end
 
-  defp extract_name(about_data, lang) do
-    get_one(about_data.displaynames, lang) || get_one(about_data.org_names, lang)
+  def encode(data, options \\ []) do
+
+    row = [
+            data[:id] || "-",
+            data[:name] || "-",
+            data[:roles] || "-",
+            (if data[:info_url], do: "[#{data[:info_url]}](#{data[:info_url]})", else: "-"),
+            (if data[:contact], do: "[#{data[:contact]}](mailto:#{data[:contact]})", else: "-")
+          ]
+          |> Enum.map(fn item -> String.replace(item, "|", "&#124;") end)
+          |> Enum.join(" | ")
+
+    "| " <> row <> " |"
+
+
   end
 
-  defp extract_description(about_data, lang) do
-    get_one(about_data.descriptions, lang)
+  def separator(options) do
+    "\n"
   end
 
-  defp extract_logo(%{url: nowt}, lang) when is_nil(nowt) or nowt == [] do
-    nil
+  def headers(options) do
+    ["| ID | Name | Roles | Info URL | Contact |\n", "|----|-----|-----|--------|---------|\n"]
   end
 
-  defp extract_logo(about_data, lang) do
-    about_data.logos
-    |> Enum.reject(fn l -> String.starts_with?(l.url, "data:") end)
-    |> Enum.filter(fn l -> l.lang in [lang, "en", "", nil] end)
-    |> Enum.sort_by(& &1.width)
-    |> Enum.map(fn l -> Map.get(l, :url, nil) end)
-    |> List.first()
-  end
-
-  defp extract_contact(%{contacts: nowt}, lang) when is_nil(nowt) or nowt == [] do
-    nil
-  end
-
-  defp extract_contact(about_data, "sirtfi") do
-    about_data.contacts
-    |> Enum.find(%{}, fn e -> Map.get(e, :type) == "other" and Map.get(e, :rtype) == "http://refeds.org/metadata/contactType/security" end)
-    |> Map.get(:email)
-    |> tidy_mail()
-  end
-
-  defp extract_contact(about_data, ctype) do
-    about_data.contacts
-    |> Enum.find(%{}, fn e -> Map.get(e, :type) == ctype end)
-    |> Map.get(:email)
-    |> tidy_mail()
-  end
-
-  defp extract_info_url(about_data, lang) do
-    get_one(about_data.info_urls, lang) || get_one(about_data.org_urls, lang)
-  end
-
-  defp get_one(data, lang \\ "en")
-  defp get_one(data, lang) when is_map(data) do
-    data[lang] || data["en"] || List.first(
-      Map.values(data)
-    )
-  end
-
-  defp get_one(data, lang) when is_list(data) do
-    List.first(data)
-  end
-
-  defp tidy_mail(nil) do
-    nil
-  end
-
-  defp tidy_mail(email_address) do
-    String.replace_prefix(email_address, "mailto:", "")
-  end
-
-  defp roles(entity) do
-    idp = Entity.idp?(entity)
-    sp = Entity.sp?(entity)
-
-    roles = cond do
-      idp && sp -> "IDP/SP"
-      sp -> "SP"
-      idp -> "IDP"
-      true -> "???"
-    end
-  end
 end

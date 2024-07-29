@@ -197,7 +197,8 @@ defmodule Smee.Publish.Common do
         items: 2,
         aggregate: 2,
         write_aggregate: 2,
-        write_items: 2
+        write_items: 2,
+        ext: 0
       ]
 
     end

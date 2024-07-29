@@ -85,7 +85,4 @@ defmodule Smee.Publish.Extract do
 
   #####
 
-
-
-
 end
