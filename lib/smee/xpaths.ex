@@ -74,7 +74,12 @@ defmodule Smee.XPaths do
       ~x"//md:Organization/md:OrganizationURL"le,
       lang: ~x"string(@xml:lang)"s,
       url: ~x"./text()"s
-    ]
+    ],
+    privacy_urls: [
+      ~x"///md:SPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:PrivacyURL"le,
+      lang: ~x"string(@xml:lang)"s,
+      url: ~x"./text()"s
+    ],
   ]
 
   @about_xmap [
@@ -234,7 +239,8 @@ defmodule Smee.XPaths do
         org_names: ml_text_map(extracted.org_names),
         info_urls: ml_text_map(extracted.info_urls, :url),
         keywords: ml_text_map(extracted.keywords),
-        entity_attributes: ea_format(extracted.entity_attributes)
+        entity_attributes: ea_format(extracted.entity_attributes),
+        privacy_urls: ml_text_map(extracted.privacy_urls, :url),
       }
     )
 

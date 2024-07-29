@@ -116,7 +116,8 @@ defmodule Smee.Publish.Extract do
     disco_data.logos
     |> Enum.map(
          fn %{url: url, height: height, width: width, lang: lang} ->
-           %{lang: lang || "en", value: url, height: height, width: width} end
+           %{lang: lang || "en", value: url, height: height, width: width}
+         end
        )
   end
 
@@ -177,6 +178,68 @@ defmodule Smee.Publish.Extract do
       disco_data.entity_attributes["http://macedir.org/entity-category"] || [])
   end
 
+  def thiss_name_tag(%{scopes: [], domain_hints: []} = disco_data, lang) do
+    name(disco_data, lang)
+    |> String.replace(~r/^[a-zA-Z]+/, "")
+    |> String.upcase()
+  end
+
+  def thiss_name_tag(disco_data, lang) do
+    domains = domains(disco_data, lang)
+    if length(domains) > 0 do
+      domains
+      |> List.first()
+      |> String.split(".")
+      |> List.first()
+      |> String.replace(" ", "")
+      |> String.upcase()
+    else
+      name(disco_data, lang)
+      |> String.replace(~r/^[a-zA-Z]+/, "")
+      |> String.upcase()
+    end
+  end
+
+
+  def thiss_hide(disco_data, lang) do
+    "http://refeds.org/category/hide-from-discovery" in (
+      disco_data.entity_attributes["http://macedir.org/entity-category"] || [])
+  end
+
+  def thiss_geos(%{geo_hints: []}, lang) do
+    nil
+  end
+
+  def thiss_geos(disco_data, lang) do
+    [lat, long | _] = disco_data.geo_hints
+                      |> List.first()
+                      |> String.replace_prefix("geo:", "")
+                      |> String.split(",")
+
+    %{lat: lat, long: long}
+  end
+
+  def thiss_logo(%{logos: nowt}, lang) when is_nil(nowt) or nowt == [] do
+    nil
+  end
+
+  def thiss_logo(disco_data, lang) do
+    logo = disco_data.logos
+           |> Enum.filter(fn l -> l.lang in [lang, "en", "", nil] end)
+           |> Enum.sort_by(& &1.width)
+           |> List.last()
+
+    if logo do
+      %{
+        url: logo.url,
+        width: "#{logo.width}",
+        height: "#{logo.height}"
+      }
+    else
+      nil
+    end
+
+  end
 
   ####
 
