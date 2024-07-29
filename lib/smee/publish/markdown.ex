@@ -51,7 +51,6 @@ defmodule Smee.Publish.Markdown do
 
     "| " <> row <> " |"
 
-
   end
 
   def separator(options) do

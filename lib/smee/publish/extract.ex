@@ -70,6 +70,48 @@ defmodule Smee.Publish.Extract do
     end
   end
 
+  def names(%{displaynames: missing} = disco_data, lang) when is_nil(missing) or missing == [] do
+    disco_data.org_names
+    |> Enum.map(fn {k, v} -> %{lang: k, value: v} end)
+  end
+
+  def names(disco_data, lang) do
+    disco_data.displaynames
+    |> Enum.map(fn {k, v} -> %{lang: k, value: v} end)
+  end
+
+  def descriptions(disco_data, lang) do
+    disco_data.descriptions
+    |> Enum.map(fn {k, v} -> %{lang: k, value: v} end)
+  end
+
+  def logos(%{url: nowt}, lang) when is_nil(nowt) or nowt == [] do
+    nil
+  end
+
+  def logos(disco_data, lang) do
+    disco_data.logos
+    |> Enum.map(
+         fn %{url: url, height: height, width: width, lang: lang} ->
+           %{lang: lang || "en", value: url, height: height, width: width} end
+       )
+  end
+
+  def keywords(disco_data, lang) do
+    disco_data.keywords
+    |> Enum.map(fn {k, v} -> %{lang: k, value: v} end)
+  end
+
+  def eas(disco_data, lang) do
+    disco_data.entity_attributes
+    |> Enum.map(fn {k, v} -> %{name: k, values: v} end)
+  end
+
+  def infos(disco_data, lang) do
+    disco_data.info_urls
+    |> Enum.map(fn {k, v} -> %{lang: k, value: v} end)
+  end
+
   ####
 
   def get_one(data, lang \\ "en")
