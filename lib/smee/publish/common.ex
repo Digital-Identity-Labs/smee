@@ -183,6 +183,12 @@ defmodule Smee.Publish.Common do
         end
       end
 
+      def compact_map(map) do
+        map
+        |> Enum.reject(fn {k, v} -> (v == false) or is_nil(v) or (is_list(v) and length(v) == 0)  end)
+        |> Map.new()
+      end
+
       defoverridable [
         format: 0,
         filter: 2,
