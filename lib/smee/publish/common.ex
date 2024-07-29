@@ -35,6 +35,7 @@ defmodule Smee.Publish.Common do
 
       @spec aggregate_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
       def aggregate_stream(entities, options \\ []) do
+        options = Keyword.merge(options, [in_aggregate: true])
         Stream.concat(
           [
             headers(options),

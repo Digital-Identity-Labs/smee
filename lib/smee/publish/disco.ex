@@ -13,7 +13,6 @@ defmodule Smee.Publish.Disco do
     :disco
   end
 
-
   @spec ext() :: atom()
   def ext() do
     "json"

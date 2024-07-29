@@ -12,65 +12,50 @@ defmodule Smee.Publish.SamlXml do
     :saml
   end
 
-  @doc """
-  Returns a streamed SAML metadata XML file
-  """
-  @spec aggregate_stream(entities :: Entity.t() | Enumerable.t(), options :: keyword()) :: Enumerable.t()
-  def aggregate_stream(entity, options \\ [])
-  def aggregate_stream(%Entity{} = entity, options) do
-    single(entity, options)
+  @spec ext() :: atom()
+  def ext() do
+    "xml"
   end
 
-  def aggregate_stream(entities, options) do
-    aggregate_stream2(entities, options)
+  def extract(entity, options \\ []) do
+
+    disco_data = Entity.xdoc(entity)
+                 |> Smee.XPaths.disco()
+
+    lang = options[:lang]
+    trim = !!options[:trim]
+
+    %{
+      uri: entity.uri,
+      uri_hash: entity.uri_hash,
+      xml: Entity.xml(entity),
+      valid_until: options[:valid_until] || entity.valid_until,
+      trim: trim,
+      id: entity.id
+    }
+
   end
 
-  @doc """
-  Returns the estimated size of a streamed SAML metadata XML file without generating it in advance.
-  """
-  @spec eslength(entities :: Enumerable.t(), options :: keyword()) :: integer()
-  def eslength(entities, options \\ []) do
-    aggregate_stream(entities, options)
-    |> Stream.map(fn x -> byte_size(x) end)
-    |> Enum.reduce(0, fn x, acc -> x + acc end)
+  def encode(data, options \\ []) do
+    if options[:in_aggregate] do
+      data[:xml]
+      |> XmlMunger.trim_entity_xml(uri: data[:uri])
+    else
+      data[:xml]
+      |> XmlMunger.expand_entity_top(options)
+    end
   end
 
-  @doc """
-  Returns a SAML metadata XML file, potentially very large.
-  """
-  @spec aggregate(entities :: Enumerable.t(), options :: keyword()) :: binary()
-  def aggregate(entities, options \\ []) do
-    aggregate_stream(entities, options)
-    |> Enum.join("\n")
+  def headers(options) do
+    [XmlMunger.xml_declaration, XmlMunger.generate_aggregate_header(options)]
   end
 
-  ################################################################################
-
-  @spec single(entity :: Entity.t(), options :: keyword()) :: list(binary())
-  defp single(entity, options) do
-    xml = Entity.xml(entity) |> XmlMunger.expand_entity_top(options)
-    [xml]
+  def footers(options) do
+    [XmlMunger.generate_aggregate_footer(options)]
   end
 
-  @spec aggregate_stream2(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
-  defp aggregate_stream2(entities, options) do
-
-    options = Keyword.put(options, :now, DateTime.utc_now)
-
-    xml_declaration = [XmlMunger.xml_declaration]
-    header_stream = [XmlMunger.generate_aggregate_header(options)]
-    footer_stream = [XmlMunger.generate_aggregate_footer(options)]
-
-    estream = entities
-              |> Stream.map(
-                   fn e ->
-                     Entity.xml(e)
-                     |> XmlMunger.trim_entity_xml(uri: e.uri)
-                   end
-                 )
-
-    Stream.concat([xml_declaration, header_stream, estream, footer_stream])
-    |> Stream.map(fn e -> e end)
+  def separator(options) do
+    "\n"
   end
 
 end

@@ -24,3 +24,4 @@ smee-*.tar
 /tmp2.txt
 /out2
 /markdown_aggregate.md
+/out*/
