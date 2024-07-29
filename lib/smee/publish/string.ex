@@ -9,12 +9,11 @@ defmodule Smee.Publish.String do
   end
 
   def extract(entity, options \\ []) do
-    "#{entity}"
+    %{text: "#{entity}"}
   end
 
-  def encoder(entities, options \\ []) do
-    entities
-    |> Stream.map(fn e -> "#{e}" end)
+  def encode(data, options \\ []) do
+    data.text
   end
 
   def separator(options) do
