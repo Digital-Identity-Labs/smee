@@ -45,12 +45,18 @@ defmodule Smee.Publish.Common do
         )
       end
 
-      @spec items_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
-      def items_stream(entities, options \\ []) do
+      @spec raw_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t(Map.t())
+      def raw_stream(entities, options \\ []) do
         entities
         |> filter(options)
         |> Stream.with_index()
         |> Stream.map(fn {e, i} -> {item_id(e, i, options), extract(e, options)} end)
+      end
+
+      @spec items_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
+      def items_stream(entities, options \\ []) do
+        entities
+        |> raw_stream(options)
         |> Stream.map(fn {id, e} -> {id, encode(e, options)} end)
       end
 
@@ -64,9 +70,8 @@ defmodule Smee.Publish.Common do
 
       def body_stream(entities, options) do
         entities
-        |> filter(options)
-        |> Stream.map(fn e -> extract(e, options) end)
-        |> Stream.map(fn e -> encode(e, options) end)
+        |> raw_stream(options)
+        |> Stream.map(fn {_id, e} -> encode(e, options) end)
         |> Stream.intersperse(separator(options))
         #|> Stream.drop(-1)
       end
@@ -193,6 +198,7 @@ defmodule Smee.Publish.Common do
         format: 0,
         filter: 2,
         extract: 2,
+        raw_stream: 2,
         items_stream: 2,
         aggregate_stream: 2,
         encode: 2,
