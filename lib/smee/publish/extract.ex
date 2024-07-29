@@ -10,6 +10,15 @@ defmodule Smee.Publish.Extract do
     get_one(data.descriptions, lang)
   end
 
+  def org_name(dest_data, lang) do
+    get_one(dest_data.org_names, lang)
+  end
+
+  def org_url(dest_data, lang) do
+    get_one(dest_data.org_urls, lang)
+  end
+
+
   def logo(%{url: nowt}, lang) when is_nil(nowt) or nowt == [] do
     nil
   end
@@ -21,6 +30,20 @@ defmodule Smee.Publish.Extract do
     |> Enum.sort_by(& &1.width)
     |> Enum.map(fn l -> Map.get(l, :url, nil) end)
     |> List.first()
+  end
+
+  def sensible_logo(%{url: nowt}, lang) when is_nil(nowt) or nowt == [] do
+    nil
+  end
+
+  def sensible_logo(dest_data, lang) do
+    dest_data.logos
+    |> Enum.reject(fn l -> String.starts_with?(l.url, "data:") end)
+    |> Enum.reject(fn l -> l.width > 500 end)
+    |> Enum.filter(fn l -> l.lang in [lang, "en", "", nil] end)
+    |> Enum.sort_by(& &1.width)
+    |> Enum.map(fn l -> Map.get(l, :url, nil) end)
+    |> List.last()
   end
 
   def contact(%{contacts: nowt}, lang) when is_nil(nowt) or nowt == [] do
@@ -110,6 +133,22 @@ defmodule Smee.Publish.Extract do
   def infos(disco_data, lang) do
     disco_data.info_urls
     |> Enum.map(fn {k, v} -> %{lang: k, value: v} end)
+  end
+
+  def disco_urls(dest_data) do
+    dest_data.disco_urls
+  end
+
+  def login_urls(dest_data) do
+    dest_data.login_urls
+  end
+
+  def info(dest_data, lang) do
+    get_one(dest_data.info_urls, lang)
+  end
+
+  def privacy(dest_data, lang) do
+    get_one(dest_data.privacy_urls, lang)
   end
 
   ####

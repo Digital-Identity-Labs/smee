@@ -30,7 +30,6 @@ defmodule Smee.Publish.SamlXml do
       uri_hash: entity.uri_hash,
       xml: Entity.xml(entity),
       valid_until: options[:valid_until] || entity.valid_until,
-      trim: trim,
       id: entity.id
     }
 

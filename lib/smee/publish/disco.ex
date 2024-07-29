@@ -38,8 +38,7 @@ defmodule Smee.Publish.Disco do
       EntityAttributes: Extract.eas(disco_data, lang),
       InformationURLs: Extract.infos(disco_data, lang),
     }
-    |> Enum.reject(fn {k, v} -> (v == false) or is_nil(v) or (is_list(v) and length(v) == 0)  end)
-    |> Map.new()
+    |> compact_map()
 
   end
 
@@ -49,6 +48,14 @@ defmodule Smee.Publish.Disco do
 
   def separator(options) do
     ",\n"
+  end
+
+  def headers(options) do
+    ["["]
+  end
+
+  def footers(options) do
+    ["]"]
   end
 
 end

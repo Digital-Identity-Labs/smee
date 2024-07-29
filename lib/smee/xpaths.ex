@@ -277,7 +277,6 @@ defmodule Smee.XPaths do
 
   end
 
-
   defp ml_text_map(ml_list, vk \\ :text) do
     ml_list
     |> Enum.map(fn h -> {h[:lang], h[vk]}  end)
