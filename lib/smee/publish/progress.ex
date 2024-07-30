@@ -8,11 +8,11 @@ defmodule Smee.Publish.Progress do
     :progress
   end
 
-  def encode(data, options \\ []) do
+  def encode(_data, _options) do
    "."
   end
 
-  def separator(options) do
+  def separator(_options) do
     ""
   end
 

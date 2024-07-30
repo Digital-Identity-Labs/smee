@@ -32,12 +32,13 @@ defmodule Smee.Publish.Markdown do
       info_url: Extract.info_url(about_data, lang),
       contact: Extract.contact(about_data, ctype)
     }
-    |> Enum.reject(fn {k, v} -> (v == false) or is_nil(v) or (is_list(v) and length(v) == 0)  end)
-    |> Map.new()
+    |> compact_map()
 
   end
 
-  def encode(data, options \\ []) do
+  @compile :nowarn_unused_vars
+
+  def encode(data, _options) do
 
     row = [
             data[:id] || "-",
@@ -53,11 +54,11 @@ defmodule Smee.Publish.Markdown do
 
   end
 
-  def separator(options) do
+  def separator(_options) do
     "\n"
   end
 
-  def headers(options) do
+  def headers(_options) do
     ["| ID | Name | Roles | Info URL | Contact |\n", "|----|-----|-----|--------|---------|\n"]
   end
 

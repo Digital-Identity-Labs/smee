@@ -22,7 +22,7 @@ defmodule Smee.Publish.Udest do
     Filter.sp(entities)
   end
 
-  def extract(entity, options \\ []) do
+  def extract(entity, options) do
 
     dest_data = Entity.xdoc(entity)
                  |> Smee.XPaths.dest()
@@ -45,19 +45,21 @@ defmodule Smee.Publish.Udest do
 
   end
 
-  def encode(data, options \\ []) do
+  @compile :nowarn_unused_vars
+
+  def encode(data, _options) do
     Jason.encode!(data)
   end
 
-  def separator(options) do
+  def separator(_options) do
     ",\n"
   end
 
-  def headers(options) do
+  def headers(_options) do
     ["["]
   end
 
-  def footers(options) do
+  def footers(_options) do
     ["]"]
   end
 

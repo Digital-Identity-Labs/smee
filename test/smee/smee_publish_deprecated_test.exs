@@ -7,6 +7,7 @@ defmodule SmeePublishDeprecatedTest do
   alias Smee.Lint
   alias Smee.XmlMunger
 
+  @moduletag :deprecated
 
   @valid_metadata Source.new("test/support/static/aggregate.xml")
                   |> Smee.fetch!()

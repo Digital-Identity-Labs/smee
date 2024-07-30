@@ -3,9 +3,9 @@ defmodule SmeePublishIndexTest do
 
   alias Smee.Publish
   alias Smee.Source
-  alias Smee.Metadata
-  alias Smee.Lint
-  alias Smee.XmlMunger
+#  alias Smee.Metadata
+#  alias Smee.Lint
+#  alias Smee.XmlMunger
 
 
   @valid_metadata Source.new("test/support/static/aggregate.xml")

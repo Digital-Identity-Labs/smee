@@ -17,13 +17,7 @@ defmodule Smee.Publish.SamlXml do
     "xml"
   end
 
-  def extract(entity, options \\ []) do
-
-    disco_data = Entity.xdoc(entity)
-                 |> Smee.XPaths.disco()
-
-    lang = options[:lang]
-    trim = !!options[:trim]
+  def extract(entity, _options) do
 
     %{
       uri: entity.uri,
@@ -52,7 +46,7 @@ defmodule Smee.Publish.SamlXml do
     [XmlMunger.generate_aggregate_footer(options)]
   end
 
-  def separator(options) do
+  def separator(_options) do
     "\n"
   end
 

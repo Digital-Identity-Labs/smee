@@ -25,9 +25,6 @@ defmodule Smee.Publish.Thiss do
 
   def extract(entity, options \\ []) do
 
-    disco_data = Entity.xdoc(entity)
-                 |> Smee.XPaths.disco()
-
     lang = options[:lang]
     role = if Entity.idp?(entity), do: :idp, else: :sp
 
@@ -36,25 +33,26 @@ defmodule Smee.Publish.Thiss do
 
   end
 
-  def encode(data, options \\ []) do
+  @compile :nowarn_unused_vars
+
+  def encode(data, _options) do
     Jason.encode!(data)
   end
 
-  def separator(options) do
+  def separator(_options) do
     ","
   end
 
-  def headers(options) do
+  def headers(_options) do
     ["["]
   end
 
-  def footers(options) do
+  def footers(_options) do
     ["]"]
   end
 
   ######################################
 
-  defp xextract(entity, role, lang \\ "en")
   defp xextract(entity, :idp, lang) do
 
     disco_data = Entity.xdoc(entity)
@@ -76,7 +74,7 @@ defmodule Smee.Publish.Thiss do
       name_tag: Extract.thiss_name_tag(disco_data, lang),
       geo: Extract.thiss_geos(disco_data, lang),
       entity_icon_url: Extract.thiss_logo(disco_data, lang),
-      keywords: Extract.keywords(disco_data, lang),
+      keywords: Extract.thiss_keywords(disco_data, lang),
       privacy_statement_url: Extract.privacy(disco_data, lang),
     }
   end

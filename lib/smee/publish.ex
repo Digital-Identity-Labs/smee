@@ -68,7 +68,6 @@ defmodule Smee.Publish do
   """
 
   alias Smee.Entity
-  alias Smee.XmlMunger
   alias Smee.Publish.Disco
   alias Smee.Publish.Udisco
   alias Smee.Publish.Udest

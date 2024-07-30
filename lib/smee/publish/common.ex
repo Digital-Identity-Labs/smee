@@ -1,6 +1,6 @@
 defmodule Smee.Publish.Common do
 
-  defmacro __using__(opts) do
+  defmacro __using__(_opts) do
     quote do
 
       @moduledoc false
@@ -190,8 +190,12 @@ defmodule Smee.Publish.Common do
 
       def compact_map(map) do
         map
-        |> Enum.reject(fn {k, v} -> (v == false) or is_nil(v) or (is_list(v) and length(v) == 0)  end)
+        |> Enum.reject(fn {_k, v} -> (v == false) or is_nil(v) or (is_list(v) and length(v) == 0)  end)
         |> Map.new()
+      end
+
+      def nop(variable) do
+        variable
       end
 
       defoverridable [

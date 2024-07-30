@@ -19,7 +19,7 @@ defmodule Smee.Publish.Extract do
   end
 
 
-  def logo(%{url: nowt}, lang) when is_nil(nowt) or nowt == [] do
+  def logo(%{url: nowt}, _lang) when is_nil(nowt) or nowt == [] do
     nil
   end
 
@@ -32,7 +32,7 @@ defmodule Smee.Publish.Extract do
     |> List.first()
   end
 
-  def sensible_logo(%{url: nowt}, lang) when is_nil(nowt) or nowt == [] do
+  def sensible_logo(%{url: nowt}, _lang) when is_nil(nowt) or nowt == [] do
     nil
   end
 
@@ -46,7 +46,7 @@ defmodule Smee.Publish.Extract do
     |> List.last()
   end
 
-  def contact(%{contacts: nowt}, lang) when is_nil(nowt) or nowt == [] do
+  def contact(%{contacts: nowt}, _lang) when is_nil(nowt) or nowt == [] do
     nil
   end
 
@@ -85,7 +85,7 @@ defmodule Smee.Publish.Extract do
     idp = Entity.idp?(entity)
     sp = Entity.sp?(entity)
 
-    roles = cond do
+    cond do
       idp && sp -> "IDP/SP"
       sp -> "SP"
       idp -> "IDP"
@@ -93,26 +93,26 @@ defmodule Smee.Publish.Extract do
     end
   end
 
-  def names(%{displaynames: missing} = disco_data, lang) when is_nil(missing) or missing == [] do
+  def names(%{displaynames: missing} = disco_data, _lang) when is_nil(missing) or missing == [] do
     disco_data.org_names
     |> Enum.map(fn {k, v} -> %{lang: k, value: v} end)
   end
 
-  def names(disco_data, lang) do
+  def names(disco_data, _lang) do
     disco_data.displaynames
     |> Enum.map(fn {k, v} -> %{lang: k, value: v} end)
   end
 
-  def descriptions(disco_data, lang) do
+  def descriptions(disco_data, _lang) do
     disco_data.descriptions
     |> Enum.map(fn {k, v} -> %{lang: k, value: v} end)
   end
 
-  def logos(%{url: nowt}, lang) when is_nil(nowt) or nowt == [] do
+  def logos(%{url: nowt}, _lang) when is_nil(nowt) or nowt == [] do
     nil
   end
 
-  def logos(disco_data, lang) do
+  def logos(disco_data, _lang) do
     disco_data.logos
     |> Enum.map(
          fn %{url: url, height: height, width: width, lang: lang} ->
@@ -121,17 +121,17 @@ defmodule Smee.Publish.Extract do
        )
   end
 
-  def keywords(disco_data, lang) do
+  def thiss_keywords(disco_data, _lang) do
     disco_data.keywords
     |> Enum.map(fn {k, v} -> %{lang: k, value: v} end)
   end
 
-  def eas(disco_data, lang) do
+  def eas(disco_data, _lang) do
     disco_data.entity_attributes
     |> Enum.map(fn {k, v} -> %{name: k, values: v} end)
   end
 
-  def infos(disco_data, lang) do
+  def infos(disco_data, _lang) do
     disco_data.info_urls
     |> Enum.map(fn {k, v} -> %{lang: k, value: v} end)
   end
@@ -152,7 +152,7 @@ defmodule Smee.Publish.Extract do
     get_one(dest_data.privacy_urls, lang)
   end
 
-  def domains(disco_data, lang) do
+  def domains(disco_data, _lang) do
     (disco_data.scopes ++ disco_data.domain_hints)
     |> Enum.uniq()
     |> Enum.reject(fn d -> String.length(d) > 20 end)
@@ -160,11 +160,11 @@ defmodule Smee.Publish.Extract do
     |> Enum.take(5)
   end
 
-  def ips(disco_data, lang) do
+  def ips(disco_data, _lang) do
     disco_data.ip_hints || []
   end
 
-  def geos(disco_data, lang) do
+  def geos(disco_data, _lang) do
     (disco_data.geo_hints || [])
     |> Enum.map(fn s -> String.replace_prefix(s, "geo:", "") end)
   end
@@ -173,7 +173,7 @@ defmodule Smee.Publish.Extract do
     get_one(disco_data.keywords, lang)
   end
 
-  def hide(disco_data, lang) do
+  def hide(disco_data, _lang) do
     "http://refeds.org/category/hide-from-discovery" in (
       disco_data.entity_attributes["http://macedir.org/entity-category"] || [])
   end
@@ -201,16 +201,16 @@ defmodule Smee.Publish.Extract do
   end
 
 
-  def thiss_hide(disco_data, lang) do
+  def thiss_hide(disco_data, _lang) do
     "http://refeds.org/category/hide-from-discovery" in (
       disco_data.entity_attributes["http://macedir.org/entity-category"] || [])
   end
 
-  def thiss_geos(%{geo_hints: []}, lang) do
+  def thiss_geos(%{geo_hints: []}, _lang) do
     nil
   end
 
-  def thiss_geos(disco_data, lang) do
+  def thiss_geos(disco_data, _lang) do
     [lat, long | _] = disco_data.geo_hints
                       |> List.first()
                       |> String.replace_prefix("geo:", "")
@@ -219,7 +219,7 @@ defmodule Smee.Publish.Extract do
     %{lat: lat, long: long}
   end
 
-  def thiss_logo(%{logos: nowt}, lang) when is_nil(nowt) or nowt == [] do
+  def thiss_logo(%{logos: nowt}, _lang) when is_nil(nowt) or nowt == [] do
     nil
   end
 
@@ -250,7 +250,7 @@ defmodule Smee.Publish.Extract do
     )
   end
 
-  def get_one(data, lang) when is_list(data) do
+  def get_one(data, _lang) when is_list(data) do
     List.first(data)
   end
 

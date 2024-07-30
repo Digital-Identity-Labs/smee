@@ -6,7 +6,6 @@ defmodule Smee.Publish.Csv do
   @moduledoc false
 
   alias Smee.Entity
-  alias Smee.XPaths
   alias Smee.Publish.Extract
 
   @spec format() :: atom()
@@ -34,11 +33,11 @@ defmodule Smee.Publish.Csv do
       info_url: Extract.info_url(about_data, lang),
       contact: Extract.contact(about_data, ctype)
     }
-    |> Enum.reject(fn {k, v} -> (v == false) or is_nil(v) or (is_list(v) and length(v) == 0)  end)
-    |> Map.new()
+    |> compact_map()
   end
 
-  def encode(data, options \\ []) do
+  def encode(data, _options) do
+
     [
       [
         data[:id],
@@ -56,7 +55,7 @@ defmodule Smee.Publish.Csv do
 
   end
 
-  def separator(options) do
+  def separator(_options) do
     "\n"
   end
 

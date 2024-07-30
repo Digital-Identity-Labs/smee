@@ -3,8 +3,6 @@ defmodule Smee.XPaths do
   @moduledoc false
 
   import Smee.Sigils
-  alias __MODULE__
-  alias Smee.Transforms
 
   @entity_p  ~x"/"
   @entityid_x  [

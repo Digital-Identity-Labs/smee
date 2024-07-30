@@ -5,7 +5,6 @@ defmodule Smee.Publish.Index do
   use Smee.Publish.Common
 
   alias Smee.Entity
-  alias Smee.XmlMunger
   alias Smee.Publish.Extract
 
   @spec format() :: atom()
@@ -42,7 +41,7 @@ defmodule Smee.Publish.Index do
     end
   end
 
-  def separator(options) do
+  def separator(_options) do
     "\n"
   end
 
