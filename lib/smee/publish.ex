@@ -21,18 +21,18 @@ defmodule Smee.Publish do
     passed to request a validity of n days, or "default" and "auto" to use the default validity period.
 
   Publishing formats:
-    * `:csv` - a brief CSV summary of the entities
-    * `:disco` - Shibboleth DiscoFeed format JSON, used by the Embedded Discovery Service and others
+    * `:csv` - a brief [CSV](https://en.wikipedia.org/wiki/Comma-separated_values) summary of the entities
+    * `:disco` - Shibboleth DiscoFeed format JSON, used by the [Embedded Discovery Service](https://shibboleth.atlassian.net/wiki/spaces/EDS10/overview) and others ([schema](https://shibboleth.atlassian.net/wiki/download/attachments/1120895097/json_schema.json?version=6&modificationDate=1569932671342&cacheVersion=1&api=v2))
     * `:index` - a plain text format containing entity ID and an optional name on each line
-    * `:markdown` - a simple Markdown table summarising the entities
-    * `:saml` - SAML2 metadata
+    * `:markdown` - a simple [Markdown](https://www.markdownguide.org/basic-syntax/) table summarising the entities
+    * `:saml` - [SAML2 metadata](https://en.wikipedia.org/wiki/SAML_metadata), either as a single aggregate XML file or many per-entity XML files
     * `:thiss` - Entity information in the JSON format used by [THISS](https://github.com/TheIdentitySelector) software such as the Seamless Access discovery service
     * `:udest` - A compact JSON format for SP info, used by [Little Disco](https://github.com/Digital-Identity-Labs/little_disco) discovery service
     * `:udisco` - An efficient JSON format used by [Little Disco](https://github.com/Digital-Identity-Labs/little_disco) as an alternative to `:disco`/DiscoFeed
 
   ID types:
     * `:hash` - a hashed entityID, as used by Local Dynamic
-    * `:entity_id`, `:uri` - an entityID. This will be sanitized when used as a filename
+    * `:entity_id`, `:uri` - an entityID URI. This will be sanitized when used as a filename
     * `:number` -  a simple incremented number
     * `:mdq` - the full MDQ style transformed entityURI, made up of "{sha1}" and a hash
 
@@ -42,7 +42,7 @@ defmodule Smee.Publish do
 
   ## Examples
 
-  1. Writing aggregated metadata XML containing entities created in the last 6 months, with a specified filename:
+  ### 1. Writing aggregated metadata XML containing entities created in the last 6 months, with a specified filename:
 
       iex> Smee.source("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
       iex> |> Smee.fetch!()
@@ -50,14 +50,14 @@ defmodule Smee.Publish do
       iex> |> Smee.Filter.days(180)
       iex> |> Smee.Publish.write_aggregate(filename: "my_aggregate.xml")
 
-  2. Writing a DiscoFeed file, with the default filename:
+  ### 2. Writing a DiscoFeed file, with the default filename:
 
       iex> Smee.source("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
       iex> |> Smee.fetch!()
       iex> |> Smee.Metadata.stream_entities()
       iex> |> Smee.Publish.write_aggregate(format: :disco)
 
-  3. Creating a directory of files for use in an IdP's Local Dynamic metadata provider, with friendly file names:
+  ### 3. Creating a directory of files for use in an IdP's Local Dynamic metadata provider, with friendly file names:
 
       iex> Smee.source("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
       iex> |> Smee.fetch!()
@@ -78,6 +78,10 @@ defmodule Smee.Publish do
   alias Smee.Publish.Csv
   alias Smee.Publish.SamlXml
 
+  @doc """
+  Lists the available supported formats, as atoms, that are used with the `:format` tag in other Publish functions.
+
+  """
   @spec formats() :: list(atom())
   def formats() do
     [
