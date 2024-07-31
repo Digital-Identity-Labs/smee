@@ -18,11 +18,11 @@ defmodule Smee.Publish.Disco do
     "json"
   end
 
-  def filter(entities) do
+  def filter(entities, _options) do
     Filter.idp(entities)
   end
 
-  def extract(entity, options \\ []) do
+  def extract(entity, options) do
 
     disco_data = Entity.xdoc(entity)
                  |> Smee.XPaths.disco()
