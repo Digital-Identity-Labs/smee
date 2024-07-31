@@ -52,7 +52,7 @@ defmodule Smee.Publish.Udest do
   end
 
   def separator(_options) do
-    ",\n"
+    ","
   end
 
   def headers(_options) do

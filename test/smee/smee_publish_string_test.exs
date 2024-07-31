@@ -36,6 +36,30 @@ defmodule SmeePublishStringTest do
   end
 
 
+  describe "headers/1" do
+
+    test "returns a " do
+      assert [] = ThisModule.headers([])
+    end
+
+  end
+
+  describe "footers/1" do
+
+    test "returns a " do
+      assert [] = ThisModule.footers([])
+    end
+
+  end
+
+  describe "separator/1" do
+
+    test "returns a " do
+      assert "\n" = ThisModule.separator([])
+    end
+
+  end
+
 #
 #
 #  describe "x/2" do

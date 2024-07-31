@@ -3,9 +3,9 @@ defmodule SmeePublishCsvTest do
 
   alias Smee.Publish.Csv, as: ThisModule
   alias Smee.Source
-#  alias Smee.Metadata
-#  alias Smee.Lint
-#  alias Smee.XmlMunger
+  #  alias Smee.Metadata
+  #  alias Smee.Lint
+  #  alias Smee.XmlMunger
 
 
   @valid_metadata Source.new("test/support/static/aggregate.xml")
@@ -35,24 +35,46 @@ defmodule SmeePublishCsvTest do
 
   end
 
+  describe "headers/1" do
 
+    test "returns a " do
+      assert [] = ThisModule.headers([])
+    end
 
-#
-#
-#  describe "x/2" do
-#
-#    test "x" do
-#
-#    end
-#
-#  end
-#
-#  describe "x/2" do
-#
-#    test "x" do
-#
-#    end
-#
-#  end
+  end
+
+  describe "footers/1" do
+
+    test "returns a " do
+      assert [] = ThisModule.footers([])
+    end
+
+  end
+
+  describe "separator/1" do
+
+    test "returns a " do
+      assert "\n" = ThisModule.separator([])
+    end
+
+  end
+
+  #
+  #
+  #  describe "x/2" do
+  #
+  #    test "x" do
+  #
+  #    end
+  #
+  #  end
+  #
+  #  describe "x/2" do
+  #
+  #    test "x" do
+  #
+  #    end
+  #
+  #  end
 
 end
