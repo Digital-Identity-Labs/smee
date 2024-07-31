@@ -1,7 +1,7 @@
-defmodule SmeePublishIndexTest do
+defmodule SmeePublishSamlXmlTest do
   use ExUnit.Case
 
-  alias Smee.Publish.Index, as: ThisModule
+  alias Smee.Publish.SamlXml, as: ThisModule
   alias Smee.Source
 #  alias Smee.Metadata
 #  alias Smee.Lint
@@ -14,7 +14,7 @@ defmodule SmeePublishIndexTest do
   describe "format/0" do
 
     test "returns the preferred identifier for this format" do
-      assert :index = ThisModule.format()
+      assert :saml = ThisModule.format()
     end
 
   end
@@ -22,7 +22,7 @@ defmodule SmeePublishIndexTest do
   describe "ext/0" do
 
     test "returns the default filename extension (without the dot)" do
-      assert "txt" = ThisModule.ext()
+      assert "xml" = ThisModule.ext()
     end
 
   end
@@ -36,6 +36,17 @@ defmodule SmeePublishIndexTest do
   end
 
 
+  describe "eslength/2" do
+
+    test "returns the size of content in the stream" do
+
+    end
+
+    test "should be about the same size as a compiled binary output" do
+
+    end
+
+  end
 
 #
 #

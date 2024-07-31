@@ -1,7 +1,7 @@
-defmodule SmeePublishIndexTest do
+defmodule SmeePublishUdiscoTest do
   use ExUnit.Case
 
-  alias Smee.Publish.Index, as: ThisModule
+  alias Smee.Publish.Udisco, as: ThisModule
   alias Smee.Source
 #  alias Smee.Metadata
 #  alias Smee.Lint
@@ -14,7 +14,7 @@ defmodule SmeePublishIndexTest do
   describe "format/0" do
 
     test "returns the preferred identifier for this format" do
-      assert :index = ThisModule.format()
+      assert :udisco = ThisModule.format()
     end
 
   end
@@ -22,7 +22,7 @@ defmodule SmeePublishIndexTest do
   describe "ext/0" do
 
     test "returns the default filename extension (without the dot)" do
-      assert "txt" = ThisModule.ext()
+      assert "json" = ThisModule.ext()
     end
 
   end

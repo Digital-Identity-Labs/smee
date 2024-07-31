@@ -1,7 +1,7 @@
-defmodule SmeePublishIndexTest do
+defmodule SmeePublishStringTest do
   use ExUnit.Case
 
-  alias Smee.Publish.Index, as: ThisModule
+  alias Smee.Publish.String, as: ThisModule
   alias Smee.Source
 #  alias Smee.Metadata
 #  alias Smee.Lint
@@ -14,7 +14,7 @@ defmodule SmeePublishIndexTest do
   describe "format/0" do
 
     test "returns the preferred identifier for this format" do
-      assert :index = ThisModule.format()
+      assert :string = ThisModule.format()
     end
 
   end
@@ -34,7 +34,6 @@ defmodule SmeePublishIndexTest do
     end
 
   end
-
 
 
 #

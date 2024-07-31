@@ -1,7 +1,7 @@
-defmodule SmeePublishIndexTest do
+defmodule SmeePublishProgressTest do
   use ExUnit.Case
 
-  alias Smee.Publish.Index, as: ThisModule
+  alias Smee.Publish.Progress, as: ThisModule
   alias Smee.Source
 #  alias Smee.Metadata
 #  alias Smee.Lint
@@ -14,7 +14,7 @@ defmodule SmeePublishIndexTest do
   describe "format/0" do
 
     test "returns the preferred identifier for this format" do
-      assert :index = ThisModule.format()
+      assert :progress = ThisModule.format()
     end
 
   end
