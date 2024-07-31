@@ -37,7 +37,7 @@ defmodule SmeePublishThissTest do
 
   describe "headers/1" do
 
-    test "returns a " do
+    test "returns a JSON list opening [" do
       assert  ["["] = ThisModule.headers([])
     end
 
@@ -45,7 +45,7 @@ defmodule SmeePublishThissTest do
 
   describe "footers/1" do
 
-    test "returns a " do
+    test "returns a JSON list-closing ]" do
       assert ["]"] = ThisModule.footers([])
     end
 
@@ -53,7 +53,7 @@ defmodule SmeePublishThissTest do
 
   describe "separator/1" do
 
-    test "returns a " do
+    test "returns a comma" do
       assert "," = ThisModule.separator([])
     end
 

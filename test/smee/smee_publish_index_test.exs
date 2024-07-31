@@ -37,7 +37,7 @@ defmodule SmeePublishIndexTest do
 
   describe "headers/1" do
 
-    test "returns a " do
+    test "returns an empty list" do
       assert [] = ThisModule.headers([])
     end
 
@@ -45,7 +45,7 @@ defmodule SmeePublishIndexTest do
 
   describe "footers/1" do
 
-    test "returns a " do
+    test "returns an empty list" do
       assert [] = ThisModule.footers([])
     end
 
@@ -53,7 +53,7 @@ defmodule SmeePublishIndexTest do
 
   describe "separator/1" do
 
-    test "returns a " do
+    test "returns a linebreak" do
       assert "\n" = ThisModule.separator([])
     end
 

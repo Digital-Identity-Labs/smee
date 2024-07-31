@@ -38,7 +38,7 @@ defmodule SmeePublishProgressTest do
 
   describe "headers/1" do
 
-    test "returns a " do
+    test "returns an empty list" do
       assert [] = ThisModule.headers([])
     end
 
@@ -46,7 +46,7 @@ defmodule SmeePublishProgressTest do
 
   describe "footers/1" do
 
-    test "returns a " do
+    test "returns an empty list" do
       assert [] = ThisModule.footers([])
     end
 
@@ -54,7 +54,7 @@ defmodule SmeePublishProgressTest do
 
   describe "separator/1" do
 
-    test "returns a " do
+    test "returns an empty string " do
       assert "" = ThisModule.separator([])
     end
 

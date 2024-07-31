@@ -51,7 +51,7 @@ defmodule SmeePublishSamlXmlTest do
 
   describe "headers/1" do
 
-    test "returns a " do
+    test "returns an XML declaration, and the opening <entitiesDescriptor> tag" do
 
       assert [
                "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>",
@@ -63,7 +63,7 @@ defmodule SmeePublishSamlXmlTest do
 
   describe "footers/1" do
 
-    test "returns a " do
+    test "returns a the closing entitiesDescriptor tag" do
       assert ["\n</EntitiesDescriptor>"] = ThisModule.footers([])
     end
 
@@ -71,7 +71,7 @@ defmodule SmeePublishSamlXmlTest do
 
   describe "separator/1" do
 
-    test "returns a " do
+    test "returns a linebreak" do
       assert "\n" = ThisModule.separator([])
     end
 
