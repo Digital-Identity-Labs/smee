@@ -15,7 +15,7 @@ defmodule Smee.Publish do
     * `:alias` (boolean) - create hashed aliases for written files (only for `write_` functions)
     * `:filename` (file path) - write an aggregate to a file with this name (only for `write_` functions)
     * `:format` - The publishing format - defaults to `:saml` for SAML metadata. See below for other options
-    * `:id` - the ID type used for keys for items and for creating item filenames automatically (only for item and raw functions)
+    * `:id_type` - the ID type used for keys for items and for creating item filenames automatically (only for item and raw functions)
     * `:to` - the directory to write automatically-named files to. Defaults to a directory called `published` in the current working directory
     * `:valid_until` - pass a DateTime to set the validUntil attribute for the entity metadata. Alternatively, an integer can be
     passed to request a validity of n days, or "default" and "auto" to use the default validity period.
@@ -95,7 +95,7 @@ defmodule Smee.Publish do
     ]
   end
 
-  @default_options [format: :saml, lang: "en", id: :hash, to: "published"]
+  @default_options [format: :saml, lang: "en", id_type: :hash, to: "published"]
   @allowed_options Keyword.keys(@default_options) ++ [:valid_until, :filename]
 
   @doc """

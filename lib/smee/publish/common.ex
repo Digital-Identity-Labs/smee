@@ -131,7 +131,7 @@ defmodule Smee.Publish.Common do
              fn {id, item} ->
                filename = item_filename(id, options)
                File.write!(filename, item)
-               if options[:alias] && options[:id] in [:entity_id, :uri] do
+               if options[:alias] && options[:id_type] in [:entity_id, :uri] do
                  alias = item_aliasname(id, options)
                  if File.exists?(alias), do: File.rm!(alias)
                  File.ln_s!(Path.basename(filename), alias)
@@ -143,7 +143,7 @@ defmodule Smee.Publish.Common do
       end
 
       def item_id(entity, i, options) do
-        case (options[:id] || id_type()) do
+        case (options[:id_type] || id_type()) do
           :hash -> entity.uri_hash
           :entity_id -> entity.uri
           :uri -> entity.uri
@@ -176,7 +176,7 @@ defmodule Smee.Publish.Common do
       end
 
       def sanitize_filename(filename, options) do
-        if options[:id] in [:hash, :number, :mdq, nil] do
+        if options[:id_type] in [:hash, :number, :mdq, nil] do
           filename
         else
           filename = filename
