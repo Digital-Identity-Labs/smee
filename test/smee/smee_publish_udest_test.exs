@@ -3,13 +3,17 @@ defmodule SmeePublishUdestTest do
 
   alias Smee.Publish.Udest, as: ThisModule
   alias Smee.Source
-#  alias Smee.Metadata
-#  alias Smee.Lint
-#  alias Smee.XmlMunger
-
+  alias Smee.Entity
+  alias Smee.Metadata
+  #  alias Smee.Metadata
+  #  alias Smee.Lint
+  #  alias Smee.XmlMunger
 
   @valid_metadata Source.new("test/support/static/aggregate.xml")
                   |> Smee.fetch!()
+  @sp_xml File.read! "test/support/static/ukamf_test.xml"
+  @sp_entity Entity.derive(@sp_xml, @valid_metadata)
+
 
   describe "format/0" do
 
@@ -59,23 +63,68 @@ defmodule SmeePublishUdestTest do
 
   end
 
+  describe "extract/2" do
 
-#
-#
-#  describe "x/2" do
-#
-#    test "x" do
-#
-#    end
-#
-#  end
-#
-#  describe "x/2" do
-#
-#    test "x" do
-#
-#    end
-#
-#  end
+    test "returns a map when passed an entity and some options" do
+      assert %{} = ThisModule.extract(@sp_entity, [])
+    end
+
+    test "returns appropriate data in the map for this format" do
+      assert %{
+               description: "This test service provider allows you to see the attributes your identity provider is releasing.",
+               id: "https://test.ukfederation.org.uk/entity",
+               login_url: [
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/Login",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/Login1",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/DS",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/UKfedWAYF",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/UKfedDS",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/UKfedWAYFall",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/UKtestWAYF",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/UKtestDS",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedWAYF",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedDS",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedWAYFall",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/TESTtestWAYF",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/TESTtestDS",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/EDS"
+               ],
+               logo_url: "https://test.ukfederation.org.uk/images/ukfedlogo.jpg",
+               name: "UK federation Test SP",
+               org_name: "UK federation Test SP",
+               org_url: "http://www.ukfederation.org.uk/",
+               return_urls: [
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/Login",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/DS",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/UKfedDS",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/UKtestDS",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedDS",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/TESTtestDS",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/EDS",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/Wayfinder",
+                 "https://test.ukfederation.org.uk/Shibboleth.sso/Staging"
+               ]
+             } = ThisModule.extract(@sp_entity, [])
+    end
+
+  end
+
+  #
+  #
+  #  describe "x/2" do
+  #
+  #    test "x" do
+  #
+  #    end
+  #
+  #  end
+  #
+  #  describe "x/2" do
+  #
+  #    test "x" do
+  #
+  #    end
+  #
+  #  end
 
 end

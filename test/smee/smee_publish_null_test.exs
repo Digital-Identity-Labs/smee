@@ -3,6 +3,8 @@ defmodule SmeePublishNullTest do
 
   alias Smee.Publish.Null, as: ThisModule
   alias Smee.Source
+  alias Smee.Entity
+  alias Smee.Metadata
 #  alias Smee.Metadata
 #  alias Smee.Lint
 #  alias Smee.XmlMunger
@@ -10,6 +12,9 @@ defmodule SmeePublishNullTest do
 
   @valid_metadata Source.new("test/support/static/aggregate.xml")
                   |> Smee.fetch!()
+  @sp_xml File.read! "test/support/static/ukamf_test.xml"
+  @sp_entity Entity.derive(@sp_xml, @valid_metadata)
+
 
   describe "format/0" do
 
@@ -60,5 +65,16 @@ defmodule SmeePublishNullTest do
 
   end
 
+  describe "extract/2" do
+
+    test "returns a map when passed an entity and some options" do
+      assert %{} = ThisModule.extract(@sp_entity, [])
+    end
+
+    test "returns appropriate data in the map for this format" do
+      assert %{} = ThisModule.extract(@sp_entity, [])
+    end
+
+  end
 
 end

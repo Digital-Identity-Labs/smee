@@ -95,7 +95,7 @@ defmodule Smee.Publish do
     ]
   end
 
-  @default_options [format: :saml, lang: "en", id_type: :hash, to: "published"]
+  @default_options [format: :saml, lang: "en", id_type: :hash, to: "published", labels: false]
   @allowed_options Keyword.keys(@default_options) ++ [:valid_until, :filename]
 
   @doc """

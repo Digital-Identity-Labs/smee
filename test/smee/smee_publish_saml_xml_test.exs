@@ -3,6 +3,8 @@ defmodule SmeePublishSamlXmlTest do
 
   alias Smee.Publish.SamlXml, as: ThisModule
   alias Smee.Source
+  alias Smee.Entity
+  alias Smee.Metadata
   #  alias Smee.Metadata
   #  alias Smee.Lint
   #  alias Smee.XmlMunger
@@ -10,6 +12,9 @@ defmodule SmeePublishSamlXmlTest do
 
   @valid_metadata Source.new("test/support/static/aggregate.xml")
                   |> Smee.fetch!()
+  @sp_xml File.read! "test/support/static/cern.xml"
+  @sp_entity Entity.derive(@sp_xml, @valid_metadata)
+
 
   describe "format/0" do
 
@@ -77,7 +82,22 @@ defmodule SmeePublishSamlXmlTest do
 
   end
 
+  describe "extract/2" do
 
+    test "returns a map when passed an entity and some options" do
+      assert %{} = ThisModule.extract(@sp_entity, [])
+    end
+
+    test "returns appropriate data in the map for this format" do
+      assert %{
+               id: nil,
+               uri: "https://cern.ch/login",
+               uri_hash: "2291055505e0387b861bad99f16d208aa80dbab4",
+               xml: "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor" <> _,
+             } = ThisModule.extract(@sp_entity, [])
+    end
+
+  end
 
   #
   #

@@ -3,6 +3,7 @@ defmodule SmeePublishCsvTest do
 
   alias Smee.Publish.Csv, as: ThisModule
   alias Smee.Source
+  alias Smee.Entity
   #  alias Smee.Metadata
   #  alias Smee.Lint
   #  alias Smee.XmlMunger
@@ -10,6 +11,9 @@ defmodule SmeePublishCsvTest do
 
   @valid_metadata Source.new("test/support/static/aggregate.xml")
                   |> Smee.fetch!()
+  @sp_xml File.read! "test/support/static/ukamf_test.xml"
+  @sp_entity Entity.derive(@sp_xml, @valid_metadata)
+
 
   describe "format/0" do
 
@@ -55,6 +59,25 @@ defmodule SmeePublishCsvTest do
 
     test "returns a line break" do
       assert "\n" = ThisModule.separator([])
+    end
+
+  end
+
+  describe "extract/2" do
+
+    test "returns a map when passed an entity and some options" do
+      assert %{} = ThisModule.extract(@sp_entity, [])
+    end
+
+    test "returns appropriate data in the map for for any entity" do
+      assert %{
+               contact: "service@ukfederation.org.uk",
+               id: "https://test.ukfederation.org.uk/entity",
+               info_url: "http://www.ukfederation.org.uk/",
+               logo: "https://test.ukfederation.org.uk/images/ukfedlogo.jpg",
+               name: "UK federation Test SP",
+               roles: "SP"
+             } = ThisModule.extract(@sp_entity, [])
     end
 
   end

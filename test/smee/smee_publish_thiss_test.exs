@@ -3,13 +3,20 @@ defmodule SmeePublishThissTest do
 
   alias Smee.Publish.Thiss, as: ThisModule
   alias Smee.Source
-#  alias Smee.Metadata
-#  alias Smee.Lint
-#  alias Smee.XmlMunger
+  alias Smee.Entity
+  alias Smee.Metadata
+  #  alias Smee.Metadata
+  #  alias Smee.Lint
+  #  alias Smee.XmlMunger
 
 
   @valid_metadata Source.new("test/support/static/aggregate.xml")
                   |> Smee.fetch!()
+  @sp_xml File.read! "test/support/static/ukamf_test.xml"
+  @sp_entity Entity.derive(@sp_xml, @valid_metadata)
+
+  @idp_xml File.read! "test/support/static/valid.xml"
+  @idp_entity Entity.derive(@idp_xml, @valid_metadata)
 
   describe "format/0" do
 
@@ -59,22 +66,54 @@ defmodule SmeePublishThissTest do
 
   end
 
-#
-#
-#  describe "x/2" do
-#
-#    test "x" do
-#
-#    end
-#
-#  end
-#
-#  describe "x/2" do
-#
-#    test "x" do
-#
-#    end
-#
-#  end
+  describe "extract/2" do
+
+    test "returns a map when passed an entity and some options" do
+      assert %{} = ThisModule.extract(@sp_entity, [])
+    end
+
+    test "returns appropriate data in the map for this format" do
+      assert %{
+               auth: "saml",
+               desc: "This test service provider allows you to see the attributes your identity provider is releasing.",
+               desc_langs: %{
+                 "en" =>
+                   "This test service provider allows you to see the attributes your identity provider is releasing."
+               },
+               entityID: "https://test.ukfederation.org.uk/entity",
+               entity_icon_url: %{
+                 width: "766",
+                 url: "https://test.ukfederation.org.uk/images/orange-topv3.jpg",
+                 height: "110"
+               },
+               entity_id: "https://test.ukfederation.org.uk/entity",
+               id: "{sha1}c0045678aa1b1e04e85d412f428ea95d2f627255",
+               title: "UK federation Test SP",
+               title_langs: %{
+                 "en" => "UK federation Test SP"
+               },
+               type: "sp"
+             } = ThisModule.extract(@sp_entity, [])
+    end
+
+  end
+
+  #
+  #
+  #  describe "x/2" do
+  #
+  #    test "x" do
+  #
+  #    end
+  #
+  #  end
+  #
+  #  describe "x/2" do
+  #
+  #    test "x" do
+  #
+  #    end
+  #
+  #  end
 
 end

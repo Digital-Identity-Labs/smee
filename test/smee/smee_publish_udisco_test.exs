@@ -3,13 +3,21 @@ defmodule SmeePublishUdiscoTest do
 
   alias Smee.Publish.Udisco, as: ThisModule
   alias Smee.Source
-#  alias Smee.Metadata
-#  alias Smee.Lint
-#  alias Smee.XmlMunger
+  alias Smee.Entity
+  alias Smee.Metadata
+  #  alias Smee.Metadata
+  #  alias Smee.Lint
+  #  alias Smee.XmlMunger
 
 
   @valid_metadata Source.new("test/support/static/aggregate.xml")
                   |> Smee.fetch!()
+  @sp_xml File.read! "test/support/static/ukamf_test.xml"
+  @sp_entity Entity.derive(@sp_xml, @valid_metadata)
+
+  @idp_xml File.read! "test/support/static/cern.xml"
+  @idp_entity Entity.derive(@idp_xml, @valid_metadata)
+
 
   describe "format/0" do
 
@@ -58,22 +66,43 @@ defmodule SmeePublishUdiscoTest do
     end
 
   end
-#
-#
-#  describe "x/2" do
-#
-#    test "x" do
-#
-#    end
-#
-#  end
-#
-#  describe "x/2" do
-#
-#    test "x" do
-#
-#    end
-#
-#  end
+
+  describe "extract/2" do
+
+    test "returns a map when passed an entity and some options" do
+      assert %{} = ThisModule.extract(@idp_entity, [])
+    end
+
+    test "returns appropriate data in the map for this format" do
+      assert %{
+               desc: "CERN Identity Provider",
+               dom: ["cern.ch"],
+               geo: ["46.23304,6.05528"],
+               id: "https://cern.ch/login",
+               ip: ["128.141.0.0/16"],
+               name: "CERN",
+               url: "http://www.cern.ch"
+             } = ThisModule.extract(@idp_entity, [])
+    end
+
+  end
+
+  #
+  #
+  #  describe "x/2" do
+  #
+  #    test "x" do
+  #
+  #    end
+  #
+  #  end
+  #
+  #  describe "x/2" do
+  #
+  #    test "x" do
+  #
+  #    end
+  #
+  #  end
 
 end

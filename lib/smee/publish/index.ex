@@ -28,7 +28,7 @@ defmodule Smee.Publish.Index do
     else
       %{
         id: entity.uri,
-        label: ""
+        label: nil
       }
     end
   end

@@ -3,6 +3,8 @@ defmodule SmeePublishIndexTest do
 
   alias Smee.Publish.Index, as: ThisModule
   alias Smee.Source
+  alias Smee.Entity
+  alias Smee.Metadata
 #  alias Smee.Metadata
 #  alias Smee.Lint
 #  alias Smee.XmlMunger
@@ -10,6 +12,9 @@ defmodule SmeePublishIndexTest do
 
   @valid_metadata Source.new("test/support/static/aggregate.xml")
                   |> Smee.fetch!()
+  @sp_xml File.read! "test/support/static/ukamf_test.xml"
+  @sp_entity Entity.derive(@sp_xml, @valid_metadata)
+
 
   describe "format/0" do
 
@@ -59,6 +64,25 @@ defmodule SmeePublishIndexTest do
 
   end
 
+  describe "extract/2" do
+
+    test "returns a map when passed an entity and some options" do
+      assert %{} = ThisModule.extract(@sp_entity, [])
+    end
+
+    test "returns appropriate data in the map for this format (labels not specified)" do
+      assert %{id: "https://test.ukfederation.org.uk/entity", label: nil} = ThisModule.extract(@sp_entity, [])
+    end
+
+    test "returns an additional pipe-separated label, if the :label option is set to true" do
+      assert %{id: "https://test.ukfederation.org.uk/entity", label: "UK federation Test SP"} = ThisModule.extract(@sp_entity, [labels: true])
+    end
+
+    test "returns only the id if the :label option is set to false" do
+      assert %{id: "https://test.ukfederation.org.uk/entity", label: nil} = ThisModule.extract(@sp_entity, [labels: false])
+    end
+
+  end
 
 #
 #
