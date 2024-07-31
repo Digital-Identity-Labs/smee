@@ -147,7 +147,7 @@ defmodule Smee.Publish.Common do
           :hash -> entity.uri_hash
           :entity_id -> entity.uri
           :uri -> entity.uri
-          :number -> i
+          :number -> "#{i}"
           :mdq -> "{sha1}#{entity.uri_hash}"
           _ -> entity.uri_hash
         end
@@ -179,12 +179,12 @@ defmodule Smee.Publish.Common do
         if options[:id_type] in [:hash, :number, :mdq, nil] do
           filename
         else
-          filename = filename
-                     |> String.replace_leading("https://", "")
-                     |> String.replace_leading("http://", "")
-                     |> String.replace([".", "/"], "_")
-                     |> String.replace_trailing("_", "")
-                     |> Zarex.sanitize()
+          filename
+          |> String.replace_leading("https://", "")
+          |> String.replace_leading("http://", "")
+          |> String.replace([".", "/"], "_")
+          |> String.replace_trailing("_", "")
+          |> Zarex.sanitize()
         end
       end
 
