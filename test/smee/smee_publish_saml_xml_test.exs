@@ -99,6 +99,20 @@ defmodule SmeePublishSamlXmlTest do
 
   end
 
+  describe "encode/2" do
+
+    test "returns a binary" do
+      extracted = ThisModule.extract(@sp_entity, [])
+      assert is_binary(ThisModule.encode(extracted, []))
+    end
+
+    test "returns the extracted data serialised into the correct text format" do
+      extracted = ThisModule.extract(@sp_entity, [])
+      assert "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:mdattr=\"urn:oasis:names:tc:SAML:metadata:attribute\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:remd=\"http://refeds.org/metadata\" xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\" xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\" xmlns:ui=\"urn:oasis:names:tc:SAML:metadata:ui\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://cern.ch/login\">\n\n\t<Extensions>\n\t<mdrpi:RegistrationInfo xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" registrationAuthority=\"http://rr.aai.switch.ch/\" registrationInstant=\"2014-07-29T13:17:52Z\">\n\t\t<mdrpi:RegistrationPolicy xml:lang=\"en\">https://www.switch.ch/aai/federation/switchaai/metadata-registration-practice-statement-20110711.txt</mdrpi:RegistrationPolicy>\n\t</mdrpi:RegistrationInfo>\n\t<mdattr:EntityAttributes xmlns:mdattr=\"urn:oasis:names:tc:SAML:metadata:attribute\">\n\t\t<saml:Attribute xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\" Name=\"http://macedir.org/entity-category-support\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\">\n\t\t<saml:AttributeValue>http://refeds.org/category/research-and-scholarship</saml:AttributeValue>\n\t\t<saml:AttributeValue>http://www.geant.net/uri/dataprotection-code-of-conduct/v1</saml:AttributeValue>\n\t\t</saml:Attribute>\n\t\t<saml:Attribute xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\" Name=\"http://macedir.org/entity-category\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\">\n\t\t<saml:AttributeValue>http://refeds.org/category/research-and-scholarship</saml:AttributeValue>\n\t\t</saml:Attribute>\n\t\t<saml:Attribute xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\" FriendlyName=\"swissEduPersonHomeOrganization\" Name=\"urn:oid:2.16.756.1.2.5.1.1.4\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\">\n\t\t<saml:AttributeValue>cern.ch</saml:AttributeValue>\n\t\t</saml:Attribute>\n\t\t<saml:Attribute xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\" FriendlyName=\"swissEduPersonHomeOrganizationType\" Name=\"urn:oid:2.16.756.1.2.5.1.1.5\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\">\n\t\t<saml:AttributeValue>others</saml:AttributeValue>\n\t\t</saml:Attribute>\n\t\t<saml:Attribute xmlns:saml=\"urn:oasis:names:tc:SAML:2.0:assertion\" Name=\"urn:oasis:names:tc:SAML:attribute:assurance-certification\" NameFormat=\"urn:oasis:names:tc:SAML:2.0:attrname-format:uri\">\n\t\t<saml:AttributeValue>https://refeds.org/sirtfi</saml:AttributeValue>\n\t\t</saml:Attribute>\n\t</mdattr:EntityAttributes>\n\t</Extensions>\n\t<SPSSODescriptor errorURL=\"http://cern.ch/serviceportal\" protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">\n\t<Extensions>\n\t\t<mdui:UIInfo xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\">\n\t\t<mdui:DisplayName xml:lang=\"en\">CERN Service Provider Proxy</mdui:DisplayName>" <> _ = ThisModule.encode(extracted, [])
+    end
+
+  end
+
   #
   #
   #  describe "x/2" do

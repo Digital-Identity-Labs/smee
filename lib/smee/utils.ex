@@ -287,6 +287,14 @@ defmodule Smee.Utils do
   def normalise_mdid(id) do
     String.trim(id)
   end
+
+  def oom(map) do
+    map
+    |> Map.to_list()
+    |> Enum.sort_by(fn {key, _value} -> key end)
+    |> Jason.OrderedObject.new()
+  end
+
   ################################################################################
 
 end

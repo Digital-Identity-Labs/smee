@@ -82,6 +82,20 @@ defmodule SmeePublishCsvTest do
 
   end
 
+  describe "encode/2" do
+
+    test "returns a binary" do
+      extracted = ThisModule.extract(@sp_entity, [])
+      assert is_binary(ThisModule.encode(extracted, []))
+    end
+
+    test "returns the extracted data serialised into the correct text format" do
+      extracted = ThisModule.extract(@sp_entity, [])
+      assert "https://test.ukfederation.org.uk/entity,UK federation Test SP,SP,https://test.ukfederation.org.uk/images/ukfedlogo.jpg,http://www.ukfederation.org.uk/,service@ukfederation.org.uk" = ThisModule.encode(extracted, [])
+    end
+
+  end
+
   #
   #
   #  describe "x/2" do

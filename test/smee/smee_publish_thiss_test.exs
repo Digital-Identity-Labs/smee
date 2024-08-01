@@ -98,6 +98,22 @@ defmodule SmeePublishThissTest do
 
   end
 
+  describe "encode/2" do
+
+    test "returns a binary" do
+      extracted = ThisModule.extract(@sp_entity, [])
+      assert is_binary(ThisModule.encode(extracted, []))
+    end
+
+    test "returns the extracted data serialised into the correct text format" do
+      ## This is less than ideal but I can't currently compare to static strings due to Map key sorting issues
+      extracted = ThisModule.extract(@sp_entity, [])
+      json =  ThisModule.encode(extracted, [])
+      assert Map.equal?(Iteraptor.jsonify(extracted), Jason.decode!(json))
+    end
+
+  end
+
   #
   #
   #  describe "x/2" do

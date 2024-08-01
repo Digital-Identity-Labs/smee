@@ -84,6 +84,21 @@ defmodule SmeePublishIndexTest do
 
   end
 
+  describe "encode/2" do
+
+    test "returns a binary" do
+      extracted = ThisModule.extract(@sp_entity, [])
+      assert is_binary(ThisModule.encode(extracted, []))
+    end
+
+    test "returns the extracted data serialised into the correct text format" do
+      extracted = ThisModule.extract(@sp_entity, [labels: true])
+      assert "https://test.ukfederation.org.uk/entity" = ThisModule.encode(extracted, [labels: false])
+      assert "https://test.ukfederation.org.uk/entity|UK federation Test SP" = ThisModule.encode(extracted, [labels: true])
+    end
+
+  end
+
 #
 #
 #  describe "x/2" do

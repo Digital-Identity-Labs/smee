@@ -18,6 +18,7 @@ defmodule SmeePublishUdiscoTest do
   @idp_xml File.read! "test/support/static/cern.xml"
   @idp_entity Entity.derive(@idp_xml, @valid_metadata)
 
+  @idp_json "{\"desc\":\"CERN Identity Provider\",\"dom\":[\"cern.ch\"],\"geo\":[\"46.23304,6.05528\"],\"id\":\"https://cern.ch/login\",\"ip\":[\"128.141.0.0/16\"],\"name\":\"CERN\",\"url\":\"http://www.cern.ch\"}"
 
   describe "format/0" do
 
@@ -83,6 +84,21 @@ defmodule SmeePublishUdiscoTest do
                name: "CERN",
                url: "http://www.cern.ch"
              } = ThisModule.extract(@idp_entity, [])
+    end
+
+  end
+
+  describe "encode/2" do
+
+    test "returns a binary" do
+      extracted = ThisModule.extract(@idp_entity, [])
+      assert is_binary(ThisModule.encode(extracted, []))
+    end
+
+    test "returns the extracted data serialised into the correct text format" do
+      extracted = ThisModule.extract(@idp_entity, [])
+                  |> Smee.Utils.oom()
+      assert @idp_json = ThisModule.encode(extracted, [])
     end
 
   end
