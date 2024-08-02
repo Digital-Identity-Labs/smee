@@ -4,7 +4,7 @@ defmodule SmeePublishCsvTest do
   alias Smee.Publish.Csv, as: ThisModule
   alias Smee.Source
   alias Smee.Entity
-  #  alias Smee.Metadata
+  alias Smee.Metadata
   #  alias Smee.Lint
   #  alias Smee.XmlMunger
 
@@ -92,6 +92,21 @@ defmodule SmeePublishCsvTest do
     test "returns the extracted data serialised into the correct text format" do
       extracted = ThisModule.extract(@sp_entity, [])
       assert "https://test.ukfederation.org.uk/entity,UK federation Test SP,SP,https://test.ukfederation.org.uk/images/ukfedlogo.jpg,http://www.ukfederation.org.uk/,service@ukfederation.org.uk" = ThisModule.encode(extracted, [])
+    end
+
+  end
+
+  describe "eslength/2" do
+
+    test "returns the size of content in the stream" do
+      assert 330 = ThisModule.eslength(Metadata.stream_entities(@valid_metadata))
+    end
+
+    test "should be about the same size as a compiled binary output" do
+      actual_size = byte_size(ThisModule.aggregate(Metadata.stream_entities(@valid_metadata)))
+      estimated_size = ThisModule.eslength(Metadata.stream_entities(@valid_metadata))
+      assert (actual_size - estimated_size) in -3..3
+
     end
 
   end
