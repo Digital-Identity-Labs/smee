@@ -96,7 +96,7 @@ defmodule SmeePublishDiscoTest do
 
       ## This is less than ideal but I can't currently compare to static strings due to Map key sorting issues
       extracted = ThisModule.extract(@idp_entity, [])
-      json =  ThisModule.encode(extracted, [])
+      json = ThisModule.encode(extracted, [])
       assert Map.equal?(Iteraptor.jsonify(extracted), Jason.decode!(json))
     end
 
@@ -112,6 +112,40 @@ defmodule SmeePublishDiscoTest do
       actual_size = byte_size(ThisModule.aggregate(Metadata.stream_entities(@valid_metadata)))
       estimated_size = ThisModule.eslength(Metadata.stream_entities(@valid_metadata))
       assert (actual_size - estimated_size) in -3..3
+
+    end
+
+  end
+
+  describe "raw_stream/2" do
+
+    test "returns a stream/function" do
+      assert %Stream{} = ThisModule.raw_stream(Metadata.stream_entities(@valid_metadata))
+    end
+
+    test "returns a stream of tuples" do
+      Metadata.stream_entities(@valid_metadata)
+      |> ThisModule.raw_stream()
+      |> Stream.each(fn r -> assert is_tuple(r) end)
+      |> Stream.run()
+    end
+
+    test "items in stream are tuples of ids and extracted data" do
+
+      assert {
+               "77603e0cbda1e00d50373ca8ca20a375f5d1f171",
+               %{
+                 DisplayNames: [%{value: "Indiid", lang: "en"}],
+                 Logos: [
+                   %{value: "https://indiid.net/assets/images/logo-compact-tiny.png", width: 16, lang: "", height: 16},
+                   %{value: "https://indiid.net/assets/images/logo-compact-medium.png", width: 80, lang: "", height: 60}
+                 ],
+                 entityID: "https://indiid.net/idp/shibboleth"
+               }
+             } = Metadata.stream_entities(@valid_metadata)
+                 |> ThisModule.raw_stream()
+                 |> Enum.to_list()
+                 |> List.first()
 
     end
 

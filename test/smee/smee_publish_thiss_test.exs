@@ -129,6 +129,47 @@ defmodule SmeePublishThissTest do
 
   end
 
+  describe "raw_stream/2" do
+
+    test "returns a stream/function" do
+      assert %Stream{} = ThisModule.raw_stream(Metadata.stream_entities(@valid_metadata))
+    end
+
+    test "returns a stream of tuples" do
+      Metadata.stream_entities(@valid_metadata)
+      |> ThisModule.raw_stream()
+      |> Stream.each(fn r -> assert is_tuple(r) end)
+      |> Stream.run()
+    end
+
+    test "items in stream are tuples of ids and extracted data" do
+
+      assert {
+               "77603e0cbda1e00d50373ca8ca20a375f5d1f171",
+               %{
+                 id: "{sha1}77603e0cbda1e00d50373ca8ca20a375f5d1f171",
+                 auth: "saml",
+                 desc_langs: %{},
+                 domain: "indiid.net",
+                 entityID: "https://indiid.net/idp/shibboleth",
+                 entity_icon_url: %{width: "80", url: "https://indiid.net/assets/images/logo-compact-medium.png", height: "60"},
+                 entity_id: "https://indiid.net/idp/shibboleth",
+                 hidden: "false",
+                 name_tag: "INDIID",
+                 scope: "indiid.net",
+                 title: "Indiid",
+                 title_langs: %{"en" => "Indiid"},
+                 type: "idp"
+               }
+             } = Metadata.stream_entities(@valid_metadata)
+                 |> ThisModule.raw_stream()
+                 |> Enum.to_list()
+                 |> List.first()
+
+    end
+
+  end
+
   #
   #
   #  describe "x/2" do

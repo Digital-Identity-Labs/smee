@@ -140,6 +140,67 @@ defmodule SmeePublishUdestTest do
 
   end
 
+  describe "raw_stream/2" do
+
+    test "returns a stream/function" do
+      assert %Stream{} = ThisModule.raw_stream(Metadata.stream_entities(@valid_metadata))
+    end
+
+    test "returns a stream of tuples" do
+      Metadata.stream_entities(@valid_metadata)
+      |> ThisModule.raw_stream()
+      |> Stream.each(fn r -> assert is_tuple(r) end)
+      |> Stream.run()
+    end
+
+    test "items in stream are tuples of ids and extracted data" do
+
+      assert {
+               "c0045678aa1b1e04e85d412f428ea95d2f627255",
+               %{
+                 id: "https://test.ukfederation.org.uk/entity",
+                 name: "UK federation Test SP",
+                 description: "This test service provider allows you to see the attributes your identity\n            provider is releasing.\n          ",
+                 login_url: [
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/Login",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/Login1",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/DS",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/UKfedWAYF",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/UKfedDS",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/UKfedWAYFall",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/UKtestWAYF",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/UKtestDS",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedWAYF",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedDS",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedWAYFall",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/TESTtestWAYF",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/TESTtestDS",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/EDS"
+                 ],
+                 logo_url: "https://test.ukfederation.org.uk/images/ukfedlogo.jpg",
+                 org_name: "UK federation Test SP",
+                 org_url: "http://www.ukfederation.org.uk/",
+                 return_urls: [
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/Login",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/DS",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/UKfedDS",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/UKtestDS",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedDS",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/TESTtestDS",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/EDS",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/Wayfinder",
+                   "https://test.ukfederation.org.uk/Shibboleth.sso/Staging"
+                 ]
+               }
+             } = Metadata.stream_entities(@valid_metadata)
+                 |> ThisModule.raw_stream()
+                 |> Enum.to_list()
+                 |> List.first()
+
+    end
+
+  end
+
   #
   #
   #  describe "x/2" do

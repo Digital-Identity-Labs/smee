@@ -14,6 +14,7 @@ defmodule SmeePublishCsvTest do
   @sp_xml File.read! "test/support/static/ukamf_test.xml"
   @sp_entity Entity.derive(@sp_xml, @valid_metadata)
 
+  @sp_data "https://test.ukfederation.org.uk/entity,UK federation Test SP,SP,https://test.ukfederation.org.uk/images/ukfedlogo.jpg,http://www.ukfederation.org.uk/,service@ukfederation.org.uk"
 
   describe "format/0" do
 
@@ -91,7 +92,7 @@ defmodule SmeePublishCsvTest do
 
     test "returns the extracted data serialised into the correct text format" do
       extracted = ThisModule.extract(@sp_entity, [])
-      assert "https://test.ukfederation.org.uk/entity,UK federation Test SP,SP,https://test.ukfederation.org.uk/images/ukfedlogo.jpg,http://www.ukfederation.org.uk/,service@ukfederation.org.uk" = ThisModule.encode(extracted, [])
+      assert @sp_data = ThisModule.encode(extracted, [])
     end
 
   end
@@ -106,6 +107,41 @@ defmodule SmeePublishCsvTest do
       actual_size = byte_size(ThisModule.aggregate(Metadata.stream_entities(@valid_metadata)))
       estimated_size = ThisModule.eslength(Metadata.stream_entities(@valid_metadata))
       assert (actual_size - estimated_size) in -3..3
+
+    end
+
+  end
+
+
+  describe "raw_stream/2" do
+
+    test "returns a stream/function" do
+      assert %Stream{} = ThisModule.raw_stream(Metadata.stream_entities(@valid_metadata))
+    end
+
+    test "returns a stream of tuples" do
+      Metadata.stream_entities(@valid_metadata)
+      |> ThisModule.raw_stream()
+      |> Stream.each(fn r -> assert is_tuple(r) end)
+      |> Stream.run()
+    end
+
+    test "items in stream are tuples of ids and extracted data" do
+
+      assert {
+               "c0045678aa1b1e04e85d412f428ea95d2f627255",
+               %{
+                 id: "https://test.ukfederation.org.uk/entity",
+                 name: "UK federation Test SP",
+                 contact: "service@ukfederation.org.uk",
+                 info_url: "http://www.ukfederation.org.uk/",
+                 logo: "https://test.ukfederation.org.uk/images/ukfedlogo.jpg",
+                 roles: "SP"
+               }
+             } = Metadata.stream_entities(@valid_metadata)
+                 |> ThisModule.raw_stream()
+                 |> Enum.to_list()
+                 |> List.first()
 
     end
 

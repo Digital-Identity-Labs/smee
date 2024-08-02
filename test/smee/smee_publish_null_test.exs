@@ -106,4 +106,28 @@ defmodule SmeePublishNullTest do
 
   end
 
+  describe "raw_stream/2" do
+
+    test "returns a stream/function" do
+      assert %Stream{} = ThisModule.raw_stream(Metadata.stream_entities(@valid_metadata))
+    end
+
+    test "returns a stream of tuples" do
+      Metadata.stream_entities(@valid_metadata)
+      |> ThisModule.raw_stream()
+      |> Stream.each(fn r -> assert is_tuple(r) end)
+      |> Stream.run()
+    end
+
+    test "items in stream are tuples of ids and extracted data" do
+
+      assert {"c0045678aa1b1e04e85d412f428ea95d2f627255", %{}} = Metadata.stream_entities(@valid_metadata)
+                 |> ThisModule.raw_stream()
+                 |> Enum.to_list()
+                 |> List.first()
+
+    end
+
+  end
+
 end
