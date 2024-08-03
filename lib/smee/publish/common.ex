@@ -64,11 +64,11 @@ defmodule Smee.Publish.Common do
         ""
       end
 
-      def headers(options) do
+      def headers(options \\ []) do
         []
       end
 
-      def body_stream(entities, options) do
+      def body_stream(entities, options \\ []) do
         entities
         |> raw_stream(options)
         |> Stream.map(fn {_id, e} -> encode(e, options) end)
@@ -76,11 +76,11 @@ defmodule Smee.Publish.Common do
         #|> Stream.drop(-1)
       end
 
-      def footers(options) do
+      def footers(options \\ []) do
         []
       end
 
-      def separator(options) do
+      def separator(options \\ []) do
         ""
       end
 

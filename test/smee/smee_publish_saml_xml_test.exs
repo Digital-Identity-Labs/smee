@@ -14,6 +14,7 @@ defmodule SmeePublishSamlXmlTest do
                   |> Smee.fetch!()
   @sp_xml File.read! "test/support/static/cern.xml"
   @sp_entity Entity.derive(@sp_xml, @valid_metadata)
+  @xml_out_snippet "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:idpdisc=\"urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol\" xmlns:init=\"urn:oasis:names:tc:SAML:profiles:SSO:request-init\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:ui=\"urn:oasis:names:tc:SAML:metadata:ui\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://test.ukfederation.org.uk/entity\">    \n    <Extensions>      <alg:DigestMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                        Algorithm=\"http://www.w3.org/2001/04/xmlenc#sha512\"/>\n      <alg:DigestMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                        Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#sha384\"/>\n      <alg:DigestMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                        Algorithm=\"http://www.w3.org/2001/04/xmlenc#sha256\"/>\n      <alg:DigestMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                        Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#sha224\"/>\n      <alg:DigestMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                        Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha224\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha512\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha384\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2009/xmldsig11#dsa-sha256\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2000/09/xmldsig#rsa-sha1\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2000/09/xmldsig#dsa-sha1\"/>\n      <mdrpi:RegistrationInfo xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\"\n                              registrationAuthority=\"http://ukfederation.org.uk\"\n                              registrationInstant=\"2012-07-13T11:19:55Z\">\n        <mdrpi:RegistrationPolicy xml:lang=\"en\">http://ukfederation.org.uk/doc/mdrps-20130902</mdrpi:RegistrationPolicy>\n      </mdrpi:RegistrationInfo>\n    </Extensions>\n    <SPSSODescriptor\n            protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:1.0:protocol\">\n      <Extensions>\n        <mdui:UIInfo xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\">\n          <mdui:DisplayName xml:lang=\"en\">UK federation Test SP</mdui:DisplayName>\n          <mdui:Description xml:lang=\"en\">This test service provider a"
 
 
   describe "format/0" do
@@ -135,7 +136,7 @@ defmodule SmeePublishSamlXmlTest do
                  id: nil,
                  uri: "https://test.ukfederation.org.uk/entity",
                  uri_hash: "c0045678aa1b1e04e85d412f428ea95d2f627255",
-                 xml: "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n<EntityDescriptor xmlns=\"urn:oasis:names:tc:SAML:2.0:metadata\" xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\" xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\" xmlns:idpdisc=\"urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol\" xmlns:init=\"urn:oasis:names:tc:SAML:profiles:SSO:request-init\" xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\" xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\" xmlns:ui=\"urn:oasis:names:tc:SAML:metadata:ui\" cacheDuration=\"P0Y0M0DT6H0M0.000S\" entityID=\"https://test.ukfederation.org.uk/entity\">    \n    <Extensions>      <alg:DigestMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                        Algorithm=\"http://www.w3.org/2001/04/xmlenc#sha512\"/>\n      <alg:DigestMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                        Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#sha384\"/>\n      <alg:DigestMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                        Algorithm=\"http://www.w3.org/2001/04/xmlenc#sha256\"/>\n      <alg:DigestMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                        Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#sha224\"/>\n      <alg:DigestMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                        Algorithm=\"http://www.w3.org/2000/09/xmldsig#sha1\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha512\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha384\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha256\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha224\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha512\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha384\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#rsa-sha256\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2009/xmldsig11#dsa-sha256\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2000/09/xmldsig#rsa-sha1\"/>\n      <alg:SigningMethod xmlns:alg=\"urn:oasis:names:tc:SAML:metadata:algsupport\"\n                         Algorithm=\"http://www.w3.org/2000/09/xmldsig#dsa-sha1\"/>\n      <mdrpi:RegistrationInfo xmlns:mdrpi=\"urn:oasis:names:tc:SAML:metadata:rpi\"\n                              registrationAuthority=\"http://ukfederation.org.uk\"\n                              registrationInstant=\"2012-07-13T11:19:55Z\">\n        <mdrpi:RegistrationPolicy xml:lang=\"en\">http://ukfederation.org.uk/doc/mdrps-20130902</mdrpi:RegistrationPolicy>\n      </mdrpi:RegistrationInfo>\n    </Extensions>\n    <SPSSODescriptor\n            protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:1.0:protocol\">\n      <Extensions>\n        <mdui:UIInfo xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\">\n          <mdui:DisplayName xml:lang=\"en\">UK federation Test SP</mdui:DisplayName>\n          <mdui:Description xml:lang=\"en\">This test service provider a" <> _
+                 xml: @xml_out_snippet <> _
                }
              } = Metadata.stream_entities(@valid_metadata)
                  |> ThisModule.raw_stream()
@@ -146,22 +147,46 @@ defmodule SmeePublishSamlXmlTest do
 
   end
 
-  #
-  #
-  #  describe "x/2" do
-  #
-  #    test "x" do
-  #
-  #    end
-  #
-  #  end
-  #
-  #  describe "x/2" do
-  #
-  #    test "x" do
-  #
-  #    end
-  #
-  #  end
+  describe "items_stream/2" do
+
+    test "returns a stream/function" do
+      assert %Stream{} = ThisModule.items_stream(Metadata.stream_entities(@valid_metadata))
+    end
+
+    test "returns a stream of tuples" do
+      Metadata.stream_entities(@valid_metadata)
+      |> ThisModule.items_stream()
+      |> Stream.each(fn r -> assert is_tuple(r) end)
+      |> Stream.run()
+    end
+
+    test "items in stream are tuples of ids and individual text records" do
+
+      assert {
+               "c0045678aa1b1e04e85d412f428ea95d2f627255",
+               @xml_out_snippet <> _
+             } = Metadata.stream_entities(@valid_metadata)
+                 |> ThisModule.items_stream()
+                 |> Enum.to_list()
+                 |> List.first()
+
+    end
+
+    test "text records in the stream do not have line endings or record separators" do
+
+      {
+        "c0045678aa1b1e04e85d412f428ea95d2f627255",
+        record
+      } = Metadata.stream_entities(@valid_metadata)
+          |> ThisModule.items_stream()
+          |> Enum.to_list()
+          |> List.first()
+
+      refute String.ends_with?(record, "\n")
+      refute String.ends_with?(record, ThisModule.separator())
+
+    end
+
+  end
 
 end

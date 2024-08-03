@@ -5,9 +5,9 @@ defmodule SmeePublishIndexTest do
   alias Smee.Source
   alias Smee.Entity
   alias Smee.Metadata
-#  alias Smee.Metadata
-#  alias Smee.Lint
-#  alias Smee.XmlMunger
+  #  alias Smee.Metadata
+  #  alias Smee.Lint
+  #  alias Smee.XmlMunger
 
 
   @valid_metadata Source.new("test/support/static/aggregate.xml")
@@ -75,11 +75,17 @@ defmodule SmeePublishIndexTest do
     end
 
     test "returns an additional pipe-separated label, if the :label option is set to true" do
-      assert %{id: "https://test.ukfederation.org.uk/entity", label: "UK federation Test SP"} = ThisModule.extract(@sp_entity, [labels: true])
+      assert %{id: "https://test.ukfederation.org.uk/entity", label: "UK federation Test SP"} = ThisModule.extract(
+               @sp_entity,
+               [labels: true]
+             )
     end
 
     test "returns only the id if the :label option is set to false" do
-      assert %{id: "https://test.ukfederation.org.uk/entity", label: nil} = ThisModule.extract(@sp_entity, [labels: false])
+      assert %{id: "https://test.ukfederation.org.uk/entity", label: nil} = ThisModule.extract(
+               @sp_entity,
+               [labels: false]
+             )
     end
 
   end
@@ -94,7 +100,10 @@ defmodule SmeePublishIndexTest do
     test "returns the extracted data serialised into the correct text format" do
       extracted = ThisModule.extract(@sp_entity, [labels: true])
       assert "https://test.ukfederation.org.uk/entity" = ThisModule.encode(extracted, [labels: false])
-      assert "https://test.ukfederation.org.uk/entity|UK federation Test SP" = ThisModule.encode(extracted, [labels: true])
+      assert "https://test.ukfederation.org.uk/entity|UK federation Test SP" = ThisModule.encode(
+               extracted,
+               [labels: true]
+             )
     end
 
   end
@@ -129,7 +138,10 @@ defmodule SmeePublishIndexTest do
 
     test "items in stream are tuples of ids and extracted data" do
 
-      assert {"c0045678aa1b1e04e85d412f428ea95d2f627255", %{id: "https://test.ukfederation.org.uk/entity", label: nil}} = Metadata.stream_entities(@valid_metadata)
+      assert {
+               "c0045678aa1b1e04e85d412f428ea95d2f627255",
+               %{id: "https://test.ukfederation.org.uk/entity", label: nil}
+             } = Metadata.stream_entities(@valid_metadata)
                  |> ThisModule.raw_stream()
                  |> Enum.to_list()
                  |> List.first()
@@ -138,22 +150,46 @@ defmodule SmeePublishIndexTest do
 
   end
 
-#
-#
-#  describe "x/2" do
-#
-#    test "x" do
-#
-#    end
-#
-#  end
-#
-#  describe "x/2" do
-#
-#    test "x" do
-#
-#    end
-#
-#  end
+  describe "items_stream/2" do
+
+    test "returns a stream/function" do
+      assert %Stream{} = ThisModule.items_stream(Metadata.stream_entities(@valid_metadata))
+    end
+
+    test "returns a stream of tuples" do
+      Metadata.stream_entities(@valid_metadata)
+      |> ThisModule.items_stream()
+      |> Stream.each(fn r -> assert is_tuple(r) end)
+      |> Stream.run()
+    end
+
+    test "items in stream are tuples of ids and individual text records" do
+
+      assert {
+               "c0045678aa1b1e04e85d412f428ea95d2f627255",
+               "https://test.ukfederation.org.uk/entity"
+             } = Metadata.stream_entities(@valid_metadata)
+                 |> ThisModule.items_stream()
+                 |> Enum.to_list()
+                 |> List.first()
+
+    end
+
+    test "text records in the stream do not have line endings or record separators" do
+
+      {
+        "c0045678aa1b1e04e85d412f428ea95d2f627255",
+        record
+      } = Metadata.stream_entities(@valid_metadata)
+          |> ThisModule.items_stream()
+          |> Enum.to_list()
+          |> List.first()
+
+      refute String.ends_with?(record, "\n")
+      refute String.ends_with?(record, ThisModule.separator())
+
+    end
+
+  end
 
 end

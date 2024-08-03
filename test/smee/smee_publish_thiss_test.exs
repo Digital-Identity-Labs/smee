@@ -108,7 +108,7 @@ defmodule SmeePublishThissTest do
     test "returns the extracted data serialised into the correct text format" do
       ## This is less than ideal but I can't currently compare to static strings due to Map key sorting issues
       extracted = ThisModule.extract(@sp_entity, [])
-      json =  ThisModule.encode(extracted, [])
+      json = ThisModule.encode(extracted, [])
       assert Map.equal?(Iteraptor.jsonify(extracted), Jason.decode!(json))
     end
 
@@ -152,13 +152,19 @@ defmodule SmeePublishThissTest do
                  desc_langs: %{},
                  domain: "indiid.net",
                  entityID: "https://indiid.net/idp/shibboleth",
-                 entity_icon_url: %{width: "80", url: "https://indiid.net/assets/images/logo-compact-medium.png", height: "60"},
+                 entity_icon_url: %{
+                   width: "80",
+                   url: "https://indiid.net/assets/images/logo-compact-medium.png",
+                   height: "60"
+                 },
                  entity_id: "https://indiid.net/idp/shibboleth",
                  hidden: "false",
                  name_tag: "INDIID",
                  scope: "indiid.net",
                  title: "Indiid",
-                 title_langs: %{"en" => "Indiid"},
+                 title_langs: %{
+                   "en" => "Indiid"
+                 },
                  type: "idp"
                }
              } = Metadata.stream_entities(@valid_metadata)
@@ -170,22 +176,46 @@ defmodule SmeePublishThissTest do
 
   end
 
-  #
-  #
-  #  describe "x/2" do
-  #
-  #    test "x" do
-  #
-  #    end
-  #
-  #  end
-  #
-  #  describe "x/2" do
-  #
-  #    test "x" do
-  #
-  #    end
-  #
-  #  end
+  describe "items_stream/2" do
+
+    test "returns a stream/function" do
+      assert %Stream{} = ThisModule.items_stream(Metadata.stream_entities(@valid_metadata))
+    end
+
+    test "returns a stream of tuples" do
+      Metadata.stream_entities(@valid_metadata)
+      |> ThisModule.items_stream()
+      |> Stream.each(fn r -> assert is_tuple(r) end)
+      |> Stream.run()
+    end
+
+    test "items in stream are tuples of ids and individual text records" do
+
+      assert {
+               "77603e0cbda1e00d50373ca8ca20a375f5d1f171",
+               "{\"" <> _
+             } = Metadata.stream_entities(@valid_metadata)
+                 |> ThisModule.items_stream()
+                 |> Enum.to_list()
+                 |> List.first()
+
+    end
+
+    test "text records in the stream do not have line endings or record separators" do
+
+      {
+        "77603e0cbda1e00d50373ca8ca20a375f5d1f171",
+        record
+      } = Metadata.stream_entities(@valid_metadata)
+          |> ThisModule.items_stream()
+          |> Enum.to_list()
+          |> List.first()
+
+      refute String.ends_with?(record, "\n")
+      refute String.ends_with?(record, ThisModule.separator())
+
+    end
+
+  end
 
 end
