@@ -193,4 +193,60 @@ defmodule SmeePublishDiscoTest do
 
   end
 
+  describe "aggregate_stream/2" do
+
+    test "returns a stream/function" do
+      assert %Stream{} = ThisModule.items_stream(Metadata.stream_entities(@valid_metadata))
+    end
+
+    test "returns a stream of binary strings" do
+      Metadata.stream_entities(@valid_metadata)
+      |> ThisModule.aggregate_stream()
+      |> Stream.each(fn r -> assert is_binary(r) end)
+      |> Stream.run()
+    end
+
+
+    test "the first chunk is an opening header" do
+
+      assert "[" = Metadata.stream_entities(@valid_metadata)
+                   |> ThisModule.aggregate_stream()
+                   |> Enum.to_list()
+                   |> List.first()
+
+    end
+
+    test "the second chunk is a JSON record" do
+
+      record = Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate_stream()
+               |> Enum.to_list()
+               |> Enum.at(1)
+               |> Jason.decode!()
+
+      assert "https://indiid.net/idp/shibboleth" = record["entityID"]
+
+    end
+
+#    test "the third chunk is a text separator" do
+#
+#      assert "," =
+#               Metadata.stream_entities(@valid_metadata)
+#               |> ThisModule.aggregate_stream()
+#               |> Enum.to_list()
+#               |> Enum.at(2)
+#
+#    end
+
+    test "the final chunk is the closing header" do
+
+      assert "]" = Metadata.stream_entities(@valid_metadata)
+                   |> ThisModule.aggregate_stream()
+                   |> Enum.to_list()
+                   |> List.last()
+
+    end
+
+  end
+
 end

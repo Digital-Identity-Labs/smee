@@ -171,4 +171,42 @@ defmodule SmeePublishStringTest do
     end
 
   end
+
+  describe "aggregate_stream/2" do
+
+    test "returns a stream/function" do
+      assert %Stream{} = ThisModule.items_stream(Metadata.stream_entities(@valid_metadata))
+    end
+
+    test "returns a stream of binary strings" do
+      Metadata.stream_entities(@valid_metadata)
+      |> ThisModule.aggregate_stream()
+      |> Stream.each(fn r -> assert is_binary(r) end)
+      |> Stream.run()
+    end
+
+    test "chunks in stream are binary text records" do
+
+      assert "#[Entity https://test.ukfederation.org.uk/entity]" =
+               Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate_stream()
+               |> Enum.to_list()
+               |> List.first()
+
+    end
+
+    test "chunks in the stream do not have line endings or record separators" do
+
+      record = Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate_stream()
+               |> Enum.to_list()
+               |> List.first()
+
+      refute String.ends_with?(record, "\n")
+      refute String.ends_with?(record, ThisModule.separator())
+
+    end
+
+  end
+
 end

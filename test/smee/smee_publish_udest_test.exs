@@ -214,7 +214,7 @@ defmodule SmeePublishUdestTest do
       |> Stream.run()
     end
 
-    test "items in stream are tuples of ids and individual text records" do
+    test "chunks in stream are tuples of ids and individual text records" do
 
       assert {
                "c0045678aa1b1e04e85d412f428ea95d2f627255",
@@ -226,7 +226,7 @@ defmodule SmeePublishUdestTest do
 
     end
 
-    test "text records in the stream do not have line endings or record separators" do
+    test "chunks in the stream do not have line endings or record separators" do
 
       {
         "c0045678aa1b1e04e85d412f428ea95d2f627255",
@@ -238,6 +238,62 @@ defmodule SmeePublishUdestTest do
 
       refute String.ends_with?(record, "\n")
       refute String.ends_with?(record, ThisModule.separator())
+
+    end
+
+  end
+
+  describe "aggregate_stream/2" do
+
+    test "returns a stream/function" do
+      assert %Stream{} = ThisModule.items_stream(Metadata.stream_entities(@valid_metadata))
+    end
+
+    test "returns a stream of binary strings" do
+      Metadata.stream_entities(@valid_metadata)
+      |> ThisModule.aggregate_stream()
+      |> Stream.each(fn r -> assert is_binary(r) end)
+      |> Stream.run()
+    end
+
+
+    test "the first chunk is an opening header" do
+
+      assert "[" = Metadata.stream_entities(@valid_metadata)
+                   |> ThisModule.aggregate_stream()
+                   |> Enum.to_list()
+                   |> List.first()
+
+    end
+
+    test "the second chunk is a JSON record" do
+
+      record = Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate_stream()
+               |> Enum.to_list()
+               |> Enum.at(1)
+               |> Jason.decode!()
+
+      assert "https://test.ukfederation.org.uk/entity" = record["id"]
+
+    end
+
+#    test "the third chunk is a text separator" do
+#
+#      assert "," =
+#               Metadata.stream_entities(@valid_metadata)
+#               |> ThisModule.aggregate_stream()
+#               |> Enum.to_list()
+#               |> Enum.at(2)
+#
+#    end
+
+    test "the final chunk is the closing header" do
+
+      assert "]" = Metadata.stream_entities(@valid_metadata)
+                   |> ThisModule.aggregate_stream()
+                   |> Enum.to_list()
+                   |> List.last()
 
     end
 

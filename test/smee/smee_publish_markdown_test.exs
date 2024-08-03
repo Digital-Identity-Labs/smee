@@ -190,4 +190,51 @@ defmodule SmeePublishMarkdownTest do
 
   end
 
+  describe "aggregate_stream/2" do
+
+    test "returns a stream/function" do
+      assert %Stream{} = ThisModule.items_stream(Metadata.stream_entities(@valid_metadata))
+    end
+
+    test "returns a stream of binary strings" do
+      Metadata.stream_entities(@valid_metadata)
+      |> ThisModule.aggregate_stream()
+      |> Stream.each(fn r -> assert is_binary(r) end)
+      |> Stream.run()
+    end
+
+    test "the first chunk is a header row" do
+
+      assert  "| ID | Name | Roles | Info URL | Contact |\n" =
+               Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate_stream()
+               |> Enum.to_list()
+               |> List.first()
+
+    end
+
+    test "the second chunk is the second part of the header" do
+
+      record = Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate_stream()
+               |> Enum.to_list()
+               |> Enum.at(1)
+
+
+      assert "|----|-----|-----|--------|---------|\n" = record
+
+    end
+
+        test "the third chunk is a record/table row" do
+
+          assert "| https://test.ukfederation.org.uk/entity | UK federation Test SP | SP | [http://www.ukfederation.org.uk/](http://www.ukfederation.org.uk/) | [service@ukfederation.org.uk](mailto:service@ukfederation.org.uk) |" =
+                   Metadata.stream_entities(@valid_metadata)
+                   |> ThisModule.aggregate_stream()
+                   |> Enum.to_list()
+                   |> Enum.at(2)
+
+        end
+
+  end
+
 end

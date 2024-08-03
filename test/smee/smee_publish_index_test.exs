@@ -163,7 +163,7 @@ defmodule SmeePublishIndexTest do
       |> Stream.run()
     end
 
-    test "items in stream are tuples of ids and individual text records" do
+    test "chunks in stream are tuples of ids and individual text records" do
 
       assert {
                "c0045678aa1b1e04e85d412f428ea95d2f627255",
@@ -175,7 +175,7 @@ defmodule SmeePublishIndexTest do
 
     end
 
-    test "text records in the stream do not have line endings or record separators" do
+    test "chunks in the stream do not have line endings or record separators built in" do
 
       {
         "c0045678aa1b1e04e85d412f428ea95d2f627255",
@@ -184,6 +184,43 @@ defmodule SmeePublishIndexTest do
           |> ThisModule.items_stream()
           |> Enum.to_list()
           |> List.first()
+
+      refute String.ends_with?(record, "\n")
+      refute String.ends_with?(record, ThisModule.separator())
+
+    end
+
+  end
+
+  describe "aggregate_stream/2" do
+
+    test "returns a stream/function" do
+      assert %Stream{} = ThisModule.items_stream(Metadata.stream_entities(@valid_metadata))
+    end
+
+    test "returns a stream of binary strings" do
+      Metadata.stream_entities(@valid_metadata)
+      |> ThisModule.aggregate_stream()
+      |> Stream.each(fn r -> assert is_binary(r) end)
+      |> Stream.run()
+    end
+
+    test "items in stream are binary text records" do
+
+      assert "https://test.ukfederation.org.uk/entity" =
+               Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate_stream()
+               |> Enum.to_list()
+               |> List.first()
+
+    end
+
+    test "text records in the stream do not have line endings or record separators" do
+
+      record = Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate_stream()
+               |> Enum.to_list()
+               |> List.first()
 
       refute String.ends_with?(record, "\n")
       refute String.ends_with?(record, ThisModule.separator())
