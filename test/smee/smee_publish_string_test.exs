@@ -209,4 +209,34 @@ defmodule SmeePublishStringTest do
 
   end
 
+  describe "aggregate/2" do
+
+    test "returns a single binary string" do
+      assert is_binary(
+               Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate()
+             )
+    end
+
+    test "contains all entities" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+      assert String.contains?(data, ~s|https://test.ukfederation.org.uk/entity|)
+      assert String.contains?(data, ~s|https://indiid.net/idp/shibboleth|)
+    end
+
+    test "is valid" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+
+
+      assert "#[Entity https://test.ukfederation.org.uk/entity]\n#[Entity https://indiid.net/idp/shibboleth]" = data
+
+
+    end
+
+    # ...
+
+  end
+
 end

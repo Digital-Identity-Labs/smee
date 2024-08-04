@@ -237,4 +237,38 @@ defmodule SmeePublishMarkdownTest do
 
   end
 
+  describe "aggregate/2" do
+
+    test "returns a single binary string" do
+      assert is_binary(
+               Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate()
+             )
+    end
+
+    test "contains all entities" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+      assert String.contains?(data, ~s|https://test.ukfederation.org.uk/entity|)
+      assert String.contains?(data, ~s|https://indiid.net/idp/shibboleth|)
+    end
+
+    test "is valid" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+
+
+      assert "| ID | Name | Roles | Info URL | Contact |\n|----|-----|-----|--------|---------|\n| https://test.ukfederation.org.uk/entity | UK federation Test SP | SP | [http://www.ukfederation.org.uk/](http://www.ukfederation.org.uk/) | [service@ukfederation.org.uk](mailto:service@ukfederation.org.uk) |\n| https://indiid.net/idp/shibboleth | Indiid | IDP | [https://indiid.net/](https://indiid.net/) | [support@digitalidentitylabs.com](mailto:support@digitalidentitylabs.com) |" = data
+
+      assert data
+      |> Earmark.as_ast!()
+      |> Earmark.transform()
+
+
+    end
+
+    # ...
+
+  end
+
 end

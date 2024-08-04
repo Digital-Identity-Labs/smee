@@ -226,4 +226,56 @@ defmodule SmeePublishCsvTest do
 
   end
 
+  describe "aggregate/2" do
+
+    test "returns a single binary string" do
+      assert is_binary(
+               Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate()
+             )
+    end
+
+    test "contains all entities" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+      assert String.contains?(data, ~s|https://test.ukfederation.org.uk/entity|)
+      assert String.contains?(data, ~s|https://indiid.net/idp/shibboleth|)
+    end
+
+    test "is valid" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+
+      {:ok, data_s} = StringIO.open(data)
+
+      parsed = IO.stream(data_s, :line)
+               |> CSV.decode!()
+               |> Enum.to_list()
+
+      assert [
+               [
+                 "https://test.ukfederation.org.uk/entity",
+                 "UK federation Test SP",
+                 "SP",
+                 "https://test.ukfederation.org.uk/images/ukfedlogo.jpg",
+                 "http://www.ukfederation.org.uk/",
+                 "service@ukfederation.org.uk"
+               ],
+               [
+                 "https://indiid.net/idp/shibboleth",
+                 "Indiid",
+                 "IDP",
+                 "https://indiid.net/assets/images/logo-compact-tiny.png",
+                 "https://indiid.net/",
+                 "support@digitalidentitylabs.com"
+               ]
+             ] = parsed
+
+
+    end
+
+    # ...
+
+  end
+
 end

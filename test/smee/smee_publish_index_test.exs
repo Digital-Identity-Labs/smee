@@ -229,4 +229,38 @@ defmodule SmeePublishIndexTest do
 
   end
 
+  describe "aggregate/2" do
+
+    test "returns a single binary string" do
+      assert is_binary(
+               Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate()
+             )
+    end
+
+    test "contains all entities" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+      assert String.contains?(data, ~s|https://test.ukfederation.org.uk/entity|)
+      assert String.contains?(data, ~s|https://indiid.net/idp/shibboleth|)
+    end
+
+    test "is valid" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+
+      assert "https://test.ukfederation.org.uk/entity\nhttps://indiid.net/idp/shibboleth" = data
+
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate(labels: true)
+
+      assert "https://test.ukfederation.org.uk/entity|UK federation Test SP\nhttps://indiid.net/idp/shibboleth|Indiid" = data
+
+
+    end
+
+    # ...
+
+  end
+
 end

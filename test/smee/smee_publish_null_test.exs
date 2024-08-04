@@ -197,4 +197,34 @@ defmodule SmeePublishNullTest do
 
   end
 
+  describe "aggregate/2" do
+
+    test "returns a single binary string" do
+      assert is_binary(
+               Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate()
+             )
+    end
+
+    test "does not contains any entitiesm because it's an odd internal test module" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+      refute String.contains?(data, ~s|https://test.ukfederation.org.uk/entity|)
+      refute String.contains?(data, ~s|https://indiid.net/idp/shibboleth|)
+    end
+
+    test "is valid" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+
+
+      assert "" = data
+
+
+    end
+
+    # ...
+
+  end
+
 end

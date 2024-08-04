@@ -36,6 +36,14 @@
         "org_name": {
           "type": "string"
         },
+        "org_url": {
+          "type": "string",
+          "format": "uri",
+          "qt-uri-protocols": [
+            "https",
+            "http"
+          ]
+        },
         "logo_url": {
           "type": "string",
           "format": "uri",

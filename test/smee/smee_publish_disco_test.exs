@@ -228,15 +228,15 @@ defmodule SmeePublishDiscoTest do
 
     end
 
-#    test "the third chunk is a text separator" do
-#
-#      assert "," =
-#               Metadata.stream_entities(@valid_metadata)
-#               |> ThisModule.aggregate_stream()
-#               |> Enum.to_list()
-#               |> Enum.at(2)
-#
-#    end
+    #    test "the third chunk is a text separator" do
+    #
+    #      assert "," =
+    #               Metadata.stream_entities(@valid_metadata)
+    #               |> ThisModule.aggregate_stream()
+    #               |> Enum.to_list()
+    #               |> Enum.at(2)
+    #
+    #    end
 
     test "the final chunk is the closing header" do
 
@@ -246,6 +246,39 @@ defmodule SmeePublishDiscoTest do
                    |> List.last()
 
     end
+
+  end
+
+  describe "aggregate/2" do
+
+    test "returns a single binary string" do
+      assert is_binary(
+               Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate()
+             )
+    end
+
+    test "contains only IdPs" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+      assert String.contains?(data, ~s|"entityID":"https://indiid.net/idp/shibboleth"|)
+    end
+
+    test "is valid" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+             |> Jason.decode!()
+
+      schema = File.read!("test/support/schema/disco_schema.json")
+               |> Jason.decode!()
+               |> ExJsonSchema.Schema.resolve()
+
+      #Apex.ap(ExJsonSchema.Validator.validate(schema, data))
+      assert ExJsonSchema.Validator.valid?(schema, data)
+
+    end
+
+    # ...
 
   end
 

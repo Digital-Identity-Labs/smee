@@ -246,4 +246,37 @@ defmodule SmeePublishUdiscoTest do
 
   end
 
+  describe "aggregate/2" do
+
+    test "returns a single binary string" do
+      assert is_binary(
+               Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate()
+             )
+    end
+
+    test "contains only IdP entities" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+      refute String.contains?(data, ~s|https://test.ukfederation.org.uk/entity|)
+      assert String.contains?(data, ~s|https://indiid.net/idp/shibboleth|)
+    end
+
+    test "is valid" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+             |> Jason.decode!()
+
+      schema = File.read!("test/support/schema/udisco_schema.json")
+               |> Jason.decode!()
+               |> ExJsonSchema.Schema.resolve()
+
+      #Apex.ap(ExJsonSchema.Validator.validate(schema, data))
+      assert ExJsonSchema.Validator.valid?(schema, data)
+    end
+
+    # ...
+
+  end
+
 end

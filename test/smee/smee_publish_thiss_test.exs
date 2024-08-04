@@ -15,9 +15,6 @@ defmodule SmeePublishThissTest do
   @sp_xml File.read! "test/support/static/ukamf_test.xml"
   @sp_entity Entity.derive(@sp_xml, @valid_metadata)
 
-  @idp_xml File.read! "test/support/static/valid.xml"
-  @idp_entity Entity.derive(@idp_xml, @valid_metadata)
-
   describe "format/0" do
 
     test "returns the preferred identifier for this format" do
@@ -253,15 +250,15 @@ defmodule SmeePublishThissTest do
 
     end
 
-#    test "the third chunk is a text separator" do
-#
-#      assert "," =
-#               Metadata.stream_entities(@valid_metadata)
-#               |> ThisModule.aggregate_stream()
-#               |> Enum.to_list()
-#               |> Enum.at(2)
-#
-#    end
+    #    test "the third chunk is a text separator" do
+    #
+    #      assert "," =
+    #               Metadata.stream_entities(@valid_metadata)
+    #               |> ThisModule.aggregate_stream()
+    #               |> Enum.to_list()
+    #               |> Enum.at(2)
+    #
+    #    end
 
     test "the final chunk is the closing header" do
 
@@ -269,6 +266,46 @@ defmodule SmeePublishThissTest do
                    |> ThisModule.aggregate_stream()
                    |> Enum.to_list()
                    |> List.last()
+
+    end
+
+  end
+
+  describe "aggregate/2" do
+
+    test "returns a single binary string" do
+      assert is_binary(
+               Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate()
+             )
+    end
+
+    test "contains only IdP entities" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+      assert String.contains?(data, ~s|https://indiid.net/idp/shibboleth|)
+    end
+
+    test "is valid" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.aggregate()
+
+      records = Jason.decode!(data)
+
+      for record <- records do
+
+        # Based on most recent docs I can find but actual content is different
+        #  - need to find json schema for this
+        assert "{sha1}" <> _ = record["id"]
+        assert is_binary(record["name_tag"]) && String.match?(record["name_tag"], ~r/[A-Z-_]/)
+        assert record["type"] in ["sp", "idp"]
+        assert record["auth"] in ["saml", "opendic", "other"]
+        assert String.starts_with?(record["entity_id"], ["http", "urn"])
+        assert record["hidden"] in ["true", "false"]
+
+      end
+
+      # ...
 
     end
 
