@@ -1,9 +1,18 @@
 {
+  "id": "https://digitalidentitylabs.com/dir/json_schema/udisco",
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "type": "array",
-  "items": {
-    "$ref": "#/definitions/Origin"
-  },
+  "anyOf": [
+    {
+      "$ref": "#/definitions/Origin"
+    },
+    {
+      "type": "array",
+      "description": "Array of Origin objects",
+      "items": {
+        "$ref": "#/definitions/Origin"
+      }
+    }
+  ],
   "definitions": {
     "Origin": {
       "type": "object",

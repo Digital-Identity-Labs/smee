@@ -1,6 +1,18 @@
 {
   "$schema": "http://json-schema.org/draft-06/schema#",
-  "$ref": "#/definitions/Destination",
+  "id": "https://digitalidentitylabs.com/dir/json_schema/udest",
+  "anyOf": [
+    {
+      "$ref": "#/definitions/Destination"
+    },
+    {
+      "type": "array",
+      "description": "Array of Destination objects",
+      "items": {
+        "$ref": "#/definitions/Destination"
+      }
+    }
+  ],
   "definitions": {
     "Destination": {
       "type": "object",
