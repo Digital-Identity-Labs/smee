@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "$ref": "#/definitions/Destination",
+  "definitions": {
+    "Destination": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uri",
+          "qt-uri-protocols": [
+            "https",
+            "http",
+            "urn"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "org_name": {
+          "type": "string"
+        },
+        "logo_url": {
+          "type": "string",
+          "format": "uri",
+          "qt-uri-protocols": [
+            "https",
+            "http"
+          ]
+        },
+        "login_url": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri",
+            "qt-uri-protocols": [
+              "https",
+              "http"
+            ]
+          }
+        },
+        "return_urls": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "uri",
+            "qt-uri-protocols": [
+              "https",
+              "http"
+            ]
+          }
+        }
+      },
+      "required": [
+        "description",
+        "id"
+      ],
+      "title": "Destination"
+    }
+  }
+}
