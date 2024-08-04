@@ -332,4 +332,44 @@ defmodule SmeePublishUdestTest do
 
   end
 
+  describe "items/2" do
+
+    test "returns a map of tuples of binary strings" do
+
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.items()
+
+      assert is_map(data)
+      assert Enum.all?(data, fn {i, r} -> is_binary(i) && is_binary(r) end)
+    end
+
+    test "contains SP entities" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.items()
+      assert Enum.any?(data, fn {i, r} -> String.contains?(r, ~s|https://test.ukfederation.org.uk/entity|) end)
+    end
+
+    test "each item is valid" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.items()
+
+      for {_id, record} <- data do
+
+        rdata = Jason.decode!(record)
+
+        schema = File.read!("test/support/schema/udest_schema.json")
+                 |> Jason.decode!()
+                 |> ExJsonSchema.Schema.resolve()
+
+        #Apex.ap(ExJsonSchema.Validator.validate(schema, data))
+        assert ExJsonSchema.Validator.valid?(schema, rdata)
+
+      end
+    end
+
+    # ...
+
+  end
+
+
 end

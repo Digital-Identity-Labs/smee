@@ -278,4 +278,44 @@ defmodule SmeePublishCsvTest do
 
   end
 
+  describe "items/2" do
+
+    test "returns a map of tuples of binary strings" do
+
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.items()
+
+      assert is_map(data)
+      assert Enum.all?(data, fn {i, r} -> is_binary(i) && is_binary(r) end)
+    end
+
+    test "contains all entities" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.items()
+      assert Enum.any?(data, fn {i, r} -> String.contains?(r, ~s|https://test.ukfederation.org.uk/entity|) end)
+      assert Enum.any?(data, fn {i, r} -> String.contains?(r, ~s|https://indiid.net/idp/shibboleth|) end)
+    end
+
+    test "each item is valid" do
+      data = Metadata.stream_entities(@valid_metadata)
+             |> ThisModule.items()
+
+      for {_id, record} <- data do
+
+        {:ok, data_s} = StringIO.open(record)
+
+        parsed = IO.stream(data_s, :line)
+                 |> CSV.decode!()
+                 |> Enum.to_list()
+
+        assert is_list(parsed)
+
+      end
+    end
+
+    # ...
+
+  end
+
+
 end
