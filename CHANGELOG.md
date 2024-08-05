@@ -4,11 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.1] - 17-07-
+## [0.5.0] - 2024-08-08
 
+New, much bigger Publish module with new output formats and features.
 
+### New Features
+- Publish module has new output formats: CSV, DiscoFeed, markdown, THISS discovery, and two new formats
+  for use with [Little Disco](https://github.com/Digital-Identity-Labs/little_disco)
+- API has changed for Publish, but previous functions will continue to work for awhile, deprecated.
+- Publish Formats can be written to disk directly as either single aggregated files or individual records
+- :saml format now supports both aggregates and MDQ-style records
+- Files can have MDQ/LocalDynamic style aliases generate automatically
+- :index files can now have entity names included
+- The :disco format should generate files compatible with the Shibboleth DiscoFeed
+- The :thiss format should hopefully mimic the files used by THISS software such as Seamless Access
+- The :markdown and :csv formats are suitable for publishing simple tables into documents
+- :udisco is an experimental more efficient alternative to DiscoFeed, only used by [Little Disco](https://github.com/Digital-Identity-Labs/little_disco)
+- :udest is also for [Little Disco](https://github.com/Digital-Identity-Labs/little_disco) and provides SP information
 
-## [0.4.1] - 17-03-24
+### Improvements
+- Another XML namespace was discovered in the wild
+- Recent Req versions will no longer complain about Accept header case
+- Tests will now run on Github's CI service
+- The Smee git repository now has a few ready-to-run example scripts
+- Smee now has over 1100 tests
+
+## [0.4.1] - 2024-17-03
 
 A bug-fix released after testing with an updated collection of SmeeFeds test data: Smee is now tested with 66 federations. 
 
@@ -22,7 +43,7 @@ A bug-fix released after testing with an updated collection of SmeeFeds test dat
 - Excess line endings are removed from pre-processed XML
 - Streaming can cope with embedded EntityDescriptor groups
 
-## [0.4.0] - 24-02-05
+## [0.4.0] - 2024-02-05
 
 ### Breaking Changes
 - XML in Metadata structs is now back to being the original metadata, with comments, signatures, etc.
