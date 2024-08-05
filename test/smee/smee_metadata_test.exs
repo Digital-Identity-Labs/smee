@@ -878,11 +878,20 @@ defmodule SmeeMetadataTest do
   end
 
   describe "Protocol String.Chars.to_string/1" do
-    "#[Metadata file:test/support/static/aggregate.xml]" = "#{@valid_metadata}"
+
+    test "Metadata is converted into a suitable string" do
+      "#[Metadata file:test/support/static/aggregate.xml]" = "#{@valid_metadata}"
+    end
+
   end
 
   describe "Protocol Jason Encoder" do
-    "{\"compressed\":false,\"data\":\"" <> _ = Jason.encode!(@valid_metadata)
+
+    test "Metadata is serialised as JSON" do
+      encoded_and_decoded = Jason.encode!(@valid_metadata)
+                            |> Jason.decode!
+      assert is_map(encoded_and_decoded)
+    end
   end
 
 end

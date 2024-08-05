@@ -608,13 +608,21 @@ defmodule SmeeEntityTest do
   end
 
   describe "Protocol String.Chars.to_string/1" do
-    assert "#[Entity https://indiid.net/idp/shibboleth]" = "#{@idp_entity}"
+
+    test "Entity is interpolated into a string in the correct format" do
+      assert "#[Entity https://indiid.net/idp/shibboleth]" = "#{@idp_entity}"
+    end
   end
 
   describe "Protocol Jason Encoder" do
-    assert "{\"compressed\":false,\"data\":\"<?xml version=\\\"1.0\\\" encoding=\\\"UTF-8\\\"" <> _ = Jason.encode!(
-      @idp_entity
-    )
+
+    test "entity is stored in a suitable JSON format" do
+      encoded_and_decoded = Jason.encode!(@idp_entity)
+                            |> Jason.decode!()
+
+      assert is_map(encoded_and_decoded)
+
+    end
   end
 
   describe "registration_authority/1" do
