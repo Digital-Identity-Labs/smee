@@ -272,5 +272,35 @@ defmodule SmeePublishStringTest do
 
   end
 
+  describe "write_aggregate/2" do
+
+    setup do
+      filename = Metadata.stream_entities(@valid_metadata)
+                 |> ThisModule.write_aggregate()
+
+      [filename: filename]
+    end
+
+    test "writes a file to disk and returns a single filename", %{filename: filename} do
+
+      %{size: size} = File.stat!(filename)
+
+      assert File.exists?(filename)
+      assert size > 0
+
+    end
+
+    test "the file contains the right entities", %{filename: filename} do
+      file = File.read!(filename)
+      assert String.contains?(file, "https://test.ukfederation.org.uk/entity")
+      assert String.contains?(file, "https://indiid.net/idp/shibboleth")
+    end
+
+    test "the file is valid", %{filename: filename} do
+      file = File.read!(filename)
+      assert "#[Entity https://test.ukfederation.org.uk/entity]\n#[Entity https://indiid.net/idp/shibboleth]" = file
+    end
+
+  end
 
 end

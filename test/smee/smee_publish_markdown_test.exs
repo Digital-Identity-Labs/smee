@@ -95,7 +95,8 @@ defmodule SmeePublishMarkdownTest do
 
     test "returns the extracted data serialised into the correct text format" do
       extracted = ThisModule.extract(@sp_entity, [])
-      assert  "| https://test.ukfederation.org.uk/entity | UK federation Test SP | SP | [http://www.ukfederation.org.uk/](http://www.ukfederation.org.uk/) | [service@ukfederation.org.uk](mailto:service@ukfederation.org.uk) |" = ThisModule.encode(extracted, [])
+      text = "| https://test.ukfederation.org.uk/entity | UK federation Test SP | SP | [http://www.ukfederation.org.uk/](http://www.ukfederation.org.uk/) | [service@ukfederation.org.uk](mailto:service@ukfederation.org.uk) |"
+      assert ^text = ThisModule.encode(extracted, [])
     end
 
   end
@@ -206,10 +207,10 @@ defmodule SmeePublishMarkdownTest do
     test "the first chunk is a header row" do
 
       assert  "| ID | Name | Roles | Info URL | Contact |\n" =
-               Metadata.stream_entities(@valid_metadata)
-               |> ThisModule.aggregate_stream()
-               |> Enum.to_list()
-               |> List.first()
+                Metadata.stream_entities(@valid_metadata)
+                |> ThisModule.aggregate_stream()
+                |> Enum.to_list()
+                |> List.first()
 
     end
 
@@ -225,15 +226,15 @@ defmodule SmeePublishMarkdownTest do
 
     end
 
-        test "the third chunk is a record/table row" do
+    test "the third chunk is a record/table row" do
 
-          assert "| https://test.ukfederation.org.uk/entity | UK federation Test SP | SP | [http://www.ukfederation.org.uk/](http://www.ukfederation.org.uk/) | [service@ukfederation.org.uk](mailto:service@ukfederation.org.uk) |" =
-                   Metadata.stream_entities(@valid_metadata)
-                   |> ThisModule.aggregate_stream()
-                   |> Enum.to_list()
-                   |> Enum.at(2)
+      assert "| https://test.ukfederation.org.uk/entity | UK federation Test SP | SP | [http://www.ukfederation.org.uk/](http://www.ukfederation.org.uk/) | [service@ukfederation.org.uk](mailto:service@ukfederation.org.uk) |" =
+               Metadata.stream_entities(@valid_metadata)
+               |> ThisModule.aggregate_stream()
+               |> Enum.to_list()
+               |> Enum.at(2)
 
-        end
+    end
 
   end
 
@@ -261,8 +262,8 @@ defmodule SmeePublishMarkdownTest do
       assert "| ID | Name | Roles | Info URL | Contact |\n|----|-----|-----|--------|---------|\n| https://test.ukfederation.org.uk/entity | UK federation Test SP | SP | [http://www.ukfederation.org.uk/](http://www.ukfederation.org.uk/) | [service@ukfederation.org.uk](mailto:service@ukfederation.org.uk) |\n| https://indiid.net/idp/shibboleth | Indiid | IDP | [https://indiid.net/](https://indiid.net/) | [support@digitalidentitylabs.com](mailto:support@digitalidentitylabs.com) |" = data
 
       assert data
-      |> Earmark.as_ast!()
-      |> Earmark.transform()
+             |> Earmark.as_ast!()
+             |> Earmark.transform()
 
 
     end
@@ -295,12 +296,45 @@ defmodule SmeePublishMarkdownTest do
 
       for {_id, record} <- data do
 
-       assert  String.match?(record, ~r/|.*|.* |.* |.* |.*|/)
+        assert  String.match?(record, ~r/|.*|.* |.* |.* |.*|/)
 
       end
     end
 
-    # ...
+  end
+
+  describe "write_aggregate/2" do
+
+    setup do
+      filename = Metadata.stream_entities(@valid_metadata)
+                 |> ThisModule.write_aggregate()
+
+      [filename: filename]
+    end
+
+    test "writes a file to disk and returns a single filename", %{filename: filename} do
+
+      %{size: size} = File.stat!(filename)
+
+      assert File.exists?(filename)
+      assert size > 0
+
+    end
+
+    test "the file contains the right entities", %{filename: filename} do
+      file = File.read!(filename)
+      assert String.contains?(file, "https://test.ukfederation.org.uk/entity")
+      assert String.contains?(file, "https://indiid.net/idp/shibboleth")
+    end
+
+    test "the file is valid", %{filename: filename} do
+      file = File.read!(filename)
+
+      assert file
+             |> Earmark.as_ast!()
+             |> Earmark.transform()
+
+    end
 
   end
 

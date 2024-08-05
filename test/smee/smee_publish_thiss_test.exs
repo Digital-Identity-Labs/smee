@@ -347,7 +347,51 @@ defmodule SmeePublishThissTest do
       end
     end
 
+
     # ...
+
+  end
+
+  describe "write_aggregate/2" do
+
+    setup do
+      filename = Metadata.stream_entities(@valid_metadata)
+                 |> ThisModule.write_aggregate()
+
+      [filename: filename]
+    end
+
+    test "writes a file to disk and returns a single filename", %{filename: filename} do
+
+      %{size: size} = File.stat!(filename)
+
+      assert File.exists?(filename)
+      assert size > 0
+
+    end
+
+    test "the file contains the right entities", %{filename: filename} do
+      file = File.read!(filename)
+      refute String.contains?(file, "https://test.ukfederation.org.uk/entity")
+      assert String.contains?(file, "https://indiid.net/idp/shibboleth")
+    end
+
+    test "the file is valid", %{filename: filename} do
+      data = File.read!(filename)
+             |> Jason.decode!()
+
+      for {_id, record} <- data do
+
+        assert "{sha1}" <> _ = record["id"]
+        assert is_binary(record["name_tag"]) && String.match?(record["name_tag"], ~r/[A-Z-_]/)
+        assert record["type"] in ["sp", "idp"]
+        assert record["auth"] in ["saml", "opendic", "other"]
+        assert String.starts_with?(record["entity_id"], ["http", "urn"])
+        assert record["hidden"] in ["true", "false"]
+
+      end
+
+    end
 
   end
 
