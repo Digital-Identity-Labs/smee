@@ -355,8 +355,9 @@ defmodule SmeePublishThissTest do
   describe "write_aggregate/2" do
 
     setup do
+      {:ok, dir} = Briefly.create(type: :directory)
       filename = Metadata.stream_entities(@valid_metadata)
-                 |> ThisModule.write_aggregate()
+                 |> ThisModule.write_aggregate(to: dir)
 
       [filename: filename]
     end
