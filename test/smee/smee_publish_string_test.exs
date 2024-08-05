@@ -304,4 +304,51 @@ defmodule SmeePublishStringTest do
 
   end
 
+  describe "write_items/2" do
+
+    @tag :tmp_dir
+    setup do
+      {:ok, dir} = Briefly.create(type: :directory)
+      filenames = Metadata.stream_entities(@valid_metadata)
+                  |> ThisModule.write_items(to: dir)
+
+      [filenames: filenames]
+    end
+
+    test "writes files to disk and returns a list of filenames", %{filenames: filenames} do
+
+      for filename <- filenames do
+
+        %{size: size} = File.stat!(filename)
+
+        assert File.exists?(filename)
+        assert size > 0
+
+      end
+
+    end
+
+    test "the files contain the right entities", %{filenames: filenames} do
+
+      for filename <- filenames do
+
+        file = File.read!(filename)
+        assert String.contains?(file, "https://test.ukfederation.org.uk/entity") || String.contains?(file, "https://indiid.net/idp/shibboleth")
+
+      end
+
+    end
+
+    test "the files are valid", %{filenames: filenames} do
+
+      for filename <- filenames do
+
+        file = File.read!(filename)
+        assert String.starts_with?(file, "#[Entity ")
+
+      end
+    end
+
+  end
+
 end
