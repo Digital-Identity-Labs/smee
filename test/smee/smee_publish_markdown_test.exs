@@ -385,6 +385,8 @@ defmodule SmeePublishMarkdownTest do
       end
     end
 
+    ## TODO: add tests for hashed symlinks
+
   end
 
 end

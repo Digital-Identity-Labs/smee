@@ -396,7 +396,7 @@ defmodule SmeePublishDiscoTest do
 
     end
 
-    test "the files are valid", %{filenames: filenames} do
+    test "the files are valid, relatively - officially only an array (aggregate) is valid", %{filenames: filenames} do
 
       schema = File.read!("test/support/schema/disco_schema.json")
                |> Jason.decode!()

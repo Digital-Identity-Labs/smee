@@ -417,5 +417,7 @@ defmodule SmeePublishUdiscoTest do
 
     end
 
+    ## TODO: add tests for hashed symlinks
+
   end
 end
