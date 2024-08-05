@@ -140,7 +140,6 @@ defmodule SmeePublishTest do
 
   end
 
-
   describe "write_aggregate/2" do
 
     @tag :tmp_dir
@@ -160,7 +159,6 @@ defmodule SmeePublishTest do
     end
 
   end
-
 
   describe "write_items/2" do
 

@@ -25,3 +25,4 @@ smee-*.tar
 /out2
 /markdown_aggregate.md
 /out*/
+/published
