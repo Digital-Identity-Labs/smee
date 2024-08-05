@@ -76,6 +76,7 @@ defmodule Smee.Publish do
   alias Smee.Publish.Markdown
   alias Smee.Publish.Csv
   alias Smee.Publish.SamlXml
+  alias Smee.Publish.FrontendUtils
 
   use Smee.Publish.LegacyCompatibility
 
@@ -85,20 +86,8 @@ defmodule Smee.Publish do
   """
   @spec formats() :: list(atom())
   def formats() do
-    [
-      :csv,
-      :disco,
-      :index,
-      :markdown,
-      :saml,
-      :thiss,
-      :udest,
-      :udisco
-    ]
+    FrontendUtils.formats()
   end
-
-  @default_options [format: :saml, lang: "en", id_type: :hash, to: "published", labels: false]
-  @allowed_options Keyword.keys(@default_options) ++ [:valid_until, :filename]
 
   @doc """
   Estimates the size (in bytes) of an aggregated published file or stream in the selected format (defaulting to SAML2
@@ -112,8 +101,8 @@ defmodule Smee.Publish do
   """
   @spec eslength(entities :: Enumerable.t(), options :: keyword()) :: integer()
   def eslength(entities, options \\ []) do
-    options = prepare_options(options)
-    apply(select_backend(options), :eslength, [entities, options])
+    options = FrontendUtils.prepare_options(options)
+    apply(FrontendUtils.select_backend(options), :eslength, [entities, options])
   end
 
   @doc """
@@ -127,8 +116,8 @@ defmodule Smee.Publish do
   """
   @spec aggregate(entities :: Enumerable.t(), options :: keyword()) :: binary()
   def aggregate(entities, options \\ []) do
-    options = prepare_options(options)
-    apply(select_backend(options), :aggregate, [entities, options])
+    options = FrontendUtils.prepare_options(options)
+    apply(FrontendUtils.select_backend(options), :aggregate, [entities, options])
   end
 
   @doc """
@@ -143,8 +132,8 @@ defmodule Smee.Publish do
   """
   @spec aggregate_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t(binary())
   def aggregate_stream(entities, options \\ []) do
-    options = prepare_options(options)
-    apply(select_backend(options), :aggregate_stream, [entities, options])
+    options = FrontendUtils.prepare_options(options)
+    apply(FrontendUtils.select_backend(options), :aggregate_stream, [entities, options])
   end
 
   @doc """
@@ -159,8 +148,8 @@ defmodule Smee.Publish do
   """
   @spec items(entities :: Enumerable.t(), options :: keyword()) ::  Map.t(tuple())
   def items(entities, options \\ []) do
-    options = prepare_options(options)
-    apply(select_backend(options), :items, [entities, options])
+    options = FrontendUtils.prepare_options(options)
+    apply(FrontendUtils.select_backend(options), :items, [entities, options])
   end
 
   @doc """
@@ -175,8 +164,8 @@ defmodule Smee.Publish do
   """
   @spec items_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t(tuple())
   def items_stream(entities, options \\ []) do
-    options = prepare_options(options)
-    apply(select_backend(options), :items_stream, [entities, options])
+    options = FrontendUtils.prepare_options(options)
+    apply(FrontendUtils.select_backend(options), :items_stream, [entities, options])
   end
 
   @doc """
@@ -190,8 +179,8 @@ defmodule Smee.Publish do
   """
   @spec raw_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t(tuple())
   def raw_stream(entities, options \\ []) do
-    options = prepare_options(options)
-    apply(select_backend(options), :raw_stream, [entities, options])
+    options = FrontendUtils.prepare_options(options)
+    apply(FrontendUtils.select_backend(options), :raw_stream, [entities, options])
   end
 
   @doc """
@@ -203,8 +192,8 @@ defmodule Smee.Publish do
   """
   @spec write_aggregate(entities :: Enumerable.t(), options :: keyword()) :: binary()
   def write_aggregate(entities, options \\ []) do
-    options = prepare_options(options)
-    apply(select_backend(options), :write_aggregate, [entities, options])
+    options = FrontendUtils.prepare_options(options)
+    apply(FrontendUtils.select_backend(options), :write_aggregate, [entities, options])
   end
 
   @doc """
@@ -221,31 +210,10 @@ defmodule Smee.Publish do
   """
   @spec write_items(entities :: Enumerable.t(), options :: keyword()) :: list()
   def write_items(entities, options \\ []) do
-    options = prepare_options(options)
-    apply(select_backend(options), :write_items, [entities, options])
+    options = FrontendUtils.prepare_options(options)
+    apply(FrontendUtils.select_backend(options), :write_items, [entities, options])
   end
 
   ################################################################################
-
-  defp prepare_options(options) do
-    Keyword.merge(@default_options, options)
-    |> Keyword.take(@allowed_options)
-  end
-
-  defp select_backend(options) do
-    case options[:format] do
-      :csv -> Csv
-      :disco -> Disco
-      :index -> Index
-      :markdown -> Markdown
-      :metadata -> SamlXml
-      :saml -> SamlXml
-      :thiss -> Thiss
-      :udest -> Udest
-      :udisco -> Udisco
-      nil -> SamlXml
-      _ -> raise "Unknown publishing format '#{options[:format]} - known formats include #{formats()}'"
-    end
-  end
 
 end
