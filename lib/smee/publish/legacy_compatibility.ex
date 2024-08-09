@@ -1,11 +1,9 @@
 defmodule Smee.Publish.LegacyCompatibility do
 
+  @moduledoc false
 
   defmacro __using__(_opts) do
     quote do
-
-      @moduledoc false
-
 
       alias Smee.Entity
       alias Smee.Publish

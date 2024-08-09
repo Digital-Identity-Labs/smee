@@ -1,9 +1,9 @@
 defmodule Smee.Publish.Common do
 
+  @moduledoc false
+
   defmacro __using__(_opts) do
     quote do
-
-      @moduledoc false
 
       alias Smee.Entity
       alias Smee.Utils

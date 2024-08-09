@@ -1,5 +1,7 @@
 defmodule Smee.Publish.Extract do
 
+  @moduledoc false
+
   alias Smee.Entity
 
   def name(data, lang) do
