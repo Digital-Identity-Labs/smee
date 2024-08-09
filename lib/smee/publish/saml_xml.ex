@@ -28,7 +28,7 @@ defmodule Smee.Publish.SamlXml do
 
   end
 
-  def encode(data, options \\ []) do
+  def encode(data, options) do
     if options[:in_aggregate] do
       data[:xml]
       |> XmlMunger.trim_entity_xml(uri: data[:uri])

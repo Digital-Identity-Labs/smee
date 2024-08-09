@@ -16,7 +16,7 @@ defmodule Smee.Publish.Index do
     "txt"
   end
 
-  def extract(entity, options \\ []) do
+  def extract(entity, options) do
 
     if options[:labels] do
       about_data = Entity.xdoc(entity)
@@ -33,7 +33,7 @@ defmodule Smee.Publish.Index do
     end
   end
 
-  def encode(record, options \\ []) do
+  def encode(record, options) do
     if options[:labels] do
       "#{record.id}|#{record.label}"
     else

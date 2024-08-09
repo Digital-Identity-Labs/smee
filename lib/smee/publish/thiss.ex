@@ -23,7 +23,7 @@ defmodule Smee.Publish.Thiss do
     Filter.idp(entities)
   end
 
-  def extract(entity, options \\ []) do
+  def extract(entity, options) do
 
     lang = options[:lang]
     role = if Entity.idp?(entity), do: :idp, else: :sp
@@ -70,7 +70,7 @@ defmodule Smee.Publish.Thiss do
       type: "idp",
       hidden: "#{Extract.thiss_hide(disco_data, lang)}",
       scope: Enum.join(disco_data.scopes, ","),
-      domain: List.first(Extract.domains(disco_data, lang) || []),
+      domain: List.first(Extract.domains(disco_data, lang)),
       name_tag: Extract.thiss_name_tag(disco_data, lang),
       geo: Extract.thiss_geos(disco_data, lang),
       entity_icon_url: Extract.thiss_logo(disco_data, lang),

@@ -288,6 +288,7 @@ defmodule Smee.Utils do
     String.trim(id)
   end
 
+  @spec oom(map :: map()) :: struct()
   def oom(map) do
     map
     |> Map.to_list()

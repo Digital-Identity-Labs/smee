@@ -13,7 +13,7 @@ defmodule Smee.Publish.Common do
         :null
       end
 
-      @spec ext() :: atom()
+      @spec ext() :: binary()
       def ext() do
         "txt"
       end
@@ -28,7 +28,7 @@ defmodule Smee.Publish.Common do
         entities
       end
 
-      @spec extract(entity :: Entity.t(), options :: keyword()) :: struct()
+      @spec extract(entity :: Entity.t(), options :: keyword()) :: map()
       def extract(entity, options \\ []) do
         %{}
       end
@@ -45,7 +45,7 @@ defmodule Smee.Publish.Common do
         )
       end
 
-      @spec raw_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t(Map.t())
+      @spec raw_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
       def raw_stream(entities, options \\ []) do
         entities
         |> filter(options)
@@ -100,14 +100,14 @@ defmodule Smee.Publish.Common do
         |> Enum.join("")
       end
 
-      @spec items(entities :: Enumerable.t(), options :: keyword()) :: list(binary())
+      @spec items(entities :: Enumerable.t(), options :: keyword()) :: map()
       def items(entities, options \\ []) do
         entities
         |> items_stream(options)
         |> Map.new()
       end
 
-      @spec write_aggregate(entities :: Enumerable.t(), options :: keyword()) :: list(binary())
+      @spec write_aggregate(entities :: Enumerable.t(), options :: keyword()) :: binary()
       def write_aggregate(entities, options \\ []) do
         options = Keyword.merge([to: File.cwd!()], options)
         :ok = check_dir!(options)

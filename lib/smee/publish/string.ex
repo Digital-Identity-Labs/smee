@@ -10,15 +10,15 @@ defmodule Smee.Publish.String do
 
   @compile :nowarn_unused_vars
 
-  def extract(entity, _options) do
+  def extract(entity, options) do
     %{text: "#{entity}"}
   end
 
-  def encode(data, _options) do
+  def encode(data, options) do
     data.text
   end
 
-  def separator(_options) do
+  def separator(options) do
     "\n"
   end
 

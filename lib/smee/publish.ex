@@ -146,7 +146,7 @@ defmodule Smee.Publish do
   and "Local Dynamic" metadata providers.
 
   """
-  @spec items(entities :: Enumerable.t(), options :: keyword()) ::  Map.t(tuple())
+  @spec items(entities :: Enumerable.t(), options :: keyword()) ::  map()
   def items(entities, options \\ []) do
     options = FrontendUtils.prepare_options(options)
     apply(FrontendUtils.select_backend(options), :items, [entities, options])

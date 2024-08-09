@@ -18,7 +18,7 @@ defmodule Smee.Publish.Csv do
     "csv"
   end
 
-  def extract(entity, options \\ []) do
+  def extract(entity, options) do
     about_data = Entity.xdoc(entity)
                  |> Smee.XPaths.about()
 
