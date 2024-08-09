@@ -68,14 +68,6 @@ defmodule Smee.Publish do
   """
 
   alias Smee.Entity
-  alias Smee.Publish.Disco
-  alias Smee.Publish.Udisco
-  alias Smee.Publish.Udest
-  alias Smee.Publish.Thiss
-  alias Smee.Publish.Index
-  alias Smee.Publish.Markdown
-  alias Smee.Publish.Csv
-  alias Smee.Publish.SamlXml
   alias Smee.Publish.FrontendUtils
 
   use Smee.Publish.LegacyCompatibility
