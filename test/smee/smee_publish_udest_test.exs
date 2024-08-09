@@ -324,7 +324,7 @@ defmodule SmeePublishUdestTest do
                |> Jason.decode!()
                |> ExJsonSchema.Schema.resolve()
 
-      Apex.ap(ExJsonSchema.Validator.validate(schema, data))
+      #Apex.ap(ExJsonSchema.Validator.validate(schema, data))
       assert ExJsonSchema.Validator.valid?(schema, data)
     end
 
@@ -453,8 +453,6 @@ defmodule SmeePublishUdestTest do
 
       for filename <- filenames do
 
-        file = File.read!(filename)
-        assert file = "https://test.ukfederation.org.uk/entity" || "https://indiid.net/idp/shibboleth"
         data = File.read!(filename)
                |> Jason.decode!()
 

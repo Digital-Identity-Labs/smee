@@ -379,8 +379,10 @@ defmodule SmeePublishMarkdownTest do
       for filename <- filenames do
 
         file = File.read!(filename)
-        assert file = "https://test.ukfederation.org.uk/entity" || "https://indiid.net/idp/shibboleth"
 
+        assert file
+               |> Earmark.as_ast!()
+               |> Earmark.transform()
 
       end
     end

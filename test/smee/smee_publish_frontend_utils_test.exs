@@ -2,13 +2,6 @@ defmodule SmeePublishFrontendUtilsTest do
   use ExUnit.Case
 
   alias Smee.Publish.FrontendUtils
-  alias Smee.Source
-  #alias Smee.Metadata
-  #alias Smee.Lint
-  #alias Smee.XmlMunger
-
-  @valid_metadata Source.new("test/support/static/aggregate.xml")
-                  |> Smee.fetch!()
 
   describe "formats/0" do
 

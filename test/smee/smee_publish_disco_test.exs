@@ -5,14 +5,9 @@ defmodule SmeePublishDiscoTest do
   alias Smee.Source
   alias Smee.Entity
   alias Smee.Metadata
-  #  alias Smee.Lint
-  #  alias Smee.XmlMunger
-
 
   @valid_metadata Source.new("test/support/static/aggregate.xml")
                   |> Smee.fetch!()
-  @sp_xml File.read! "test/support/static/ukamf_test.xml"
-  @sp_entity Entity.derive(@sp_xml, @valid_metadata)
   @idp_xml File.read! "test/support/static/valid.xml"
   @idp_entity Entity.derive(@idp_xml, @valid_metadata)
 
@@ -404,8 +399,6 @@ defmodule SmeePublishDiscoTest do
 
       for filename <- filenames do
 
-        file = File.read!(filename)
-        assert file = "https://test.ukfederation.org.uk/entity" || "https://indiid.net/idp/shibboleth"
         data = File.read!(filename)
                |> Jason.decode!()
 
