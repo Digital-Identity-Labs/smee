@@ -39,7 +39,7 @@ defmodule SmeePublishTest do
       assert 464 = Publish.eslength(md_stream, format: :markdown)
       assert 41311 = Publish.eslength(md_stream, format: :saml)
       assert 434 = Publish.eslength(md_stream, format: :thiss)
-      assert 1746 = Publish.eslength(md_stream, format: :udest)
+      assert 1747 = Publish.eslength(md_stream, format: :udest)
       assert 147 = Publish.eslength(md_stream, format: :udisco)
     end
 

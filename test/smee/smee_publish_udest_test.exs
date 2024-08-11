@@ -15,7 +15,7 @@ defmodule SmeePublishUdestTest do
   @sp_xml File.read! "test/support/static/ukamf_test.xml"
   @sp_entity Entity.derive(@sp_xml, @valid_metadata)
 
-  @sp_json "{\"description\":\"This test service provider allows you to see the attributes your identity provider is releasing.\",\"id\":\"https://test.ukfederation.org.uk/entity\",\"login_url\":[\"https://test.ukfederation.org.uk/Shibboleth.sso/Login\",\"https://test.ukfederation.org.uk/Shibboleth.sso/Login1\",\"https://test.ukfederation.org.uk/Shibboleth.sso/DS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/UKfedWAYF\",\"https://test.ukfederation.org.uk/Shibboleth.sso/UKfedDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/UKfedWAYFall\",\"https://test.ukfederation.org.uk/Shibboleth.sso/UKtestWAYF\",\"https://test.ukfederation.org.uk/Shibboleth.sso/UKtestDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedWAYF\",\"https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedWAYFall\",\"https://test.ukfederation.org.uk/Shibboleth.sso/TESTtestWAYF\",\"https://test.ukfederation.org.uk/Shibboleth.sso/TESTtestDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/EDS\"],\"logo_url\":\"https://test.ukfederation.org.uk/images/ukfedlogo.jpg\",\"name\":\"UK federation Test SP\",\"org_name\":\"UK federation Test SP\",\"org_url\":\"http://www.ukfederation.org.uk/\",\"return_urls\":[\"https://test.ukfederation.org.uk/Shibboleth.sso/Login\",\"https://test.ukfederation.org.uk/Shibboleth.sso/DS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/UKfedDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/UKtestDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/TESTtestDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/EDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/Wayfinder\",\"https://test.ukfederation.org.uk/Shibboleth.sso/Staging\"]}"
+  @sp_json "{\"description\":\"This test service provider allows you to see the attributes your identity provider is releasing.\",\"id\":\"https://test.ukfederation.org.uk/entity\",\"login_urls\":[\"https://test.ukfederation.org.uk/Shibboleth.sso/Login\",\"https://test.ukfederation.org.uk/Shibboleth.sso/Login1\",\"https://test.ukfederation.org.uk/Shibboleth.sso/DS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/UKfedWAYF\",\"https://test.ukfederation.org.uk/Shibboleth.sso/UKfedDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/UKfedWAYFall\",\"https://test.ukfederation.org.uk/Shibboleth.sso/UKtestWAYF\",\"https://test.ukfederation.org.uk/Shibboleth.sso/UKtestDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedWAYF\",\"https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedWAYFall\",\"https://test.ukfederation.org.uk/Shibboleth.sso/TESTtestWAYF\",\"https://test.ukfederation.org.uk/Shibboleth.sso/TESTtestDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/EDS\"],\"logo_url\":\"https://test.ukfederation.org.uk/images/ukfedlogo.jpg\",\"name\":\"UK federation Test SP\",\"org_name\":\"UK federation Test SP\",\"org_url\":\"http://www.ukfederation.org.uk/\",\"return_urls\":[\"https://test.ukfederation.org.uk/Shibboleth.sso/Login\",\"https://test.ukfederation.org.uk/Shibboleth.sso/DS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/UKfedDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/UKtestDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/TESTfedDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/TESTtestDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/EDS\",\"https://test.ukfederation.org.uk/Shibboleth.sso/Wayfinder\",\"https://test.ukfederation.org.uk/Shibboleth.sso/Staging\"]}"
 
   describe "format/0" do
 
@@ -75,7 +75,7 @@ defmodule SmeePublishUdestTest do
       assert %{
                description: "This test service provider allows you to see the attributes your identity provider is releasing.",
                id: "https://test.ukfederation.org.uk/entity",
-               login_url: [
+               login_urls: [
                  "https://test.ukfederation.org.uk/Shibboleth.sso/Login",
                  "https://test.ukfederation.org.uk/Shibboleth.sso/Login1",
                  "https://test.ukfederation.org.uk/Shibboleth.sso/DS",
@@ -128,7 +128,7 @@ defmodule SmeePublishUdestTest do
   describe "eslength/2" do
 
     test "returns the size of content in the stream" do
-      assert 1746 = ThisModule.eslength(Metadata.stream_entities(@valid_metadata))
+      assert 1747 = ThisModule.eslength(Metadata.stream_entities(@valid_metadata))
     end
 
     test "should be about the same size as a compiled binary output" do
@@ -161,7 +161,7 @@ defmodule SmeePublishUdestTest do
                  id: "https://test.ukfederation.org.uk/entity",
                  name: "UK federation Test SP",
                  description: "This test service provider allows you to see the attributes your identity\n            provider is releasing.\n          ",
-                 login_url: [
+                 login_urls: [
                    "https://test.ukfederation.org.uk/Shibboleth.sso/Login",
                    "https://test.ukfederation.org.uk/Shibboleth.sso/Login1",
                    "https://test.ukfederation.org.uk/Shibboleth.sso/DS",

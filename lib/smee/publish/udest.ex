@@ -34,7 +34,7 @@ defmodule Smee.Publish.Udest do
       name: Extract.name(dest_data, lang),
       description: Extract.description(dest_data, lang),
       logo_url: Extract.sensible_logo(dest_data, lang),
-      login_url: Extract.login_urls(dest_data),
+      login_urls: Extract.login_urls(dest_data),
       return_urls: Extract.disco_urls(dest_data),
       privacy_url: Extract.privacy(dest_data, lang),
       info_url: Extract.info(dest_data, lang),
