@@ -26,3 +26,4 @@ smee-*.tar
 /markdown_aggregate.md
 /out*/
 /published
+/example_scripts/output
