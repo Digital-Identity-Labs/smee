@@ -114,9 +114,9 @@ defmodule Smee.Publish.Common do
         filename = aggregate_filename(options)
         file = File.stream!(filename)
 
-        entities
-        |> aggregate_stream(options)
-        |> Enum.into(file)
+        %File.Stream{} = entities
+                         |> aggregate_stream(options)
+                         |> Enum.into(file)
         Path.absname(filename)
       end
 
@@ -190,7 +190,7 @@ defmodule Smee.Publish.Common do
 
       def compact_map(map) do
         map
-        |> Enum.reject(fn {_k, v} -> (v == false) or is_nil(v) or (is_list(v) and length(v) == 0)  end)
+        |> Enum.reject(fn {_k, v} -> (v == false) or is_nil(v) or (is_list(v) and Enum.empty?(v))  end)
         |> Map.new()
       end
 
