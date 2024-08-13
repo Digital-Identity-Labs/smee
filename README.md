@@ -1,5 +1,5 @@
-<img src="logo.png" width="250" alt="Smee Logo">
 # Smee
+<img src="logo.png" width="256" alt="Smee Logo" align: "right">
 
 `Smee` is a pragmatic library for handling SAML metadata with Elixir, Erlang or any other BEAM language.
 
