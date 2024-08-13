@@ -1,5 +1,6 @@
-Mix.install([{:smee, path: "."}])
+Mix.install([{:smee, ">= 0.5"}])
 
+## Create a DiscoFeed file from a full federation aggregate
 Smee.Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
 |> Smee.fetch!()
 |> Smee.Metadata.stream_entities()
