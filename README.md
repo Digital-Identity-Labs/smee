@@ -4,7 +4,7 @@
 `Smee` is a pragmatic library for handling SAML metadata with Elixir, Erlang or any other BEAM language.
 
 Smee started life as an sprawling mess of code used over five years in an internal application to download and process
-SAML metadata. It's now been extracted, restructured and made a **little** less messy, with the aim of reusing it in other 
+SAML metadata. It's now been extracted, restructured and cleaned up, with the aim of reusing it in other 
 projects. Smee can be used within applications or in simpler scripts for processing metadata.
 
 [![Hex pm](http://img.shields.io/hexpm/v/smee.svg?style=flat)](https://hex.pm/packages/smee)
