@@ -86,7 +86,7 @@ alias Smee.{Source, Fetch, Filter, Metadata, Publish}
 |> Filter.days(365)
 |> Filter.sp()
 |> Filter.assurance("https://refeds.org/sirtfi")
-|> Publish.aggregate()
+|> Publish.write_aggregate()
 
 ```
 ### Munge XML with XSLT
