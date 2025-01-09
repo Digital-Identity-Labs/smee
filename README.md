@@ -117,7 +117,7 @@ by adding `Smee` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:Smee, "~> 0.4.1"}
+    {:smee, "~> 0.5.1"}
   ]
 end
 ```
@@ -192,6 +192,8 @@ Various Github repositories have been plundered in a search for XSLT stylesheets
 * [SWAMID Federation](https://swamid.se/swamid-metadata.git/tree/xslt)
 * [UK Access Management Federation's metadata processing pipeline](https://github.com/ukf/ukf-meta)
 
+https://github.com/ukf/ukf-meta/
+
 The use of the Apache2 license in the above projects led to the Apache2 license for Smee.
 
 Other sources and inspirations:
@@ -217,7 +219,7 @@ If you are comfortable working with Python but Smee's Elixir code is unfamiliar 
 
 ## Copyright and License
 
-Copyright (c) 2023, 2024 Digital Identity Ltd, UK
+Copyright (c) 2023, 2025 Digital Identity Ltd, UK
 
 Smee is Apache 2.0 licensed.
 
