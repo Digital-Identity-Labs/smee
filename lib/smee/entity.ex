@@ -514,7 +514,7 @@ defmodule Smee.Entity do
       struct(entity, %{xdoc: xdoc})
     rescue
       MatchError -> exit("Open file limit may be too low! Please use ulimit to increase maximum number of files and restart")
-      e ->
+      _ ->
         reraise "cannot process data for #{entity.uri}! Data is:\n #{xml_data}",
                 __STACKTRACE__
     end
