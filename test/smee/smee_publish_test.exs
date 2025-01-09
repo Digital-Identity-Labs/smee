@@ -32,12 +32,12 @@ defmodule SmeePublishTest do
 
       md_stream = Metadata.stream_entities(@valid_metadata)
 
-      assert 41311 = Publish.eslength(md_stream)
+      assert 41366 = Publish.eslength(md_stream)
       assert 330 = Publish.eslength(md_stream, format: :csv)
       assert 310 = Publish.eslength(md_stream, format: :disco)
       assert 73 = Publish.eslength(md_stream, format: :index)
       assert 464 = Publish.eslength(md_stream, format: :markdown)
-      assert 41311 = Publish.eslength(md_stream, format: :saml)
+      assert 41366 = Publish.eslength(md_stream, format: :saml)
       assert 434 = Publish.eslength(md_stream, format: :thiss)
       assert 1747 = Publish.eslength(md_stream, format: :udest)
       assert 147 = Publish.eslength(md_stream, format: :udisco)
