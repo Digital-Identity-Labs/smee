@@ -513,8 +513,9 @@ defmodule Smee.Entity do
       xdoc = SweetXml.parse(xml_data, namespace_conformant: true, dtd: :none)
       struct(entity, %{xdoc: xdoc})
     rescue
+      MatchError -> exit("Open file limit may be too low! Please use ulimit to increase maximum number of files and restart")
       e ->
-        reraise "cannot process data for #{entity.uri}! Error is: #{e.message}\n Data is:\n #{xml_data}",
+        reraise "cannot process data for #{entity.uri}! Data is:\n #{xml_data}",
                 __STACKTRACE__
     end
 
