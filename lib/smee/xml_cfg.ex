@@ -35,6 +35,7 @@ defmodule Smee.XmlCfg do
     pyff: "http://pyff.io/NS",
     q1: "urn:oasis:names:tc:SAML:2.0:metadata",
     refeds: "http://refeds.org/metadata",
+    renater: "https://federation.renater.fr/metadata",
     remd: "http://refeds.org/metadata",
     req: "urn:oasis:names:tc:SAML:profiles:SSO:request-init",
     "req-attr": "urn:oasis:names:tc:SAML:protocol:ext:req-attr",
