@@ -28,7 +28,7 @@ defmodule Smee.Security.Xmlsec1 do
     [
       "--pubkey-cert-pem",
       cert_file,
-      "-"
+      "/dev/stdin"
     ]
   end
 
