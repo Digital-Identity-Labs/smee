@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.1] - 2025-01-11
+
+A bugfix release
+
+### Fixes
+- New `renater` namespace has been included - this appeared early in January 2025 and prevented parsing of 3 federations
+  (there are possibly better long-term solutions than reactively adding new namespaces to Smee, hopefully this sort of
+  problem can be avoided in the future with some smarter code in Smee)
+- The Extract module could not list entity attribute types and values if more than one value was present, now it can. 
+- The Security module began failing with the latest 1.3.6 `xmlsec1` *but only with the Mac Homebrew packaged version*. Using a hyphen
+  pseudo-filename while piping XML stopped working, at least for me, when using Homebrew's package. This has been worked-around
+  in Smee and should continue to work with all versions of `xmlsec1` ([GH issue](https://github.com/lsh123/xmlsec/issues/863))
+- Exceptions that occur while parsing metadata should not now cause their own exceptions
+- Problems caused by open file limits should now cause a warning about open file limits to be shown
+
 ## [0.5.0] - 2024-08-13
 
 New, much bigger Publish module with new output formats and features.
@@ -130,6 +145,8 @@ XML storage and publishing bugfixes and small improvements, plus some breaking A
 ## [0.1.0] - 2023-04-11
 Initial release
 
+[0.5.1]: https://github.com/Digital-Identity-Labs/smee/compare/0.5.0...0.5.1
+[0.5.0]: https://github.com/Digital-Identity-Labs/smee/compare/0.4.1...0.5.0
 [0.4.1]: https://github.com/Digital-Identity-Labs/smee/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/Digital-Identity-Labs/smee/compare/0.3.0...0.4.0
 [0.3.0]: https://github.com/Digital-Identity-Labs/smee/compare/0.2.0...0.3.0
