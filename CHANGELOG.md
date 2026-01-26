@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Now developed with Elixir 1.19 and Erlang 28 by default, older versions *should* still work
 * No longer grumble about metadata with a 'text/xml' MIME type to avoid STDERR noise and pedantry
 * Fixed compiler warnings from Elixir 1.19
+* There should be no module-attribute compiled regexes now, to make Erlang 28+ happy and avoid the deprecation in Elixir.
 
 * Fixes and improvements to tests
 * Better, type-safe handling of exception messages

@@ -15,20 +15,21 @@ defmodule Smee.XmlMunger do
   # alias Smee.XmlMunger
 
   @xml_declaration ~s|<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n|
-  @xml_decl_pattern ~r|^<\?xml.*\?>\n*|ifUm
-  @top_tag_pattern ~r|<([a-z-0-9]+:)?EntityDescriptor.*?>|ms
+
+  def xml_decl_pattern, do: ~r|^<\?xml.*\?>\n*|ifUm
+  def top_tag_pattern, do: ~r|<([a-z-0-9]+:)?EntityDescriptor.*?>|ms
   # @single_pattern @top_tag_pattern
   # @aggregate_pattern ~r|^<(md:)?EntitiesDescriptor.*?>|ms
-  @bot_tag_pattern ~r|</([a-z-0-9]+:)?EntityDescriptor>\z|ms
-  @uri_extractor_pattern ~r|<([a-z-0-9]+:)?EntityDescriptor.*entityID="(.+)".*>|mUs
-  @signature_pattern ~r|<([a-z-0-9]+:)?Signature.*.+</([a-z-0-9]+:)?Signature>|msU
-  @split_pattern ~r|(<([a-z-0-9]+:)?EntityDescriptor)|
-  @entities_descriptor_pattern ~r|<([a-z-0-9]+:)?EntitiesDescriptor.*?>|s
-  @comments_pattern ~r|<!--[\s\S]*?-->|
-  @top_eds_pattern ~r|<([a-z-0-9]+:)?EntitiesDescriptor.*?>|s
-  @bot_eds_pattern ~r|</([a-z-0-9]+:)?EntitiesDescriptor.*?>|s
-  @all_eds_pattern ~r|</*([a-z-0-9]+:)?EntitiesDescriptor.*?>|s
-  @blanks_pattern ~r|(\n\n)+|
+  def bot_tag_pattern, do: ~r|</([a-z-0-9]+:)?EntityDescriptor>\z|ms
+  def uri_extractor_pattern, do: ~r|<([a-z-0-9]+:)?EntityDescriptor.*entityID="(.+)".*>|mUs
+  def signature_pattern, do: ~r|<([a-z-0-9]+:)?Signature.*.+</([a-z-0-9]+:)?Signature>|msU
+  def split_pattern, do: ~r|(<([a-z-0-9]+:)?EntityDescriptor)|
+  def entities_descriptor_pattern, do: ~r|<([a-z-0-9]+:)?EntitiesDescriptor.*?>|s
+  def comments_pattern, do: ~r|<!--[\s\S]*?-->|
+  def top_eds_pattern, do: ~r|<([a-z-0-9]+:)?EntitiesDescriptor.*?>|s
+  def bot_eds_pattern, do: ~r|</([a-z-0-9]+:)?EntitiesDescriptor.*?>|s
+  def all_eds_pattern, do: ~r|</*([a-z-0-9]+:)?EntitiesDescriptor.*?>|s
+  def blanks_pattern, do: ~r|(\n\n)+|
 
   @spec xml_declaration() :: binary()
   def xml_declaration() do
@@ -72,7 +73,7 @@ defmodule Smee.XmlMunger do
 
   @spec remove_xml_declaration(xml :: binary()) :: binary()
   def remove_xml_declaration(xml) do
-    Regex.replace(@xml_decl_pattern, prepare_xml(xml), "", global: false)
+    Regex.replace(xml_decl_pattern(), prepare_xml(xml), "", global: false)
     |> prepare_xml()
   end
 
@@ -115,7 +116,7 @@ defmodule Smee.XmlMunger do
     xml
     |> prepare_xml()
     |> add_xml_declaration()
-    |> String.replace(@top_tag_pattern, replacement_top)
+    |> String.replace(top_tag_pattern(), replacement_top)
   end
 
   @spec shrink_entity_top(xml :: binary()) :: binary()
@@ -139,7 +140,7 @@ defmodule Smee.XmlMunger do
       |> Enum.join(" ")
 
     xml
-    |> String.replace(@top_tag_pattern, replacement_top)
+    |> String.replace(top_tag_pattern(), replacement_top)
   end
 
   @spec consistent_bottom(xml :: binary()) :: binary()
@@ -147,12 +148,12 @@ defmodule Smee.XmlMunger do
     replacement_bottom = ~s|</EntityDescriptor>|
 
     xml
-    |> String.replace(@bot_tag_pattern, replacement_bottom)
+    |> String.replace(bot_tag_pattern(), replacement_bottom)
   end
 
   @spec extract_uri!(xml :: binary()) :: binary()
   def extract_uri!(xml) do
-    case Regex.run(@uri_extractor_pattern, xml, capture: :all_but_first) do
+    case Regex.run(uri_extractor_pattern(), xml, capture: :all_but_first) do
       nil -> raise "Cannot extract URI from XML!"
       [_, uri] -> uri
     end
@@ -161,7 +162,7 @@ defmodule Smee.XmlMunger do
   @spec remove_signature(xml :: binary()) :: binary()
   def remove_signature(xml) do
     xml
-    |> String.replace(@signature_pattern, "\n")
+    |> String.replace(signature_pattern(), "\n")
   end
 
   @spec process_entity_xml(xml :: binary(), options :: keyword()) :: binary()
@@ -243,7 +244,7 @@ defmodule Smee.XmlMunger do
   @spec snip_aggregate(xml :: binary()) :: binary()
   def snip_aggregate(xml) do
     # TODO this is temp workaround - can be improved
-    case Regex.run(@entities_descriptor_pattern, xml) do
+    case Regex.run(entities_descriptor_pattern(), xml) do
       [capture] ->
         capture
 
@@ -274,16 +275,16 @@ defmodule Smee.XmlMunger do
 
   @spec remove_comments(xml :: binary()) :: binary()
   def remove_comments(xml) do
-    Regex.replace(@comments_pattern, prepare_xml(xml), "", global: true)
+    Regex.replace(comments_pattern(), prepare_xml(xml), "", global: true)
     |> prepare_xml()
   end
 
   @spec remove_groups(xml :: binary()) :: binary()
   def remove_groups(xml) do
     if contains_entities_groups?(xml) do
-      [top] = Regex.run(@top_eds_pattern, xml, global: false)
-      [bottom] = Regex.run(@bot_eds_pattern, xml, global: false)
-      middle = Regex.replace(@all_eds_pattern, xml, "", global: true)
+      [top] = Regex.run(top_eds_pattern(), xml, global: false)
+      [bottom] = Regex.run(bot_eds_pattern(), xml, global: false)
+      middle = Regex.replace(all_eds_pattern(), xml, "", global: true)
       top <> middle <> bottom
     else
       xml
@@ -292,12 +293,12 @@ defmodule Smee.XmlMunger do
 
   @spec remove_blank_lines(xml :: binary()) :: binary()
   def remove_blank_lines(xml) do
-    Regex.replace(@blanks_pattern, xml, "", global: true)
+    Regex.replace(blanks_pattern(), xml, "", global: true)
   end
 
   @spec remove_blank_lines(xml :: binary()) :: boolean()
   def contains_entities_groups?(xml) do
-    Regex.scan(@all_eds_pattern, xml)
+    Regex.scan(all_eds_pattern(), xml)
     |> Enum.count() > 2
   end
 
@@ -384,7 +385,7 @@ defmodule Smee.XmlMunger do
   @spec strip_leading(fx :: binary(), n :: integer) :: binary()
   defp strip_leading(fx, 0) do
     fx
-    |> String.split(@split_pattern, include_captures: true)
+    |> String.split(split_pattern(), include_captures: true)
     |> Enum.drop(1)
     |> Enum.join()
   end
