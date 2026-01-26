@@ -97,8 +97,10 @@ defmodule SmeeTest do
 
   end
 
-  @tag timeout: 180_000
+
   describe "entity_ids/1" do
+
+    @describetag timeout: 180_000
 
     test "returns a list of all entity IDs at a Source" do
       assert 8000 < Smee.source(

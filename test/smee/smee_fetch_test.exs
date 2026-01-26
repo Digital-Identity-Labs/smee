@@ -18,8 +18,10 @@ defmodule SmeeFetchTest do
 
   ## TODO: There are missing tests here for how the fetch module configures Metadata structs
 
-  @tag timeout: 180_000
+
   describe "fetch!/2" do
+
+    @describetag timeout: 180_000
 
     @tag timeout: 180_000
     test "it returns a metadata struct if given a source pointing to a remote metadata URL" do
@@ -49,8 +51,10 @@ defmodule SmeeFetchTest do
 
   end
 
-  @tag timeout: 180_000
+
   describe "fetch/2" do
+
+    @describetag timeout: 180_000
 
     @tag timeout: 180_000
     test "it returns a metadata struct if given a source pointing to a remote metadata URL" do
@@ -100,8 +104,10 @@ defmodule SmeeFetchTest do
 
   end
 
-  @tag timeout: 180_000
+
   describe "remote!/2" do
+
+    @describetag timeout: 180_000
 
     test "raises an exception if passed a local source" do
       assert_raise RuntimeError,
