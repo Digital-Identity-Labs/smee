@@ -67,7 +67,6 @@ defmodule Smee.Publish do
 
   """
 
-  alias Smee.Entity
   alias Smee.Publish.FrontendUtils
 
   @doc """

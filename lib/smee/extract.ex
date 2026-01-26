@@ -98,7 +98,7 @@ defmodule Smee.Extract do
     txt
     |> String.splitter("\n")
     |> Stream.map(fn line -> String.split(line, "§") end)
-    |> Stream.map(fn parts -> List.zip([[:entity_id, :idp_displayname, :idp_description, :idp_information_url, :idp_privacy_url, :sp_displayname, :sp_description, :sp_information_url, :sp_privacy_url, :org_name, :org_displayname], parts]) end)
+    |> Stream.map(fn parts -> Enum.zip([[:entity_id, :idp_displayname, :idp_description, :idp_information_url, :idp_privacy_url, :sp_displayname, :sp_description, :sp_information_url, :sp_privacy_url, :org_name, :org_displayname], parts]) end)
     |> Stream.map(fn tuples -> Map.new(tuples) end)
     |> Enum.to_list()
   end
