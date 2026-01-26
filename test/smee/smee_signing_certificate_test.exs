@@ -19,21 +19,19 @@ defmodule SmeeSigningCertificateTest do
                             cert_url: "file:#{@local_cert}"
                           )
 
-#  @source_with_local_cert_and_fp Source.new(
-#                                   "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
-#                                   cert_url: "file:#{@local_cert}",
-#                                   cert_fingerprint: @local_cert_fp
-#                                 )
+  #  @source_with_local_cert_and_fp Source.new(
+  #                                   "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+  #                                   cert_url: "file:#{@local_cert}",
+  #                                   cert_fingerprint: @local_cert_fp
+  #                                 )
 
-#  @source_with_local_cert_and_bad_fp Source.new(
-#                                   "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
-#                                   cert_url: "file:#{@local_cert}",
-#                                   cert_fingerprint: @local_cert_fp
-#                                 )
+  #  @source_with_local_cert_and_bad_fp Source.new(
+  #                                   "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+  #                                   cert_url: "file:#{@local_cert}",
+  #                                   cert_fingerprint: @local_cert_fp
+  #                                 )
 
-  @source_with_no_cert Source.new(
-                         "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml"
-                       )
+  @source_with_no_cert Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
 
   @source_missing_remote_cert Source.new(
                                 "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
@@ -47,7 +45,6 @@ defmodule SmeeSigningCertificateTest do
                              )
 
   describe "prepare_file!/2" do
-
     test "When passed a Source struct using a cert file URL, return the local path to it" do
       path = SigningCertificate.prepare_file!(@source_with_local_cert)
       assert String.ends_with?(path, ".pem")
@@ -99,11 +96,9 @@ defmodule SmeeSigningCertificateTest do
                      SigningCertificate.prepare_file!(@source_missing_remote_cert)
                    end
     end
-
   end
 
   describe "prepare_file/2" do
-
     test "When passed a Source struct using a cert file URL, return the local path to it in an :ok tuple" do
       response = SigningCertificate.prepare_file(@source_with_local_cert)
       assert {:ok, _path} = response
@@ -174,17 +169,13 @@ defmodule SmeeSigningCertificateTest do
     end
 
     test "verify the certificate fingerprint and error if a mismatched fingerprint is included in struct" do
-
     end
 
     test "Use the optional override fingerprint instead of certificate fingerprint in struct" do
-
     end
-
   end
 
   describe "prepare_file_url/2" do
-
     test "When passed a file URL, return the local path to it" do
       response = SigningCertificate.prepare_file_url("file:#{@local_cert}")
       assert {:ok, _path} = response
@@ -215,7 +206,5 @@ defmodule SmeeSigningCertificateTest do
       response = SigningCertificate.prepare_file_url("file:#{@local_cert}", @not_local_cert_fp)
       assert {:error, _msg} = response
     end
-
   end
-
 end

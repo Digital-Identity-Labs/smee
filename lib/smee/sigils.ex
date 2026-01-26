@@ -31,5 +31,5 @@ defmodule Smee.Sigils do
   end
 
   # Defoverridable makes the given functions in the current module overridable
-  defoverridable [sigil_x: 2]
+  defoverridable sigil_x: 2
 end

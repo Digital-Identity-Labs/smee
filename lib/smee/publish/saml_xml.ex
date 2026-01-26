@@ -1,5 +1,4 @@
 defmodule Smee.Publish.SamlXml do
-
   @moduledoc false
 
   use Smee.Publish.Common
@@ -18,14 +17,12 @@ defmodule Smee.Publish.SamlXml do
   end
 
   def extract(entity, _options) do
-
     %{
       uri: entity.uri,
       uri_hash: entity.uri_hash,
       xml: Entity.xml(entity),
       id: entity.id
     }
-
   end
 
   def encode(data, options) do
@@ -39,7 +36,7 @@ defmodule Smee.Publish.SamlXml do
   end
 
   def headers(options) do
-    [XmlMunger.xml_declaration, XmlMunger.generate_aggregate_header(options)]
+    [XmlMunger.xml_declaration(), XmlMunger.generate_aggregate_header(options)]
   end
 
   def footers(options) do
@@ -49,5 +46,4 @@ defmodule Smee.Publish.SamlXml do
   def separator(_options) do
     "\n"
   end
-
 end

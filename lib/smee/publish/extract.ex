@@ -1,5 +1,4 @@
 defmodule Smee.Publish.Extract do
-
   @moduledoc false
 
   alias Smee.Entity
@@ -19,7 +18,6 @@ defmodule Smee.Publish.Extract do
   def org_url(dest_data, lang) do
     get_one(dest_data.org_urls, lang)
   end
-
 
   def logo(%{url: nowt}, _lang) when is_nil(nowt) or nowt == [] do
     nil
@@ -55,11 +53,13 @@ defmodule Smee.Publish.Extract do
   def contact(data, "sirtfi") do
     data.contacts
     |> Enum.find(
-         %{},
-         fn
-           e -> Map.get(e, :type) == "other" and Map.get(e, :rtype) == "http://refeds.org/metadata/contactType/security"
-         end
-       )
+      %{},
+      fn
+        e ->
+          Map.get(e, :type) == "other" and
+            Map.get(e, :rtype) == "http://refeds.org/metadata/contactType/security"
+      end
+    )
     |> Map.get(:email)
     |> tidy_mail()
   end
@@ -116,11 +116,9 @@ defmodule Smee.Publish.Extract do
 
   def logos(disco_data, _lang) do
     disco_data.logos
-    |> Enum.map(
-         fn %{url: url, height: height, width: width, lang: lang} ->
-           %{lang: lang || "en", value: url, height: height, width: width}
-         end
-       )
+    |> Enum.map(fn %{url: url, height: height, width: width, lang: lang} ->
+      %{lang: lang || "en", value: url, height: height, width: width}
+    end)
   end
 
   def thiss_keywords(disco_data, _lang) do
@@ -176,8 +174,9 @@ defmodule Smee.Publish.Extract do
   end
 
   def hide(disco_data, _lang) do
-    "http://refeds.org/category/hide-from-discovery" in (
-      disco_data.entity_attributes["http://macedir.org/entity-category"] || [])
+    "http://refeds.org/category/hide-from-discovery" in (disco_data.entity_attributes[
+                                                           "http://macedir.org/entity-category"
+                                                         ] || [])
   end
 
   def thiss_name_tag(%{scopes: [], domain_hints: []} = disco_data, lang) do
@@ -188,6 +187,7 @@ defmodule Smee.Publish.Extract do
 
   def thiss_name_tag(disco_data, lang) do
     domains = domains(disco_data, lang)
+
     if length(domains) > 0 do
       domains
       |> List.first()
@@ -202,10 +202,10 @@ defmodule Smee.Publish.Extract do
     end
   end
 
-
   def thiss_hide(disco_data, _lang) do
-    "http://refeds.org/category/hide-from-discovery" in (
-      disco_data.entity_attributes["http://macedir.org/entity-category"] || [])
+    "http://refeds.org/category/hide-from-discovery" in (disco_data.entity_attributes[
+                                                           "http://macedir.org/entity-category"
+                                                         ] || [])
   end
 
   def thiss_geos(%{geo_hints: []}, _lang) do
@@ -213,10 +213,11 @@ defmodule Smee.Publish.Extract do
   end
 
   def thiss_geos(disco_data, _lang) do
-    [lat, long | _] = disco_data.geo_hints
-                      |> List.first()
-                      |> String.replace_prefix("geo:", "")
-                      |> String.split(",")
+    [lat, long | _] =
+      disco_data.geo_hints
+      |> List.first()
+      |> String.replace_prefix("geo:", "")
+      |> String.split(",")
 
     %{lat: lat, long: long}
   end
@@ -226,10 +227,11 @@ defmodule Smee.Publish.Extract do
   end
 
   def thiss_logo(disco_data, lang) do
-    logo = disco_data.logos
-           |> Enum.filter(fn l -> l.lang in [lang, "en", "", nil] end)
-           |> Enum.sort_by(& &1.width)
-           |> List.last()
+    logo =
+      disco_data.logos
+      |> Enum.filter(fn l -> l.lang in [lang, "en", "", nil] end)
+      |> Enum.sort_by(& &1.width)
+      |> List.last()
 
     if logo do
       %{
@@ -240,16 +242,14 @@ defmodule Smee.Publish.Extract do
     else
       nil
     end
-
   end
 
   ####
 
   def get_one(data, lang \\ "en")
+
   def get_one(data, lang) when is_map(data) do
-    data[lang] || data["en"] || List.first(
-      Map.values(data)
-    )
+    data[lang] || data["en"] || List.first(Map.values(data))
   end
 
   def get_one(data, _lang) when is_list(data) do
@@ -257,5 +257,4 @@ defmodule Smee.Publish.Extract do
   end
 
   #####
-
 end

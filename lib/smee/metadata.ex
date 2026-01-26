@@ -1,5 +1,4 @@
 defmodule Smee.Metadata do
-
   @moduledoc """
   The Metadata module wraps up Metadata XML into a struct and contains functions that may be helpful when working with
     them. The metadata is either an aggregate (as used by federations to contain many entity records) or a single entity.
@@ -27,35 +26,36 @@ defmodule Smee.Metadata do
   alias Smee.Metadata
   alias Smee.Lint
 
-  #@metadata_types [:aggregate, :single]
+  # @metadata_types [:aggregate, :single]
 
   @type t :: %__MODULE__{
-               downloaded_at: nil | DateTime.t(),
-               modified_at: nil | DateTime.t(),
-               url: nil | binary(),
-               id: nil | binary(),
-               type: atom(),
-               size: integer(),
-               data: nil | binary(),
-               url_hash: nil | binary(),
-               data_hash: nil | binary(),
-               etag: nil | binary(),
-               label: nil | binary(),
-               entity_count: integer(),
-               uri: nil | binary(),
-               uri_hash: nil | binary(),
-               file_uid: nil | binary(),
-               valid_until: nil | DateTime.t(),
-               cache_duration: nil | binary(),
-               cert_url: nil | binary(),
-               cert_fingerprint: nil | binary(),
-               verified: boolean(),
-               compressed: boolean(),
-               changes: integer(),
-               priority: integer(),
-               trustiness: float(),
-               tags: list(binary())
-             }
+          downloaded_at: nil | DateTime.t(),
+          modified_at: nil | DateTime.t(),
+          url: nil | binary(),
+          id: nil | binary(),
+          type: atom(),
+          size: integer(),
+          data: nil | binary(),
+          url_hash: nil | binary(),
+          data_hash: nil | binary(),
+          etag: nil | binary(),
+          label: nil | binary(),
+          entity_count: integer(),
+          uri: nil | binary(),
+          uri_hash: nil | binary(),
+          file_uid: nil | binary(),
+          valid_until: nil | DateTime.t(),
+          cache_duration: nil | binary(),
+          cert_url: nil | binary(),
+          cert_fingerprint: nil | binary(),
+          verified: boolean(),
+          compressed: boolean(),
+          changes: integer(),
+          priority: integer(),
+          trustiness: float(),
+          tags: list(binary()),
+          fedid: nil | binary()
+        }
 
   @enforce_keys [:data]
   @derive Jason.Encoder
@@ -85,7 +85,8 @@ defmodule Smee.Metadata do
     changes: 0,
     priority: 5,
     trustiness: 0.5,
-    tags: []
+    tags: [],
+    fedid: nil
   ]
 
   @doc """
@@ -110,7 +111,6 @@ defmodule Smee.Metadata do
   """
   @spec new(data :: binary(), options :: keyword()) :: Metadata.t()
   def new(data, options \\ []) when is_binary(data) do
-
     data = XmlMunger.prepare_xml(data)
     url = Utils.normalize_url(Keyword.get(options, :url, nil))
     dlt = Keyword.get(options, :downloaded_at, DateTime.utc_now())
@@ -132,12 +132,12 @@ defmodule Smee.Metadata do
       verified: false,
       priority: Keyword.get(options, :priority, 5),
       trustiness: Keyword.get(options, :trustiness, 0.5),
-      tags: Utils.tidy_tags(Keyword.get(options, :tags, []))
+      tags: Utils.tidy_tags(Keyword.get(options, :tags, [])),
+      fedid: Keyword.get(options, :fedid, nil)
     }
     |> fix_type()
     |> extract_info()
     |> count_entities()
-
   end
 
   @doc """
@@ -160,8 +160,10 @@ defmodule Smee.Metadata do
   """
   @spec derive(data :: Enumerable.t() | Entity.t(), options :: keyword()) :: Metadata.t()
   def derive(enum, options \\ []) do
-    data = Smee.Publish.aggregate(enum, options)
-           |> XmlMunger.process_metadata_xml()
+    data =
+      Smee.Publish.aggregate(enum, options)
+      |> XmlMunger.process_metadata_xml()
+
     new(data, options)
   end
 
@@ -184,18 +186,15 @@ defmodule Smee.Metadata do
   """
   @spec update(metadata :: Metadata.t(), xml :: binary()) :: Metadata.t()
   def update(metadata, xml) do
-    xml_has_changed = (xml != Metadata.xml(metadata))
+    xml_has_changed = xml != Metadata.xml(metadata)
     changes = if xml_has_changed, do: metadata.changes + 1, else: metadata.changes
 
     metadata
     |> Metadata.decompress()
-    |> Map.merge(
-         %{data: xml, changes: changes, data_hash: Utils.sha1(xml), size: byte_size(xml)}
-       )
+    |> Map.merge(%{data: xml, changes: changes, data_hash: Utils.sha1(xml), size: byte_size(xml)})
     |> fix_type()
     |> extract_info()
     |> count_entities()
-
   end
 
   @doc """
@@ -231,7 +230,6 @@ defmodule Smee.Metadata do
     metadata
     |> Map.merge(%{data: :zlib.gunzip(metadata.data), compressed: false})
   end
-
 
   @doc """
   Returns a parsed Erlang `xmerl` structure representing the metadata XML, for use with `xmerl`, `SweetXML` and other
@@ -324,7 +322,7 @@ defmodule Smee.Metadata do
   @spec entities(metadata :: Metadata.t()) :: list(Entity.t())
   def entities(metadata) do
     stream_entities(metadata)
-    |> Enum.to_list
+    |> Enum.to_list()
   end
 
   @doc """
@@ -333,8 +331,9 @@ defmodule Smee.Metadata do
   @spec stream_entities(metadata :: Metadata.t(), options :: keyword()) :: Enumerable.t()
   def stream_entities(metadata, options \\ []) do
     options = Keyword.take(options, [:slim, :compress])
+
     split_to_stream(metadata)
-    |> Stream.map(fn xml -> Smee.Entity.derive(xml, metadata, options)  end)
+    |> Stream.map(fn xml -> Smee.Entity.derive(xml, metadata, options) end)
   end
 
   @doc """
@@ -343,11 +342,14 @@ defmodule Smee.Metadata do
   @spec random_entity(metadata :: Metadata.t()) :: Entity.t()
   def random_entity(%Metadata{entity_count: max} = metadata) do
     if max > 10 do
-      uri = Extract.list_ids(metadata)
-            |> Enum.random()
+      uri =
+        Extract.list_ids(metadata)
+        |> Enum.random()
+
       Extract.entity!(metadata, uri)
     else
       offset = :rand.uniform(max) - 1
+
       split_to_stream(metadata)
       |> Stream.drop(offset)
       |> Stream.take(1)
@@ -405,9 +407,11 @@ defmodule Smee.Metadata do
   end
 
   def filename(metadata, :uri) do
-    name = metadata.uri
-           |> String.replace(["://", ":", ".", "/"], "_")
-           |> String.trim_trailing("_")
+    name =
+      metadata.uri
+      |> String.replace(["://", ":", ".", "/"], "_")
+      |> String.trim_trailing("_")
+
     "#{name}.xml"
   end
 
@@ -416,10 +420,12 @@ defmodule Smee.Metadata do
   end
 
   def filename(metadata, :url) do
-    name = metadata.url
-           |> String.replace(["://", ":", ".", "/"], "_")
-           |> String.trim_trailing("_")
-           |> String.trim_trailing("_xml")
+    name =
+      metadata.url
+      |> String.replace(["://", ":", ".", "/"], "_")
+      |> String.trim_trailing("_")
+      |> String.trim_trailing("_xml")
+
     "#{name}.xml"
   end
 
@@ -434,7 +440,7 @@ defmodule Smee.Metadata do
   end
 
   def expired?(metadata) do
-    DateTime.compare(metadata.valid_until, DateTime.utc_now) == :lt
+    DateTime.compare(metadata.valid_until, DateTime.utc_now()) == :lt
   end
 
   @doc """
@@ -466,6 +472,7 @@ defmodule Smee.Metadata do
       {:ok, _xml} -> metadata
       {:error, message} -> raise "Invalid metadata XML! #{message}"
     end
+
     metadata
   end
 
@@ -499,42 +506,48 @@ defmodule Smee.Metadata do
 
   @spec extract_info(metadata :: Metadata.t()) :: Metadata.t()
   defp extract_info(%{type: :aggregate} = metadata) do
-
     import SweetXml
 
     snippet = XmlMunger.snip_aggregate(metadata.data)
 
-    info = Regex.replace(~r/>$/, snippet, "\/>")
-           |> xmap(
-                uri: ~x"string(/*/@Name)"s,
-                file_uid: ~x"string(/*/@ID)"s,
-                valid_until: ~x"string(/*/@validUntil)"s
-              )
-           |> Utils.nillify_map_empties()
+    info =
+      Regex.replace(~r/>$/, snippet, "\/>")
+      |> xmap(
+        uri: ~x"string(/*/@Name)"s,
+        file_uid: ~x"string(/*/@ID)"s,
+        valid_until: ~x"string(/*/@validUntil)"s
+      )
+      |> Utils.nillify_map_empties()
 
-    info = Map.merge(info, %{uri_hash: Smee.Utils.sha1(info.uri), valid_until: tweak_valid_until(info.valid_until)})
+    info =
+      Map.merge(info, %{
+        uri_hash: Smee.Utils.sha1(info.uri),
+        valid_until: tweak_valid_until(info.valid_until)
+      })
 
     Map.merge(metadata, info)
-
   end
 
   defp extract_info(%{type: :single} = metadata) do
-
     import SweetXml
 
-    info = metadata.data
-           |> xmap(
-                uri: ~x"string(/*/@entityID)"s,
-                file_uid: ~x"string(/*/@ID)"s,
-                cache_duration: ~x"string(/*/@cacheDuration)"s,
-                valid_until: ~x"string(/*/@validUntil)"s
-              )
-           |> Utils.nillify_map_empties()
+    info =
+      metadata.data
+      |> xmap(
+        uri: ~x"string(/*/@entityID)"s,
+        file_uid: ~x"string(/*/@ID)"s,
+        cache_duration: ~x"string(/*/@cacheDuration)"s,
+        valid_until: ~x"string(/*/@validUntil)"s
+      )
+      |> Utils.nillify_map_empties()
 
-    info = Map.merge(info, %{uri_hash: Smee.Utils.sha1(info.uri), valid_until: tweak_valid_until(info.valid_until)})
+    info =
+      Map.merge(info, %{
+        uri_hash: Smee.Utils.sha1(info.uri),
+        valid_until: tweak_valid_until(info.valid_until)
+      })
 
     Map.merge(metadata, info)
-
   end
 
   defp extract_info(metadata) do
@@ -553,6 +566,7 @@ defmodule Smee.Metadata do
   @spec extract_id(xml_fragment :: binary()) :: binary()
   defp extract_id(xml_fragment) do
     import SweetXml
+
     xml_fragment
     |> xpath(~x"string(/*/@entityID)"s)
   end
@@ -567,12 +581,16 @@ defmodule Smee.Metadata do
   end
 
   defp tweak_valid_until(date) when is_binary(date) and byte_size(date) > 1 do
-    case  DateTime.from_iso8601(date) do
+    case DateTime.from_iso8601(date) do
       {:ok, dt, 0} ->
         dt
+
       {:error, :missing_offset} ->
         IO.warn("DateTime formatted without a Z offset found in metadata, retrying as UTC", [])
-        (if String.ends_with?(date, "Z"), do: raise("Bad date format!"), else: tweak_valid_until(date <> "Z"))
+
+        if String.ends_with?(date, "Z"),
+          do: raise("Bad date format!"),
+          else: tweak_valid_until(date <> "Z")
     end
   end
 
@@ -591,11 +609,11 @@ defmodule Smee.Metadata do
   defp list_ids_int(metadata) do
     stream_entities(metadata)
     |> Stream.map(fn e -> e.uri end)
-    |> Enum.to_list
+    |> Enum.to_list()
   end
 
   @spec list_ids_ext(metadata :: Metadata.t()) :: list(binary())
-  defp list_ids_ext(metadata)  do
+  defp list_ids_ext(metadata) do
     Extract.list_ids(metadata)
   end
 
@@ -607,16 +625,14 @@ defmodule Smee.Metadata do
   end
 
   defp parse_data(metadata) do
-
     xml_data = Metadata.xml(metadata)
 
     try do
       SweetXml.parse(xml_data, namespace_conformant: true, dtd: :none)
     rescue
       e ->
-        reraise "cannot process data for #{metadata.uri}! Error is: #{e.message}\n Data is:\n #{xml_data}",
+        reraise "cannot process data for #{metadata.uri}! Error is: #{Exception.message(e)}\n Data is:\n #{xml_data}",
                 __STACKTRACE__
     end
-
   end
 end

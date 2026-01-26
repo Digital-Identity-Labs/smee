@@ -1,5 +1,4 @@
 defmodule Smee.MDQ do
-
   @moduledoc """
   `Smee.MDQ` provides a client API to MDQ services, and also attempts to emulate MDQ-style behaviour with old-fashioned
     metadata aggregates. MDQ allows individual entities to be looked up when needed without downloading and processing
@@ -50,7 +49,8 @@ defmodule Smee.MDQ do
   """
   @spec url(source :: Source.t(), entity_id :: binary()) :: binary()
   def url(%{type: :mdq} = source, entity_id) do
-    String.trim_trailing(Utils.fetchable_remote_xml(source), "/") <> "/#{transform_uri(entity_id)}"
+    (String.trim_trailing(Utils.fetchable_remote_xml(source), "/") <>
+       "/#{transform_uri(entity_id)}")
     |> URI.parse()
     |> URI.to_string()
     |> URI.encode()
@@ -107,18 +107,18 @@ defmodule Smee.MDQ do
       {:ok, metadata} -> {:ok, List.first(Metadata.entities(metadata))}
       {:error, code} -> {:error, code}
     end
-
   end
 
   def lookup(%{type: :aggregate} = source, entity_id) do
     try do
-      entity = aggregate!(source)
-               |> Metadata.entity(entity_id)
+      entity =
+        aggregate!(source)
+        |> Metadata.entity(entity_id)
+
       if entity, do: {:ok, entity}, else: {:error, :http_404}
     rescue
       e -> {:ok, Exception.message(e)}
     end
-
   end
 
   @doc """
@@ -129,23 +129,25 @@ defmodule Smee.MDQ do
   @spec lookup!(source :: Source.t(), entity_id :: binary()) :: Entity.t()
   def lookup!(%{type: :mdq} = source, entity_id) do
     source = Map.merge(source, %{type: :single, url: url(source, entity_id)})
-    entity = Fetch.remote!(source)
-             |> Metadata.entities()
-             |> List.first
 
-    if entity, do: entity, else: raise "Cannot lookup #{entity_id} in source"
+    entity =
+      Fetch.remote!(source)
+      |> Metadata.entities()
+      |> List.first()
 
+    if entity, do: entity, else: raise("Cannot lookup #{entity_id} in source")
   end
 
   def lookup!(%{type: :aggregate} = source, entity_id) do
     try do
-      entity = aggregate!(source)
-               |> Metadata.entity(entity_id)
-      if entity, do: entity, else: raise "Cannot lookup #{entity_id} in source"
+      entity =
+        aggregate!(source)
+        |> Metadata.entity(entity_id)
+
+      if entity, do: entity, else: raise("Cannot lookup #{entity_id} in source")
     rescue
       e -> reraise "Cannot lookup #{entity_id} in source #{Exception.message(e)}", __STACKTRACE__
     end
-
   end
 
   @doc """
@@ -174,14 +176,12 @@ defmodule Smee.MDQ do
   @spec stream(source :: Source.t(), ids :: list()) :: Enumerable.t()
   def stream(source, ids) do
     ids
-    |> Stream.map(
-         fn id ->
-           case lookup(source, id) do
-             {:ok, entity_or_nil} -> entity_or_nil
-             {:error, _} -> nil
-           end
-         end
-       )
+    |> Stream.map(fn id ->
+      case lookup(source, id) do
+        {:ok, entity_or_nil} -> entity_or_nil
+        {:error, _} -> nil
+      end
+    end)
     |> Stream.reject(fn e -> is_nil(e) end)
   end
 
@@ -197,9 +197,9 @@ defmodule Smee.MDQ do
   end
 
   def transform_uri(entity_id) do
-    "{sha1}" <> (entity_id
-                 |> String.trim
-                 |> Utils.sha1)
+    "{sha1}" <>
+      (entity_id
+       |> String.trim()
+       |> Utils.sha1())
   end
-
 end

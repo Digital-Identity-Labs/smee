@@ -14,6 +14,7 @@ defmodule Smee.Security.Xmlsec1 do
     cert_file = SigningCertificate.prepare_file!(metadata)
 
     command = build_command(metadata, cert_file)
+
     case Rambo.run("xmlsec1", command, in: metadata.data, log: false) do
       {:ok, %Rambo{status: 0, out: _out}} -> Map.merge(metadata, %{verified: true})
       {:error, %Rambo{status: status, err: err}} -> raise(parse_error(status, err))
@@ -24,12 +25,12 @@ defmodule Smee.Security.Xmlsec1 do
   @spec build_command(metadata :: Metadata.t(), cert_file :: binary()) :: list()
   defp build_command(_metadata, cert_file) do
     @base_command ++
-    version_dependent_options() ++
-    [
-      "--pubkey-cert-pem",
-      cert_file,
-      "/dev/stdin"
-    ]
+      version_dependent_options() ++
+      [
+        "--pubkey-cert-pem",
+        cert_file,
+        "/dev/stdin"
+      ]
   end
 
   @spec debug_command(command :: list()) :: binary()
@@ -81,7 +82,6 @@ defmodule Smee.Security.Xmlsec1 do
       [_, major, minor, _patch] -> version_check(major, minor)
       _ -> false
     end
-
   end
 
   @spec version_check(major :: integer() | binary(), minor :: integer() | binary()) :: boolean()
@@ -96,5 +96,4 @@ defmodule Smee.Security.Xmlsec1 do
       true -> false
     end
   end
-
 end

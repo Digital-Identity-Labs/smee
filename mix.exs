@@ -6,7 +6,8 @@ defmodule Smee.MixProject do
       app: :smee,
       version: "0.6.0",
       elixir: "~> 1.14",
-      description: "SAML Metadata Extractor, Etc: A library for processing large collections of SAML metadata",
+      description:
+        "SAML Metadata Extractor, Etc: A library for processing large collections of SAML metadata",
       package: package(),
       name: "Smee",
       source_url: "https://github.com/Digital-Identity-Labs/smee",
@@ -22,8 +23,9 @@ defmodule Smee.MixProject do
         extras: ["README.md", "LICENSE"]
       ],
       deps: deps(),
-      compilers: Mix.compilers() ++ [:rambo], # Needed until issue fixed in Rambo
-      elixirc_paths: elixirc_paths(Mix.env)
+      # Needed until issue fixed in Rambo
+      compilers: Mix.compilers() ++ [:rambo],
+      elixirc_paths: elixirc_paths(Mix.env())
     ]
   end
 
@@ -41,7 +43,7 @@ defmodule Smee.MixProject do
       {:sweet_xml, "~> 0.7"},
       {:rambo, "~> 0.3"},
       {:briefly, "~> 0.5"},
-      #{:easy_ssl, "~> 1.3"},
+      # {:easy_ssl, "~> 1.3"},
       {:xmerl_xml_indent, "~> 0.2.0"},
       {:xmlixer, "~> 0.1.1"},
       {:castore, ">= 1.0.5"},
@@ -50,7 +52,6 @@ defmodule Smee.MixProject do
       {:csv, "~> 3.2"},
       {:zarex, "~> 1.0"},
       {:iteraptor, "~> 1.15"},
-
       {:apex, "~> 1.2", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.14 and >= 0.14.4", only: [:dev, :test]},
@@ -63,7 +64,6 @@ defmodule Smee.MixProject do
       {:json_comparator, "~> 1.0", only: :test, runtime: false}
     ]
   end
-
 
   def cli do
     [
@@ -88,5 +88,4 @@ defmodule Smee.MixProject do
   # Specifies which paths to compile per environment.
   defp elixirc_paths(:test), do: ["lib", "test/support", "priv"]
   defp elixirc_paths(_), do: ["lib", "priv"]
-
 end

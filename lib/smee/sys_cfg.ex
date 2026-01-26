@@ -1,5 +1,4 @@
 defmodule Smee.SysCfg do
-
   @moduledoc false
 
   @spec strategies() :: list(atom())
@@ -38,7 +37,4 @@ defmodule Smee.SysCfg do
   end
 
   ################################################################################
-
-
-
 end

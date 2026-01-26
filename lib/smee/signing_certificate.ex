@@ -1,8 +1,7 @@
 defmodule Smee.SigningCertificate do
-
   @moduledoc false
 
-  #alias __MODULE__
+  # alias __MODULE__
   alias Smee.Utils
   alias Smee.SysCfg
 
@@ -14,11 +13,14 @@ defmodule Smee.SigningCertificate do
     end
   end
 
-  @spec prepare_file(input :: struct(), fingerprint :: binary() | nil) :: {:ok, binary()} | {
-    :error,
-    binary()
-  }
+  @spec prepare_file(input :: struct(), fingerprint :: binary() | nil) ::
+          {:ok, binary()}
+          | {
+              :error,
+              binary()
+            }
   def prepare_file(input, override_fingerprint \\ nil)
+
   def prepare_file(%{cert_url: nil, cert_fingerprint: _}, override_fingerprint) do
     Smee.Resources.default_cert_file_url()
     |> prepare_file_url(override_fingerprint)
@@ -33,11 +35,14 @@ defmodule Smee.SigningCertificate do
     prepare_file_url(url, override_fingerprint)
   end
 
-  @spec prepare_file(binary() | nil, fingerprint :: binary() | nil) :: {:ok, binary()} | {
-    :error,
-    binary()
-  }
+  @spec prepare_file(binary() | nil, fingerprint :: binary() | nil) ::
+          {:ok, binary()}
+          | {
+              :error,
+              binary()
+            }
   def prepare_file_url(url, fingerprint \\ nil)
+
   def prepare_file_url(nil, fingerprint) do
     Smee.Resources.default_cert_file_url()
     |> prepare_file_url(fingerprint)
@@ -50,10 +55,7 @@ defmodule Smee.SigningCertificate do
     else
       err -> err
     end
-
   end
-
-
 
   #  def provided?(c) do
   #
@@ -71,15 +73,15 @@ defmodule Smee.SigningCertificate do
   #
   #  end
 
-
   ################################################################################
 
   defp select_fingerprint(nil, nil), do: nil
   defp select_fingerprint(builtin, nil), do: builtin
   defp select_fingerprint(_builtin, override), do: override
 
-  defp  ensure_local_cert("file:" <> _ = url) do
+  defp ensure_local_cert("file:" <> _ = url) do
     path = Utils.file_url_to_path(url)
+
     if File.exists?(path) do
       {:ok, path}
     else
@@ -87,7 +89,7 @@ defmodule Smee.SigningCertificate do
     end
   end
 
-  defp  ensure_local_cert("http" <> _ = url) do
+  defp ensure_local_cert("http" <> _ = url) do
     hashname = Utils.sha1(url) <> ".pem"
     cert_file = Path.join(dynamic_cert_dir(), hashname)
 
@@ -96,21 +98,22 @@ defmodule Smee.SigningCertificate do
     else
       try do
         case download(url) do
-          {:ok, pem_data} -> {:ok, fh} = File.open(cert_file, [:write, :utf8])
-                             IO.write(fh, pem_data)
-                             File.close(fh)
-                             {:ok, cert_file}
-          {:error, _message} -> {:error, "File #{url} cannot be downloaded!"}
-        end
+          {:ok, pem_data} ->
+            {:ok, fh} = File.open(cert_file, [:write, :utf8])
+            IO.write(fh, pem_data)
+            File.close(fh)
+            {:ok, cert_file}
 
+          {:error, _message} ->
+            {:error, "File #{url} cannot be downloaded!"}
+        end
       rescue
         _ -> {:error, "File #{url} cannot be downloaded!"}
       end
-
     end
   end
 
-  defp  ensure_local_cert(url) do
+  defp ensure_local_cert(url) do
     raise "Unknown format of url #{url}!"
   end
 
@@ -119,10 +122,10 @@ defmodule Smee.SigningCertificate do
   end
 
   defp fingerprint_check(path, fingerprint) do
-
     try do
-      cert_info = File.read!(path)
-                  |> Smee.EasySSL.parse_pem()
+      cert_info =
+        File.read!(path)
+        |> Smee.EasySSL.parse_pem()
 
       src_fingerprint = normalize_fingerprint(fingerprint)
       actual_fingerprint = normalize_fingerprint(cert_info.fingerprint)
@@ -130,35 +133,34 @@ defmodule Smee.SigningCertificate do
       if src_fingerprint == actual_fingerprint do
         {:ok, path}
       else
-        {:error, "Certificate fingerprint #{actual_fingerprint} does not match source fingerprint #{src_fingerprint}}"}
+        {:error,
+         "Certificate fingerprint #{actual_fingerprint} does not match source fingerprint #{src_fingerprint}}"}
       end
-
     rescue
       _ -> {:error, "Unable to parse certificate #{path}"}
     end
-
   end
 
   def download(url) do
-    response = Req.get!(
-      url,
-      headers: %{
-        "accept" => "application/x-pem-file"
-      },
-      max_redirects: 5,
-      cache: true,
-      cache_dir: SysCfg.cache_directory(),
-      user_agent: Utils.http_agent_name,
-      #http_errors: :raise,
-      max_retries: 3,
-      retry_delay: &retry_jitter/1
-    )
+    response =
+      Req.get!(
+        url,
+        headers: %{
+          "accept" => "application/x-pem-file"
+        },
+        max_redirects: 5,
+        cache: true,
+        cache_dir: SysCfg.cache_directory(),
+        user_agent: Utils.http_agent_name(),
+        # http_errors: :raise,
+        max_retries: 3,
+        retry_delay: &retry_jitter/1
+      )
 
     case response.status do
       200 -> {:ok, response.body}
       other_status when other_status in 100..999 -> {:error, :"http_#{other_status}"}
     end
-
   end
 
   defp retry_jitter(n) do
@@ -172,13 +174,13 @@ defmodule Smee.SigningCertificate do
   end
 
   def dynamic_cert_dir do
-
     case Application.get_env(:smee, :cert_dir) do
-      {:ok, dir} -> dir
-      _ -> {:ok, path} = Briefly.create(type: :directory)
-           path
+      {:ok, dir} ->
+        dir
+
+      _ ->
+        {:ok, path} = Briefly.create(type: :directory)
+        path
     end
-
   end
-
 end

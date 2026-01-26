@@ -11,7 +11,9 @@ Benchee.run(
     "3. Enum.random" => fn -> Smee.Metadata.random_entity3(md) end,
     "4. Enum.at" => fn -> Smee.Metadata.random_entity4(md) end,
     "5. Cheat: Shell out to xsltproc, twice" => fn -> Smee.Metadata.random_entity5(md) end,
-    "7. D'oh!: don't process the entire stream first" => fn -> Smee.Metadata.random_entity5(md) end,
+    "7. D'oh!: don't process the entire stream first" => fn ->
+      Smee.Metadata.random_entity5(md)
+    end
   },
   time: 10,
   memory_time: 2,

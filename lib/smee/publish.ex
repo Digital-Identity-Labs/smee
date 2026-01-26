@@ -1,5 +1,4 @@
 defmodule Smee.Publish do
-
   @moduledoc """
   Publishes/exports streams, lists or text files of entity structs in various formats.
 
@@ -119,7 +118,8 @@ defmodule Smee.Publish do
   By default this function will produce a SAML2 metadata aggregate in XML.
 
   """
-  @spec aggregate_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t(binary())
+  @spec aggregate_stream(entities :: Enumerable.t(), options :: keyword()) ::
+          Enumerable.t(binary())
   def aggregate_stream(entities, options \\ []) do
     options = FrontendUtils.prepare_options(options)
     apply(FrontendUtils.select_backend(options), :aggregate_stream, [entities, options])
@@ -135,7 +135,7 @@ defmodule Smee.Publish do
   and "Local Dynamic" metadata providers.
 
   """
-  @spec items(entities :: Enumerable.t(), options :: keyword()) ::  map()
+  @spec items(entities :: Enumerable.t(), options :: keyword()) :: map()
   def items(entities, options \\ []) do
     options = FrontendUtils.prepare_options(options)
     apply(FrontendUtils.select_backend(options), :items, [entities, options])
@@ -204,5 +204,4 @@ defmodule Smee.Publish do
   end
 
   ################################################################################
-
 end

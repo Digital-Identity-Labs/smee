@@ -1,5 +1,4 @@
 defmodule Smee.Publish.String do
-
   @moduledoc false
 
   use Smee.Publish.Common
@@ -21,6 +20,4 @@ defmodule Smee.Publish.String do
   def separator(_options) do
     "\n"
   end
-
 end
-

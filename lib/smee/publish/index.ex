@@ -1,5 +1,4 @@
 defmodule Smee.Publish.Index do
-
   @moduledoc false
 
   use Smee.Publish.Common
@@ -17,10 +16,11 @@ defmodule Smee.Publish.Index do
   end
 
   def extract(entity, options) do
-
     if options[:labels] do
-      about_data = Entity.xdoc(entity)
-                   |> Smee.XPaths.about()
+      about_data =
+        Entity.xdoc(entity)
+        |> Smee.XPaths.about()
+
       %{
         id: entity.uri,
         label: Extract.name(about_data, options[:lang])
@@ -44,6 +44,4 @@ defmodule Smee.Publish.Index do
   def separator(_options) do
     "\n"
   end
-
-
 end

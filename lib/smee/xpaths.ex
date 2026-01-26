@@ -1,16 +1,15 @@
 defmodule Smee.XPaths do
-
   @moduledoc false
 
   import Smee.Sigils
 
-  @entity_p  ~x"/"
-  @entityid_x  [
+  @entity_p ~x"/"
+  @entityid_x [
     uri: ~x"string(/*/@entityID)"s,
     id: ~x"string(/*/@ID)"os
   ]
 
-  @eas_p  ~x"//md:Extensions/mdattr:EntityAttributes/saml:Attribute"le
+  @eas_p ~x"//md:Extensions/mdattr:EntityAttributes/saml:Attribute"le
   @eas_x [
     name: ~x"string(@Name)"s,
     values: ~x"string(saml:AttributeValue)"ls
@@ -19,10 +18,10 @@ defmodule Smee.XPaths do
   @is_idp_p ~x"//md:IDPSSODescriptor"e
   @is_sp_p ~x"//md:SPSSODescriptor"e
 
-  @ra_p  ~x"//md:Extensions/mdrpi:RegistrationInfo"le
-  @ra_x  [
+  @ra_p ~x"//md:Extensions/mdrpi:RegistrationInfo"le
+  @ra_x [
     authority: ~x"string(@registrationAuthority)"s,
-    instant: ~x"string(@registrationInstant)"s,
+    instant: ~x"string(@registrationInstant)"s
   ]
 
   @disco_xmap [
@@ -77,7 +76,7 @@ defmodule Smee.XPaths do
       ~x"///md:SPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:PrivacyURL"le,
       lang: ~x"string(@xml:lang)"s,
       url: ~x"./text()"s
-    ],
+    ]
   ]
 
   @about_xmap [
@@ -105,7 +104,7 @@ defmodule Smee.XPaths do
       rtype: ~x"string(@remd:contactType)"s,
       givenname: ~x"string(//md:GivenName[1])"s,
       surname: ~x"string(//md:SurName[1])"s,
-      email: ~x"string(//md:EmailAddress[1])"s,
+      email: ~x"string(//md:EmailAddress[1])"s
     ],
     info_urls: [
       ~x"//md:IDPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:InformationURL | //md:SPSSODescriptor/md:Extensions/mdui:UIInfo/mdui:InformationURL"le,
@@ -117,7 +116,6 @@ defmodule Smee.XPaths do
       lang: ~x"string(@xml:lang)"s,
       url: ~x"./text()"s
     ]
-
   ]
 
   @dest_xmap [
@@ -168,7 +166,7 @@ defmodule Smee.XPaths do
       ~x"//md:SPSSODescriptor/Extensions/idpdisc:DiscoveryResponse"le,
       binding: ~x"string(@Binding)"s,
       location: ~x"string(@Location)"s,
-      index: ~x"string(@index)"s,
+      index: ~x"string(@index)"s
     ],
     login_urls: [
       ~x"//md:SPSSODescriptor/Extensions/init:RequestInitiator"le,
@@ -177,14 +175,15 @@ defmodule Smee.XPaths do
     ]
   ]
 
-
   @spec entity_ids(xdoc :: tuple()) :: map()
   def entity_ids(xdoc) do
     SweetXml.xpath(
       xdoc,
       @entity_p,
       @entityid_x
-    ) # Might want to force empty string to be a nil here? Or do it further up?
+    )
+
+    # Might want to force empty string to be a nil here? Or do it further up?
   end
 
   @spec entity_attributes(xdoc :: tuple()) :: map()
@@ -195,7 +194,6 @@ defmodule Smee.XPaths do
       @eas_x
     )
     |> ea_format()
-
   end
 
   @spec idp?(xdoc :: tuple()) :: boolean()
@@ -216,19 +214,23 @@ defmodule Smee.XPaths do
 
   @spec registration(xdoc :: tuple()) :: map()
   def registration(xdoc) do
-    first = SweetXml.xpath(
-              xdoc,
-              @ra_p,
-              @ra_x
-            )
-            |> List.first()
+    first =
+      SweetXml.xpath(
+        xdoc,
+        @ra_p,
+        @ra_x
+      )
+      |> List.first()
+
     first || %{}
   end
 
   @spec disco(xdoc :: tuple()) :: map()
   def disco(xdoc) do
-    extracted = xdoc
-                |> SweetXml.xmap(@disco_xmap)
+    extracted =
+      xdoc
+      |> SweetXml.xmap(@disco_xmap)
+
     Map.merge(
       extracted,
       %{
@@ -238,16 +240,17 @@ defmodule Smee.XPaths do
         info_urls: ml_text_map(extracted.info_urls, :url),
         keywords: ml_text_map(extracted.keywords),
         entity_attributes: ea_format(extracted.entity_attributes),
-        privacy_urls: ml_text_map(extracted.privacy_urls, :url),
+        privacy_urls: ml_text_map(extracted.privacy_urls, :url)
       }
     )
-
   end
 
   @spec dest(xdoc :: tuple()) :: map()
   def dest(xdoc) do
-    extracted = xdoc
-                |> SweetXml.xmap(@dest_xmap)
+    extracted =
+      xdoc
+      |> SweetXml.xmap(@dest_xmap)
+
     Map.merge(
       extracted,
       %{
@@ -259,45 +262,43 @@ defmodule Smee.XPaths do
         org_urls: ml_text_map(extracted.org_urls, :url),
         entity_attributes: ea_format(extracted.entity_attributes),
         login_urls: only_locations(extracted.login_urls),
-        disco_urls: only_locations(extracted.disco_urls),
+        disco_urls: only_locations(extracted.disco_urls)
       }
     )
-
   end
 
   @spec about(xdoc :: tuple()) :: map()
   def about(xdoc) do
-    extracted = xdoc
-                |> SweetXml.xmap(@about_xmap)
+    extracted =
+      xdoc
+      |> SweetXml.xmap(@about_xmap)
+
     Map.merge(
       extracted,
       %{
         displaynames: ml_text_map(extracted.displaynames),
         org_names: ml_text_map(extracted.org_names),
         info_urls: ml_text_map(extracted.info_urls, :url),
-        org_urls: ml_text_map(extracted.org_urls, :url),
+        org_urls: ml_text_map(extracted.org_urls, :url)
       }
     )
-
   end
 
   defp ml_text_map(ml_list, vk \\ :text) do
     ml_list
-    |> Enum.map(fn h -> {h[:lang], h[vk]}  end)
+    |> Enum.map(fn h -> {h[:lang], h[vk]} end)
     |> Map.new()
   end
 
   defp ea_format(data) do
-    Enum.reduce(data, %{}, fn r, acc -> Map.put(acc, r.name, Map.get(acc, r[:name], []) ++ r[:values]) end)
+    Enum.reduce(data, %{}, fn r, acc ->
+      Map.put(acc, r.name, Map.get(acc, r[:name], []) ++ r[:values])
+    end)
   end
 
- defp only_locations(data, attr \\ :location) do
-   data
-   |> Enum.map(fn r -> r[attr] end)
-   |> Enum.reject(fn u -> is_nil(u) end)
+  defp only_locations(data, attr \\ :location) do
+    data
+    |> Enum.map(fn r -> r[attr] end)
+    |> Enum.reject(fn u -> is_nil(u) end)
   end
-
 end
-
-
-

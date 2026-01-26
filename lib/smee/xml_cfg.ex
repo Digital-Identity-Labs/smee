@@ -1,5 +1,4 @@
 defmodule Smee.XmlCfg do
-
   @moduledoc false
 
   @saml_namespaces %{
@@ -57,18 +56,19 @@ defmodule Smee.XmlCfg do
     xrd: "http://docs.oasis-open.org/ns/xri/xrd-1.0",
     xs: "http://www.w3.org/2001/XMLSchema",
     xsd: "http://www.w3.org/2001/XMLSchema",
-    xsi: "http://www.w3.org/2001/XMLSchema-instance",
+    xsi: "http://www.w3.org/2001/XMLSchema-instance"
   }
 
   @erlanged_saml_namespaces Enum.map(
                               @saml_namespaces,
-                              fn {p, ns} -> {List.Chars.to_charlist(p), List.Chars.to_charlist(ns)} end
+                              fn {p, ns} ->
+                                {List.Chars.to_charlist(p), List.Chars.to_charlist(ns)}
+                              end
                             )
                             |> Enum.sort()
 
   @default_namespace_prefix :md
   @default_namespace @saml_namespaces[@default_namespace_prefix]
-
 
   #  @xml_namespaces %{
   #    xi: "http://www.w3.org/2001/XInclude",
@@ -112,9 +112,7 @@ defmodule Smee.XmlCfg do
   def erlang_namespaces() do
     if Application.get_env(:smee, :namespaces, nil) do
       Application.get_env(:smee, :namespaces)
-      |> Enum.map(
-           fn {p, ns} -> {List.Chars.to_charlist(p), List.Chars.to_charlist(ns)} end
-         )
+      |> Enum.map(fn {p, ns} -> {List.Chars.to_charlist(p), List.Chars.to_charlist(ns)} end)
       |> Enum.sort()
     else
       @erlanged_saml_namespaces
@@ -133,6 +131,4 @@ defmodule Smee.XmlCfg do
   end
 
   ################################################################################
-
-
 end

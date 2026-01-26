@@ -1,5 +1,4 @@
 defmodule Smee.Publish.Udisco do
-
   @moduledoc false
 
   use Smee.Publish.Common
@@ -23,9 +22,9 @@ defmodule Smee.Publish.Udisco do
   end
 
   def extract(entity, options) do
-
-    disco_data = Entity.xdoc(entity)
-                 |> Smee.XPaths.disco()
+    disco_data =
+      Entity.xdoc(entity)
+      |> Smee.XPaths.disco()
 
     lang = options[:lang]
 
@@ -39,10 +38,9 @@ defmodule Smee.Publish.Udisco do
       geo: Extract.geos(disco_data, lang),
       kw: Extract.keywords(disco_data, lang),
       hide: Extract.hide(disco_data, lang),
-      url: Extract.info(disco_data, lang),
+      url: Extract.info(disco_data, lang)
     }
     |> compact_map()
-
   end
 
   @compile :nowarn_unused_vars
@@ -62,6 +60,4 @@ defmodule Smee.Publish.Udisco do
   def footers(_options) do
     ["]"]
   end
-
 end
-

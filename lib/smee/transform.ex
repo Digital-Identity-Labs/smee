@@ -1,5 +1,4 @@
 defmodule Smee.Transform do
-
   @moduledoc """
   Tools for manipulating metadata XML.
 
@@ -14,16 +13,16 @@ defmodule Smee.Transform do
   alias Smee.XSLT
   alias Smee.Metadata
 
-  @valid_until_s File.read! "priv/xslt/valid_until.xsl"
-  #@strip_comments_s File.read! "priv/xslt/strip_comments.xsl"
-  @strip_idp_s File.read! "priv/xslt/strip_adfs_idp.xsl"
-  @strip_sp_s File.read! "priv/xslt/strip_adfs_sp.xsl"
-
+  @valid_until_s File.read!("priv/xslt/valid_until.xsl")
+  # @strip_comments_s File.read! "priv/xslt/strip_comments.xsl"
+  @strip_idp_s File.read!("priv/xslt/strip_adfs_idp.xsl")
+  @strip_sp_s File.read!("priv/xslt/strip_adfs_sp.xsl")
 
   @doc """
   Applies an XSLT stylesheet to a metadata struct, returning a transformed metadata struct in an :ok/error tuple
   """
-  @spec transform(metadata :: Metadata.t(), stylesheet :: binary, params :: keyword()) :: {:ok, Metadata.t()} | {:error, binary()}
+  @spec transform(metadata :: Metadata.t(), stylesheet :: binary, params :: keyword()) ::
+          {:ok, Metadata.t()} | {:error, binary()}
   def transform(metadata, stylesheet, params \\ []) do
     case XSLT.transform(metadata.data, stylesheet, params) do
       {:ok, xml} -> {:ok, Metadata.update(metadata, xml)}
@@ -31,22 +30,21 @@ defmodule Smee.Transform do
     end
   end
 
-
-#  @doc """
-#  Returns a metadata struct with all comments removed, in an :ok/:error struct
-#  """
-#  @spec strip_comments(metadata :: Metadata.t()) :: {:ok, Metadata.t()} | {:error, binary()}
-#  def strip_comments(metadata) do
-#    transform(metadata, @strip_comments_s, [])
-#  end
-
+  #  @doc """
+  #  Returns a metadata struct with all comments removed, in an :ok/:error struct
+  #  """
+  #  @spec strip_comments(metadata :: Metadata.t()) :: {:ok, Metadata.t()} | {:error, binary()}
+  #  def strip_comments(metadata) do
+  #    transform(metadata, @strip_comments_s, [])
+  #  end
 
   @doc """
   Returns a metadata struct with the validUntil date updated, in an :ok/:error struct
   """
-  @spec valid_until(metadata :: Metadata.t(), date :: DateTime.t()) :: {:ok,  Metadata.t()} | {:error, binary()}
+  @spec valid_until(metadata :: Metadata.t(), date :: DateTime.t()) ::
+          {:ok, Metadata.t()} | {:error, binary()}
   def valid_until(metadata, date) do
-    transform(metadata, @valid_until_s, [validUntil: DateTime.to_iso8601(date)])
+    transform(metadata, @valid_until_s, validUntil: DateTime.to_iso8601(date))
   end
 
   @doc """
@@ -80,5 +78,4 @@ defmodule Smee.Transform do
       {:error, msg} -> raise msg
     end
   end
-
 end

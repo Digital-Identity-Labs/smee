@@ -1,5 +1,4 @@
 defmodule Smee.Publish.Udest do
-
   @moduledoc false
 
   use Smee.Publish.Common
@@ -23,9 +22,9 @@ defmodule Smee.Publish.Udest do
   end
 
   def extract(entity, options) do
-
-    dest_data = Entity.xdoc(entity)
-                 |> Smee.XPaths.dest()
+    dest_data =
+      Entity.xdoc(entity)
+      |> Smee.XPaths.dest()
 
     lang = options[:lang]
 
@@ -39,10 +38,9 @@ defmodule Smee.Publish.Udest do
       privacy_url: Extract.privacy(dest_data, lang),
       info_url: Extract.info(dest_data, lang),
       org_url: Extract.org_url(dest_data, lang),
-      org_name: Extract.org_name(dest_data, lang),
+      org_name: Extract.org_name(dest_data, lang)
     }
     |> compact_map()
-
   end
 
   @compile :nowarn_unused_vars
@@ -62,6 +60,4 @@ defmodule Smee.Publish.Udest do
   def footers(_options) do
     ["]"]
   end
-
 end
-

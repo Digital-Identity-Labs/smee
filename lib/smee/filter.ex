@@ -1,5 +1,4 @@
 defmodule Smee.Filter do
-
   @moduledoc """
   Process a stream of entities to include or exclude entity structs matching the specified criteria.
 
@@ -24,16 +23,18 @@ defmodule Smee.Filter do
 
   The filter is positive by default but can be inverted by specifying `false`
   """
-  @spec uri(enum :: Enumerable.t(), uris :: list() | binary(), bool :: boolean()) :: Enumerable.t()
+  @spec uri(enum :: Enumerable.t(), uris :: list() | binary(), bool :: boolean()) ::
+          Enumerable.t()
   def uri(enum, uris, bool \\ true)
+
   def uri(enum, uris, bool) when is_list(uris) do
     enum
-    |> Stream.filter(fn e -> (Enum.member?(uris, e.uri)) == bool end)
+    |> Stream.filter(fn e -> Enum.member?(uris, e.uri) == bool end)
   end
 
   def uri(enum, uris, bool) do
     enum
-    |> Stream.filter(fn e -> (e.uri == uris) == bool end)
+    |> Stream.filter(fn e -> e.uri == uris == bool end)
   end
 
   @doc """
@@ -65,10 +66,11 @@ defmodule Smee.Filter do
 
   The filter is positive by default but can be inverted by specifying `false`
   """
-  @spec trustiness(enum :: Enumerable.t(), trustiness :: float(), bool :: boolean()) :: Enumerable.t()
+  @spec trustiness(enum :: Enumerable.t(), trustiness :: float(), bool :: boolean()) ::
+          Enumerable.t()
   def trustiness(enum, trustiness \\ 0.7, bool \\ true) do
     enum
-    |> Stream.filter(fn e -> (Entity.trustiness(e) >= trustiness) == bool end)
+    |> Stream.filter(fn e -> Entity.trustiness(e) >= trustiness == bool end)
   end
 
   @doc """
@@ -87,7 +89,7 @@ defmodule Smee.Filter do
 
   def tag(enum, tag, bool) do
     enum
-    |> Stream.filter(fn e -> (tag in Entity.tags(e)) == bool end)
+    |> Stream.filter(fn e -> tag in Entity.tags(e) == bool end)
   end
 
   @doc """
@@ -95,10 +97,13 @@ defmodule Smee.Filter do
 
   The filter is positive by default but can be inverted by specifying `false`
   """
-  @spec entity_category(enum :: Enumerable.t(), category :: binary(), bool :: boolean()) :: Enumerable.t()
+  @spec entity_category(enum :: Enumerable.t(), category :: binary(), bool :: boolean()) ::
+          Enumerable.t()
   def entity_category(enum, category, bool \\ true) do
     enum
-    |> Stream.filter(fn e -> (Enum.find_value(Entity.categories(e), false, fn c -> c == category end)) == bool end)
+    |> Stream.filter(fn e ->
+      Enum.find_value(Entity.categories(e), false, fn c -> c == category end) == bool
+    end)
   end
 
   @doc """
@@ -106,12 +111,13 @@ defmodule Smee.Filter do
 
   The filter is positive by default but can be inverted by specifying `false`
   """
-  @spec entity_category_support(enum :: Enumerable.t(), category :: binary(), bool :: boolean()) :: Enumerable.t()
+  @spec entity_category_support(enum :: Enumerable.t(), category :: binary(), bool :: boolean()) ::
+          Enumerable.t()
   def entity_category_support(enum, category, bool \\ true) do
     enum
-    |> Stream.filter(
-         fn e -> (Enum.find_value(Entity.category_support(e), false, fn c -> c == category end)) == bool end
-       )
+    |> Stream.filter(fn e ->
+      Enum.find_value(Entity.category_support(e), false, fn c -> c == category end) == bool
+    end)
   end
 
   @doc """
@@ -119,10 +125,13 @@ defmodule Smee.Filter do
 
   The filter is positive by default but can be inverted by specifying `false`
   """
-  @spec assurance(enum :: Enumerable.t(), certification :: binary(), bool :: boolean()) :: Enumerable.t()
+  @spec assurance(enum :: Enumerable.t(), certification :: binary(), bool :: boolean()) ::
+          Enumerable.t()
   def assurance(enum, certification, bool \\ true) do
     enum
-    |> Stream.filter(fn e -> (Enum.find_value(Entity.assurance(e), false, fn c -> c == certification end)) == bool end)
+    |> Stream.filter(fn e ->
+      Enum.find_value(Entity.assurance(e), false, fn c -> c == certification end) == bool
+    end)
   end
 
   @doc """
@@ -131,10 +140,11 @@ defmodule Smee.Filter do
 
   The filter is positive by default but can be inverted by specifying `false`
   """
-  @spec registered_by(enum :: Enumerable.t(), registrar :: binary(), bool :: boolean()) :: Enumerable.t()
+  @spec registered_by(enum :: Enumerable.t(), registrar :: binary(), bool :: boolean()) ::
+          Enumerable.t()
   def registered_by(enum, registrar, bool \\ true) do
     enum
-    |> Stream.filter(fn e -> (Entity.registration_authority(e) == registrar) == bool end)
+    |> Stream.filter(fn e -> Entity.registration_authority(e) == registrar == bool end)
   end
 
   @doc """
@@ -146,16 +156,14 @@ defmodule Smee.Filter do
 
   The filter is positive by default but can be inverted by specifying `false`
   """
-  @spec registered_before(enum :: Enumerable.t(), date :: Date.t() | binary(), bool :: boolean()) :: Enumerable.t()
+  @spec registered_before(enum :: Enumerable.t(), date :: Date.t() | binary(), bool :: boolean()) ::
+          Enumerable.t()
   def registered_before(enum, date, bool \\ true) do
     enum
-    |> Stream.filter(
-         fn e ->
-           (
-             Entity.registered_at(e)
-             |> Utils.before?(date)) == bool
-         end
-       )
+    |> Stream.filter(fn e ->
+      Entity.registered_at(e)
+      |> Utils.before?(date) == bool
+    end)
   end
 
   @doc """
@@ -167,16 +175,14 @@ defmodule Smee.Filter do
 
   The filter is positive by default but can be inverted by specifying `false`
   """
-  @spec registered_after(enum :: Enumerable.t(), date :: Date.t() | binary(), bool :: boolean()) :: Enumerable.t()
+  @spec registered_after(enum :: Enumerable.t(), date :: Date.t() | binary(), bool :: boolean()) ::
+          Enumerable.t()
   def registered_after(enum, date, bool \\ true) do
     enum
-    |> Stream.filter(
-         fn e ->
-           (
-             Entity.registered_at(e)
-             |> Utils.after?(date)) == bool
-         end
-       )
+    |> Stream.filter(fn e ->
+      Entity.registered_at(e)
+      |> Utils.after?(date) == bool
+    end)
   end
 
   @doc """
@@ -189,13 +195,10 @@ defmodule Smee.Filter do
   @spec fresh(enum :: Enumerable.t(), bool :: boolean()) :: Enumerable.t()
   def fresh(enum, bool \\ true) do
     enum
-    |> Stream.filter(
-         fn e ->
-           (
-             Entity.registered_at(e)
-             |> Utils.after?(Utils.days_ago(7))) == bool
-         end
-       )
+    |> Stream.filter(fn e ->
+      Entity.registered_at(e)
+      |> Utils.after?(Utils.days_ago(7)) == bool
+    end)
   end
 
   @doc """
@@ -208,15 +211,11 @@ defmodule Smee.Filter do
   @spec days(enum :: Enumerable.t(), days :: integer(), bool :: boolean()) :: Enumerable.t()
   def days(enum, days, bool \\ true) do
     enum
-    |> Stream.filter(
-         fn e ->
-           (
-             Entity.registered_at(e)
-             |> Utils.after?(Utils.days_ago(days))) == bool
-         end
-       )
+    |> Stream.filter(fn e ->
+      Entity.registered_at(e)
+      |> Utils.after?(Utils.days_ago(days)) == bool
+    end)
   end
 
   ################################################################################
-
 end

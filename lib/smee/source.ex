@@ -1,5 +1,4 @@
 defmodule Smee.Source do
-
   @moduledoc """
   Defines sources for metadata, which can then be `Fetch`ed and prodoce Metadata structs. Source structs are the
     usual starting-place for Smee tasks.
@@ -15,43 +14,42 @@ defmodule Smee.Source do
   @source_types [:aggregate, :single, :mdq, :ld]
 
   @type t :: %__MODULE__{
-               url: binary(),
-               type: nil | atom(),
-               auth: nil | keyword(),
-               cert_url: binary(),
-               cert_fingerprint: nil | binary(),
-               cache: boolean(),
-               redirects: integer(),
-               retries: integer(),
-               label: nil | binary(),
-               priority: integer(),
-               trustiness: float(),
-               strict: boolean(),
-               tags: list(binary()),
-               id: binary() | atom(),
-               fedid: binary() | atom()
-             }
+          url: binary(),
+          type: nil | atom(),
+          auth: nil | keyword(),
+          cert_url: binary(),
+          cert_fingerprint: nil | binary(),
+          cache: boolean(),
+          redirects: integer(),
+          retries: integer(),
+          label: nil | binary(),
+          priority: integer(),
+          trustiness: float(),
+          strict: boolean(),
+          tags: list(binary()),
+          id: binary() | atom(),
+          fedid: binary() | atom()
+        }
 
   @enforce_keys [:url]
   @derive Jason.Encoder
-  defstruct [
-    url: nil,
-    type: :aggregate,
-    auth: nil,
-    cert_url: nil,
-    cert_fingerprint: nil,
-    cache: true,
-    redirects: 3,
-    retries: 5,
-    label: nil,
-    priority: 5,
-    trustiness: 0.5,
-    strict: false,
-    tags: [],
-    id: nil,
-    fedid: nil
-  ]
+  defstruct url: nil,
+            type: :aggregate,
+            auth: nil,
+            cert_url: nil,
+            cert_fingerprint: nil,
+            cache: true,
+            redirects: 3,
+            retries: 5,
+            label: nil,
+            priority: 5,
+            trustiness: 0.5,
+            strict: false,
+            tags: [],
+            id: nil,
+            fedid: nil
 
+  # Bilateral support?
   @doc """
   Creates a new source struct, describing where and how to find metadata.
 
@@ -92,7 +90,7 @@ defmodule Smee.Source do
       retries: Keyword.get(options, :retries, 5),
       tags: Utils.tidy_tags(Keyword.get(options, :tags, [])),
       id: Keyword.get(options, :id, nil),
-      fedid: Keyword.get(options, :fedid, nil),
+      fedid: Keyword.get(options, :fedid, nil)
     }
     |> fix_type()
     |> fix_url()
@@ -101,19 +99,22 @@ defmodule Smee.Source do
   @doc """
   Attempts to validate a source struct, and will return an :ok/:error tuple containing the Source if it passes checks.
   """
-  @spec check(source :: Source.t(), options :: keyword()) :: {:ok, Source.t()} | {:error, binary()}
+  @spec check(source :: Source.t(), options :: keyword()) ::
+          {:ok, Source.t()} | {:error, binary()}
   def check(source, _options \\ []) do
     cond do
       !Enum.member?(@source_types, source.type) ->
         {:error, "Source type #{source.type} is unknown!"}
+
       Utils.local?(source) && !File.exists?(Utils.file_url_to_path(source.url)) ->
         {:error, "Metadata file #{Utils.file_url_to_path(source.url)} cannot be found!"}
+
       Utils.local_cert?(source) && !File.exists?(Utils.file_url_to_path(source.cert_url)) ->
         {:error, "Certificate file #{Utils.file_url_to_path(source.cert_url)} cannot be found!"}
+
       true ->
         {:ok, source}
     end
-
   end
 
   @doc """
@@ -151,24 +152,35 @@ defmodule Smee.Source do
 
   @spec fix_type(source :: Source.t()) :: Source.t()
   defp fix_type(source) do
-    type = cond do
-      String.ends_with?(source.url, ["entities", "entities/"]) -> :mdq
-      String.starts_with?(source.url, ["file:"]) && !String.ends_with?(source.url, [".xml"]) -> :ld
-      true -> source.type
-    end
+    type =
+      cond do
+        String.ends_with?(source.url, ["entities", "entities/"]) ->
+          :mdq
+
+        String.starts_with?(source.url, ["file:"]) && !String.ends_with?(source.url, [".xml"]) ->
+          :ld
+
+        true ->
+          source.type
+      end
+
     Map.merge(source, %{type: type})
   end
 
   @spec fix_url(source :: Source.t()) :: Source.t()
   defp fix_url(source) do
-    url = cond do
-      source.type == :mdq && String.ends_with?(source.url, ["entities"]) ->
-        String.trim_trailing(source.url, "entities")
-      source.type == :mdq && String.ends_with?(source.url, ["entities/"]) ->
-        String.trim_trailing(source.url, "entities/")
-      true ->
-        source.url
-    end
+    url =
+      cond do
+        source.type == :mdq && String.ends_with?(source.url, ["entities"]) ->
+          String.trim_trailing(source.url, "entities")
+
+        source.type == :mdq && String.ends_with?(source.url, ["entities/"]) ->
+          String.trim_trailing(source.url, "entities/")
+
+        true ->
+          source.url
+      end
+
     Map.merge(source, %{url: url})
   end
 
@@ -184,5 +196,4 @@ defmodule Smee.Source do
   defp normalize_type(type) when is_atom(type) do
     type
   end
-
 end

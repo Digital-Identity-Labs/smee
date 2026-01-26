@@ -1,5 +1,4 @@
 defmodule Smee.Utils do
-
   alias Smee.Source
   alias Smee.Metadata
 
@@ -45,7 +44,6 @@ defmodule Smee.Utils do
   def parse_http_datetime(%DateTime{} = datetime), do: datetime
 
   def parse_http_datetime(datetime_header) do
-
     try do
       [_day_of_week, day, month, year, time, "GMT"] = String.split(datetime_header, " ")
       date = year <> "-" <> @month_numbers[month] <> "-" <> day
@@ -57,11 +55,9 @@ defmodule Smee.Utils do
         {:error, reason} ->
           raise "could not parse HTTP header containing '#{datetime_header}': #{reason}"
       end
-
     rescue
       _ -> reraise "could not parse HTTP header containing '#{datetime_header}'", __STACKTRACE__
     end
-
   end
 
   @spec normalize_url(url :: binary() | nil | URI.t()) :: binary()
@@ -79,6 +75,7 @@ defmodule Smee.Utils do
 
   def normalize_url(url) do
     uri = URI.parse(url)
+
     cond do
       uri.scheme == nil -> URI.to_string(Map.merge(uri, %{scheme: "file"}))
       String.starts_with?(uri.scheme, "http") -> URI.to_string(uri)
@@ -112,20 +109,22 @@ defmodule Smee.Utils do
 
   @spec file_url_to_path(url :: binary()) :: binary()
   def file_url_to_path(url) do
-    if file_url?(url), do: URI.parse(url).path, else: raise "Not a file:/ URL!"
+    if file_url?(url), do: URI.parse(url).path, else: raise("Not a file:/ URL!")
   end
 
   @spec file_url_to_path(url :: binary(), base_path :: binary()) :: binary()
   def file_url_to_path(url, base_path) do
     reqpath = Path.absname(file_url_to_path(url))
-    if String.starts_with?(reqpath, base_path), do: reqpath, else: raise "Illegal path outside base directory!"
+
+    if String.starts_with?(reqpath, base_path),
+      do: reqpath,
+      else: raise("Illegal path outside base directory!")
   end
 
   @spec http_agent_name() :: binary()
   def http_agent_name do
     "Smee #{Application.spec(:smee, :vsn)}"
   end
-
 
   @spec xdoc_to_string(xdoc :: tuple()) :: binary()
   def xdoc_to_string(xdoc) do
@@ -136,7 +135,7 @@ defmodule Smee.Utils do
 
   @spec fetchable_remote_xml(source :: Source.t()) :: binary()
   def fetchable_remote_xml(%{type: :mdq} = source) do
-    String.trim_trailing(source.url, "/") <> "/entities"
+    (String.trim_trailing(source.url, "/") <> "/entities")
     |> URI.parse()
     |> URI.to_string()
   end
@@ -154,34 +153,39 @@ defmodule Smee.Utils do
 
   @spec normalize_fingerprint(fp :: binary() | nil) :: binary() | nil
   def normalize_fingerprint(fp) do
-
-    if  is_nil(fp) do
+    if is_nil(fp) do
       nil
     else
-      fp = fp
-           |> String.trim()
-           |> String.upcase
+      fp =
+        fp
+        |> String.trim()
+        |> String.upcase()
+
       cond do
+        String.match?(fp, ~r/^([0-9A-F]{2}[:]){19}[0-9A-F]{2}$/) ->
+          fp
 
-        String.match?(fp, ~r/^([0-9A-F]{2}[:]){19}[0-9A-F]{2}$/) -> fp
-        String.match?(fp, ~r/^[0-9a-fA-F]{40}$/) -> String.upcase(fp)
-                                                    |> String.split(
-                                                         ~r|[0-9a-fA-F]{2}|,
-                                                         include_captures: true,
-                                                         trim: true
-                                                       )
-                                                    |> Enum.join(":")
-        true -> raise "Incorrect fingerprint format - should be SHA1 hexadecimal"
+        String.match?(fp, ~r/^[0-9a-fA-F]{40}$/) ->
+          String.upcase(fp)
+          |> String.split(
+            ~r|[0-9a-fA-F]{2}|,
+            include_captures: true,
+            trim: true
+          )
+          |> Enum.join(":")
+
+        true ->
+          raise "Incorrect fingerprint format - should be SHA1 hexadecimal"
       end
-
     end
-
   end
 
   @spec check_cache_dir!(cache_dir :: binary() | nil) :: binary()
   def check_cache_dir!(cache_dir) do
-    if (cache_dir == nil) || (cache_dir == "") || (cache_dir == File.cwd!()) || (cache_dir == "/") || (
-      cache_dir == System.user_home!()), do: raise "Cache directory appears to be set to a bad location!"
+    if cache_dir == nil || cache_dir == "" || cache_dir == File.cwd!() || cache_dir == "/" ||
+         cache_dir == System.user_home!(),
+       do: raise("Cache directory appears to be set to a bad location!")
+
     cache_dir
   end
 
@@ -222,13 +226,15 @@ defmodule Smee.Utils do
   end
 
   def valid_until(days) when is_integer(days) do
-    DateTime.utc_now
+    DateTime.utc_now()
     |> DateTime.add(days, :day)
     |> format_xml_date()
   end
 
-  @spec before?(base_date :: DateTime.t() | Date.t(), subject_date :: DateTime.t() | Date.t()) :: boolean()
+  @spec before?(base_date :: DateTime.t() | Date.t(), subject_date :: DateTime.t() | Date.t()) ::
+          boolean()
   def before?(subject_date, comparison_date)
+
   def before?(nil, _) do
     false
   end
@@ -244,8 +250,10 @@ defmodule Smee.Utils do
     Date.compare(subject_date, comparison_date) == :lt
   end
 
-  @spec after?(base_date :: DateTime.t() | Date.t(), subject_date :: DateTime.t() | Date.t()) :: boolean()
+  @spec after?(base_date :: DateTime.t() | Date.t(), subject_date :: DateTime.t() | Date.t()) ::
+          boolean()
   def after?(subject_date, comparison_date)
+
   def after?(subject_date, comparison_date) when is_binary(comparison_date) do
     case Date.from_iso8601(comparison_date) do
       {:ok, comparison_date} -> after?(subject_date, comparison_date)
@@ -261,7 +269,7 @@ defmodule Smee.Utils do
     Date.compare(subject_date, comparison_date) == :gt
   end
 
-  @spec days_ago(days ::integer()) :: Date.t()
+  @spec days_ago(days :: integer()) :: Date.t()
   def days_ago(days) do
     Date.utc_today()
     |> Date.add(-days)
@@ -297,5 +305,4 @@ defmodule Smee.Utils do
   end
 
   ################################################################################
-
 end

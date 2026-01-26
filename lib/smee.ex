@@ -174,5 +174,4 @@ defmodule Smee do
   def stream_entities(%Metadata{} = metadata) do
     Metadata.stream_entities(metadata)
   end
-
 end

@@ -1,5 +1,4 @@
 defmodule Smee.Publish.Thiss do
-
   @moduledoc false
 
   use Smee.Publish.Common
@@ -24,13 +23,11 @@ defmodule Smee.Publish.Thiss do
   end
 
   def extract(entity, options) do
-
     lang = options[:lang]
     role = if Entity.idp?(entity), do: :idp, else: :sp
 
     xextract(entity, role, lang)
     |> compact_map()
-
   end
 
   @compile :nowarn_unused_vars
@@ -54,9 +51,9 @@ defmodule Smee.Publish.Thiss do
   ######################################
 
   defp xextract(entity, :idp, lang) do
-
-    disco_data = Entity.xdoc(entity)
-                 |> Smee.XPaths.disco()
+    disco_data =
+      Entity.xdoc(entity)
+      |> Smee.XPaths.disco()
 
     %{
       id: "{sha1}#{entity.uri_hash}",
@@ -75,14 +72,14 @@ defmodule Smee.Publish.Thiss do
       geo: Extract.thiss_geos(disco_data, lang),
       entity_icon_url: Extract.thiss_logo(disco_data, lang),
       keywords: Extract.thiss_keywords(disco_data, lang),
-      privacy_statement_url: Extract.privacy(disco_data, lang),
+      privacy_statement_url: Extract.privacy(disco_data, lang)
     }
   end
 
   defp xextract(entity, :sp, lang) do
-
-    disco_data = Entity.xdoc(entity)
-                 |> Smee.XPaths.dest()
+    disco_data =
+      Entity.xdoc(entity)
+      |> Smee.XPaths.dest()
 
     %{
       id: "{sha1}#{entity.uri_hash}",
@@ -95,8 +92,7 @@ defmodule Smee.Publish.Thiss do
       entityID: disco_data.id,
       type: "sp",
       entity_icon_url: Extract.thiss_logo(disco_data, lang),
-      privacy_statement_url: Extract.privacy(disco_data, lang),
+      privacy_statement_url: Extract.privacy(disco_data, lang)
     }
   end
-
 end

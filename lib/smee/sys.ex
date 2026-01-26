@@ -1,5 +1,4 @@
 defmodule Smee.Sys do
-
   alias Smee.SysCfg
   alias Smee.Utils
 
@@ -18,19 +17,20 @@ defmodule Smee.Sys do
   """
   @spec reset_cache() :: {:ok, integer()}
   def reset_cache() do
-    cache_dir = SysCfg.cache_directory()
-                |> Utils.check_cache_dir!()
+    cache_dir =
+      SysCfg.cache_directory()
+      |> Utils.check_cache_dir!()
 
     File.mkdir_p!(cache_dir)
 
-    count = File.ls!(cache_dir)
-            |> Enum.map(fn file -> Path.join(cache_dir, file) end)
-            |> Enum.map(fn file -> File.rm_rf!(file) end)
-            |> Enum.count()
+    count =
+      File.ls!(cache_dir)
+      |> Enum.map(fn file -> Path.join(cache_dir, file) end)
+      |> Enum.map(fn file -> File.rm_rf!(file) end)
+      |> Enum.count()
 
     {:ok, count}
   end
 
   ################################################################################
-
 end

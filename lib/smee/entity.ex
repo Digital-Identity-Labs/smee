@@ -1,5 +1,4 @@
 defmodule Smee.Entity do
-
   @moduledoc """
   `Smee` wraps up metadata for individual entities in %Entity{} structs, and the `Smee.Entity` module contains
     functions that may be useful when working with them.
@@ -24,25 +23,26 @@ defmodule Smee.Entity do
   @enforce_keys [:data]
 
   @type t :: %__MODULE__{
-               metadata_uri: nil | binary(),
-               metadata_uri_hash: nil | binary(),
-               downloaded_at: nil | DateTime.t(),
-               modified_at: nil | DateTime.t(),
-               uri: nil | binary(),
-               uri_hash: nil | binary(),
-               data: nil | binary(),
-               xdoc: nil | tuple(),
-               data_hash: nil | binary(),
-               valid_until: nil | DateTime.t(),
-               label: nil | binary(),
-               size: integer(),
-               compressed: boolean(),
-               changes: integer(),
-               priority: integer(),
-               trustiness: float(),
-               tags: list(binary()),
-               id: nil | binary(),
-             }
+          metadata_uri: nil | binary(),
+          metadata_uri_hash: nil | binary(),
+          downloaded_at: nil | DateTime.t(),
+          modified_at: nil | DateTime.t(),
+          uri: nil | binary(),
+          uri_hash: nil | binary(),
+          data: nil | binary(),
+          xdoc: nil | tuple(),
+          data_hash: nil | binary(),
+          valid_until: nil | DateTime.t(),
+          label: nil | binary(),
+          fedid: nil | binary(),
+          size: integer(),
+          compressed: boolean(),
+          changes: integer(),
+          priority: integer(),
+          trustiness: float(),
+          tags: list(binary()),
+          id: nil | binary()
+        }
 
   @derive {Jason.Encoder, except: [:xdoc]}
   @derive {Inspect, except: [:xdoc, :data]}
@@ -64,7 +64,8 @@ defmodule Smee.Entity do
     priority: 5,
     trustiness: 0.5,
     tags: [],
-    id: nil
+    id: nil,
+    fedid: nil
   ]
 
   @doc """
@@ -83,11 +84,13 @@ defmodule Smee.Entity do
   """
   @spec new(data :: binary(), options :: keyword()) :: Entity.t()
   def new(data, options \\ []) do
-
     data = XmlMunger.process_entity_xml(data)
     dlt = DateTime.utc_now()
-    until = dlt
-            |> DateTime.add(1_209_600, :second)
+
+    until =
+      dlt
+      |> DateTime.add(1_209_600, :second)
+
     dhash = Smee.Utils.sha1(data)
     md_uri = Keyword.get(options, :metadata_uri, nil)
 
@@ -103,11 +106,11 @@ defmodule Smee.Entity do
       metadata_uri_hash: if(md_uri, do: Smee.Utils.sha1(md_uri), else: nil),
       priority: Keyword.get(options, :priority, 5),
       trustiness: Keyword.get(options, :trustiness, 0.5),
-      tags: Utils.tidy_tags(Keyword.get(options, :tags, []))
+      tags: Utils.tidy_tags(Keyword.get(options, :tags, [])),
+      fedid: Keyword.get(options, :fedid, nil)
     }
     |> parse_data()
     |> extract_info()
-
   end
 
   @doc """
@@ -128,6 +131,7 @@ defmodule Smee.Entity do
   """
   @spec derive(data :: binary(), metadata :: Metadata.t(), options :: keyword()) :: Entity.t()
   def derive(data, metadata, options \\ [])
+
   def derive(data, _metadata, _options) when is_nil(data) or data == "" do
     raise "No data!"
   end
@@ -150,11 +154,11 @@ defmodule Smee.Entity do
       metadata_uri_hash: md_uri_hash,
       priority: Keyword.get(options, :priority, metadata.priority),
       trustiness: Keyword.get(options, :trustiness, metadata.trustiness),
-      tags: Utils.tidy_tags(Keyword.get(options, :tags, metadata.tags))
+      tags: Utils.tidy_tags(Keyword.get(options, :tags, metadata.tags)),
+      fedid: Keyword.get(options, :fedid, metadata.fedid)
     }
     |> parse_data()
     |> extract_info()
-
   end
 
   @doc """
@@ -177,9 +181,16 @@ defmodule Smee.Entity do
   @spec update(entity :: Entity.t(), xml :: binary()) :: Entity.t()
   def update(entity, xml) do
     changes = if xml == entity.data, do: entity.changes, else: entity.changes + 1
+
     Map.merge(
       entity,
-      %{data: xml, changes: changes, data_hash: Utils.sha1(xml), size: byte_size(xml), compressed: false}
+      %{
+        data: xml,
+        changes: changes,
+        data_hash: Utils.sha1(xml),
+        size: byte_size(xml),
+        compressed: false
+      }
     )
     |> parse_data()
   end
@@ -275,7 +286,6 @@ defmodule Smee.Entity do
     |> XPaths.idp?()
   end
 
-
   @doc """
   Returns true if the entity has an SP role.
 
@@ -323,9 +333,11 @@ defmodule Smee.Entity do
   end
 
   def filename(entity, :uri) do
-    name = entity.uri
-           |> String.replace(["://", ":", ".", "/"], "_")
-           |> String.trim_trailing("_")
+    name =
+      entity.uri
+      |> String.replace(["://", ":", ".", "/"], "_")
+      |> String.trim_trailing("_")
+
     "#{name}.xml"
   end
 
@@ -335,6 +347,7 @@ defmodule Smee.Entity do
   @spec trustiness(entity :: Entity.t()) :: float()
   def trustiness(entity) do
     trustiness = entity.trustiness
+
     cond do
       is_nil(trustiness) -> 0.0
       trustiness > 0.9 -> 0.9
@@ -349,6 +362,7 @@ defmodule Smee.Entity do
   @spec priority(entity :: Entity.t()) :: integer()
   def priority(entity) do
     priority = entity.priority
+
     cond do
       is_nil(priority) -> 0
       priority > 10 -> 10
@@ -368,7 +382,7 @@ defmodule Smee.Entity do
   end
 
   def expired?(entity) do
-    DateTime.compare(entity.valid_until, DateTime.utc_now) == :lt
+    DateTime.compare(entity.valid_until, DateTime.utc_now()) == :lt
   end
 
   @doc """
@@ -400,6 +414,7 @@ defmodule Smee.Entity do
       {:ok, _xml} -> entity
       {:error, message} -> raise "Invalid entity XML! #{message}"
     end
+
     entity
   end
 
@@ -447,11 +462,14 @@ defmodule Smee.Entity do
     case Entity.xdoc(entity)
          |> XPaths.registration()
          |> Map.get(:instant, nil) do
-      nil -> nil
-      instant -> case DateTime.from_iso8601(instant) do
-                   {:ok, dt, _} -> DateTime.to_date(dt)
-                   {:error, _} -> nil
-                 end
+      nil ->
+        nil
+
+      instant ->
+        case DateTime.from_iso8601(instant) do
+          {:ok, dt, _} -> DateTime.to_date(dt)
+          {:error, _} -> nil
+        end
     end
   end
 
@@ -506,28 +524,31 @@ defmodule Smee.Entity do
   end
 
   defp parse_data(entity) do
-
     xml_data = Entity.xml(entity)
 
     try do
       xdoc = SweetXml.parse(xml_data, namespace_conformant: true, dtd: :none)
       struct(entity, %{xdoc: xdoc})
     rescue
-      MatchError -> exit("Open file limit may be too low! Please use ulimit to increase maximum number of files and restart")
+      MatchError ->
+        exit(
+          "Open file limit may be too low! Please use ulimit to increase maximum number of files and restart"
+        )
+
       _ ->
         reraise "cannot process data for #{entity.uri}! Data is:\n #{xml_data}",
                 __STACKTRACE__
     end
-
   end
 
   @spec extract_info(entity :: Entity.t()) :: Entity.t()
   defp extract_info(entity) do
-
     info = XPaths.entity_ids(entity.xdoc)
 
-    struct(entity, %{uri: info[:uri], id: Utils.normalise_mdid(info[:id]), uri_hash: Utils.sha1(info[:uri])})
-
+    struct(entity, %{
+      uri: info[:uri],
+      id: Utils.normalise_mdid(info[:id]),
+      uri_hash: Utils.sha1(info[:uri])
+    })
   end
-
 end

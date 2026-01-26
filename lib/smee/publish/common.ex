@@ -1,10 +1,8 @@
 defmodule Smee.Publish.Common do
-
   @moduledoc false
 
   defmacro __using__(_opts) do
     quote do
-
       alias Smee.Entity
       alias Smee.Utils
 
@@ -35,14 +33,13 @@ defmodule Smee.Publish.Common do
 
       @spec aggregate_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
       def aggregate_stream(entities, options \\ []) do
-        options = Keyword.merge(options, [in_aggregate: true])
-        Stream.concat(
-          [
-            headers(options),
-            body_stream(entities, options),
-            footers(options)
-          ]
-        )
+        options = Keyword.merge(options, in_aggregate: true)
+
+        Stream.concat([
+          headers(options),
+          body_stream(entities, options),
+          footers(options)
+        ])
       end
 
       @spec raw_stream(entities :: Enumerable.t(), options :: keyword()) :: Enumerable.t()
@@ -73,7 +70,8 @@ defmodule Smee.Publish.Common do
         |> raw_stream(options)
         |> Stream.map(fn {_id, e} -> encode(e, options) end)
         |> Stream.intersperse(separator(options))
-        #|> Stream.drop(-1)
+
+        # |> Stream.drop(-1)
       end
 
       def footers(options \\ []) do
@@ -114,9 +112,11 @@ defmodule Smee.Publish.Common do
         filename = aggregate_filename(options)
         file = File.stream!(filename)
 
-        %File.Stream{} = entities
-                         |> aggregate_stream(options)
-                         |> Enum.into(file)
+        %File.Stream{} =
+          entities
+          |> aggregate_stream(options)
+          |> Enum.into(file)
+
         Path.absname(filename)
       end
 
@@ -127,23 +127,23 @@ defmodule Smee.Publish.Common do
 
         entities
         |> items_stream(options)
-        |> Stream.map(
-             fn {id, item} ->
-               filename = item_filename(id, options)
-               File.write!(filename, item)
-               if options[:alias] && options[:id_type] in [:entity_id, :uri] do
-                 alias = item_aliasname(id, options)
-                 if File.exists?(alias), do: File.rm!(alias)
-                 File.ln_s!(Path.basename(filename), alias)
-               end
-               Path.absname(filename)
-             end
-           )
+        |> Stream.map(fn {id, item} ->
+          filename = item_filename(id, options)
+          File.write!(filename, item)
+
+          if options[:alias] && options[:id_type] in [:entity_id, :uri] do
+            alias = item_aliasname(id, options)
+            if File.exists?(alias), do: File.rm!(alias)
+            File.ln_s!(Path.basename(filename), alias)
+          end
+
+          Path.absname(filename)
+        end)
         |> Enum.to_list()
       end
 
       def item_id(entity, i, options) do
-        case (options[:id_type] || id_type()) do
+        case options[:id_type] || id_type() do
           :hash -> entity.uri_hash
           :entity_id -> entity.uri
           :uri -> entity.uri
@@ -162,11 +162,12 @@ defmodule Smee.Publish.Common do
       end
 
       def aggregate_filename(options) do
-        (options[:filename] || Path.join("#{options[:to]}", "#{format()}_aggregate.#{ext()}"))
+        options[:filename] || Path.join("#{options[:to]}", "#{format()}_aggregate.#{ext()}")
       end
 
       def check_dir!(options) do
         dir = options[:to]
+
         if File.exists?(dir) && !File.dir?(dir) do
           raise "specify to: directory exists but is not a directory!"
         else
@@ -190,7 +191,9 @@ defmodule Smee.Publish.Common do
 
       def compact_map(map) do
         map
-        |> Enum.reject(fn {_k, v} -> (v == false) or is_nil(v) or (is_list(v) and Enum.empty?(v))  end)
+        |> Enum.reject(fn {_k, v} ->
+          v == false or is_nil(v) or (is_list(v) and Enum.empty?(v))
+        end)
         |> Map.new()
       end
 
@@ -198,27 +201,23 @@ defmodule Smee.Publish.Common do
         variable
       end
 
-      defoverridable [
-        format: 0,
-        filter: 2,
-        extract: 2,
-        raw_stream: 2,
-        items_stream: 2,
-        aggregate_stream: 2,
-        encode: 2,
-        headers: 1,
-        footers: 1,
-        body_stream: 2,
-        separator: 1,
-        eslength: 2,
-        items: 2,
-        aggregate: 2,
-        write_aggregate: 2,
-        write_items: 2,
-        ext: 0
-      ]
-
+      defoverridable format: 0,
+                     filter: 2,
+                     extract: 2,
+                     raw_stream: 2,
+                     items_stream: 2,
+                     aggregate_stream: 2,
+                     encode: 2,
+                     headers: 1,
+                     footers: 1,
+                     body_stream: 2,
+                     separator: 1,
+                     eslength: 2,
+                     items: 2,
+                     aggregate: 2,
+                     write_aggregate: 2,
+                     write_items: 2,
+                     ext: 0
     end
   end
-
 end

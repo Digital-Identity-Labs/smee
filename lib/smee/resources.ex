@@ -1,5 +1,4 @@
 defmodule Smee.Resources do
-
   @moduledoc false
 
   @doc false
@@ -9,7 +8,7 @@ defmodule Smee.Resources do
   end
 
   @doc false
-  @spec default_cert_file() ::binary()
+  @spec default_cert_file() :: binary()
   def default_cert_file do
     Application.get_env(:smee, :default_cert_file, CAStore.file_path())
   end
@@ -20,9 +19,5 @@ defmodule Smee.Resources do
     "file:" <> default_cert_file()
   end
 
-
-
   ################################################################################
-
-
 end

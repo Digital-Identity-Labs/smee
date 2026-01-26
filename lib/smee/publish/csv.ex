@@ -1,6 +1,4 @@
 defmodule Smee.Publish.Csv do
-
-
   use Smee.Publish.Common
 
   @moduledoc false
@@ -19,8 +17,9 @@ defmodule Smee.Publish.Csv do
   end
 
   def extract(entity, options) do
-    about_data = Entity.xdoc(entity)
-                 |> Smee.XPaths.about()
+    about_data =
+      Entity.xdoc(entity)
+      |> Smee.XPaths.about()
 
     lang = options[:lang]
     ctype = options[:contact] || "support"
@@ -37,7 +36,6 @@ defmodule Smee.Publish.Csv do
   end
 
   def encode(data, _options) do
-
     [
       [
         data[:id],
@@ -52,11 +50,9 @@ defmodule Smee.Publish.Csv do
     |> Enum.to_list()
     |> List.first()
     |> String.trim()
-
   end
 
   def separator(_options) do
     "\n"
   end
-
 end
