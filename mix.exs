@@ -4,7 +4,7 @@ defmodule Smee.MixProject do
   def project do
     [
       app: :smee,
-      version: "0.5.1",
+      version: "0.6.0",
       elixir: "~> 1.14",
       description: "SAML Metadata Extractor, Etc: A library for processing large collections of SAML metadata",
       package: package(),
@@ -42,10 +42,10 @@ defmodule Smee.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:req, "~> 0.4"},
+{:req, "~> 0.5"},
       {:sweet_xml, "~> 0.7"},
-      {:rambo, "~> 0.3.4"},
-      {:briefly, "~> 0.5.0"},
+      {:rambo, "~> 0.3"},
+      {:briefly, "~> 0.5"},
       #{:easy_ssl, "~> 1.3"},
       {:xmerl_xml_indent, "~> 0.2.0"},
       {:xmlixer, "~> 0.1.1"},
@@ -54,17 +54,18 @@ defmodule Smee.MixProject do
       {:jason, "~> 1.4"},
       {:csv, "~> 3.2"},
       {:zarex, "~> 1.0"},
-      {:iteraptor, "~> 1.14"},
+      {:iteraptor, "~> 1.15"},
 
       {:apex, "~> 1.2", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
       {:excoveralls, "~> 0.14 and >= 0.14.4", only: [:dev, :test]},
       {:benchee, "~> 1.3", only: [:dev, :test]},
-      {:ex_doc, "~> 0.31", only: :dev, runtime: false},
+      {:ex_doc, "~> 0.40.0"},
       {:earmark, "~> 1.4", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
       {:doctor, "~> 0.21", only: :dev, runtime: false},
-      {:ex_json_schema, "~> 0.10.2", only: :test, runtime: false}
+      {:ex_json_schema, "~> 0.10.2", only: :test, runtime: false},
+      {:json_comparator, "~> 1.0", only: :test, runtime: false}
     ]
   end
 
