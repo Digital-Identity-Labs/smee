@@ -116,7 +116,7 @@ defmodule Smee.MDQ do
                |> Metadata.entity(entity_id)
       if entity, do: {:ok, entity}, else: {:error, :http_404}
     rescue
-      e -> {:ok, e.message}
+      e -> {:ok, Exception.message(e)}
     end
 
   end
@@ -143,7 +143,7 @@ defmodule Smee.MDQ do
                |> Metadata.entity(entity_id)
       if entity, do: entity, else: raise "Cannot lookup #{entity_id} in source"
     rescue
-      e -> reraise "Cannot lookup #{entity_id} in source #{e.message}", __STACKTRACE__
+      e -> reraise "Cannot lookup #{entity_id} in source #{Exception.message(e)}", __STACKTRACE__
     end
 
   end

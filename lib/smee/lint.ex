@@ -46,7 +46,7 @@ defmodule Smee.Lint do
       end
 
     rescue
-      e -> {:error, "Unknown XML linter exception has occurred #{e.message}"}
+      e -> {:error, "Unknown XML linter exception has occurred #{Exception.message(e)}"}
     end
 
   end

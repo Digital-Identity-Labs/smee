@@ -30,7 +30,7 @@ defmodule Smee.Security.Mdqt do
       end
 
     rescue
-      e -> reraise "Verification of signed XML has failed! Command was: #{debug_command(command)}\n#{e.message}", __STACKTRACE__
+      e -> reraise "Verification of signed XML has failed! Command was: #{debug_command(command)}\n#{Exception.message(e)}", __STACKTRACE__
     end
 
   end

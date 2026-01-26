@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * No longer grumble about metadata with a 'text/xml' MIME type to avoid STDERR noise and pedantry 
 
 * Fixes and improvements to tests
+* Better, type-safe handling of exception messages
 
 ## Breaking Changes
 * Req new returns it's own Exception types rather than Mint exceptions, so when it returned a Mint.TransportError,

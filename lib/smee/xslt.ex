@@ -27,7 +27,7 @@ defmodule Smee.XSLT do
       end
 
     rescue
-      e -> {:error, "Unknown XSLT exception has occurred #{e.message}"}
+      e -> {:error, "Unknown XSLT exception has occurred #{Exception.message(e)}"}
     end
 
   end

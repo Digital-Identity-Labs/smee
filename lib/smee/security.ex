@@ -26,7 +26,7 @@ defmodule Smee.Security do
     try do
       {:ok, verify!(metadata)}
     rescue
-      e -> {:error, e.message}
+      e -> {:error, Exception.message(e)}
     end
   end
 
