@@ -188,7 +188,7 @@ defmodule Smee.Publish.Extract do
   def thiss_name_tag(disco_data, lang) do
     domains = domains(disco_data, lang)
 
-    if length(domains) > 0 do
+    if domains != [] do
       domains
       |> List.first()
       |> String.split(".")

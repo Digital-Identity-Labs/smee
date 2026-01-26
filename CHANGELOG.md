@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Dependencies have been updated. Req has changed exception behaviour, causing a breaking change, see below.
 * Now developed with Elixir 1.19 and Erlang 28 by default, older versions *should* still work
-* No longer grumble about metadata with a 'text/xml' MIME type to avoid STDERR noise and pedantry 
+* No longer grumble about metadata with a 'text/xml' MIME type to avoid STDERR noise and pedantry
+* Fixed compiler warnings from Elixir 1.19
 
 * Fixes and improvements to tests
 * Better, type-safe handling of exception messages
