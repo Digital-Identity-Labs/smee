@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.6.0]
 
 * Deps have been updated
+* Now developed with Elixir 1.19 and Erlang 28 by default, older versions *should* still work
 
 ## Breaking Changes
 * Req new returns it's own Exception types rather than Mint exceptions, so when it returned a Mint.TransportError,
