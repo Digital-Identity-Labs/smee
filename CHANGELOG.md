@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Breaking Changes
 * Req new returns it's own Exception types rather than Mint exceptions, so when it returned a Mint.TransportError,
   it now returns a Req.TransportError, and so on. This may break code that expects the Mint exceptions.
-
+* Removed deprecated Publish functions (from the earliest releases of Smee) such as stream, aggregate, xml, etc.
 
 ## [0.5.1] - 2025-01-11
 

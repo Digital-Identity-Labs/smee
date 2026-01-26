@@ -70,8 +70,6 @@ defmodule Smee.Publish do
   alias Smee.Entity
   alias Smee.Publish.FrontendUtils
 
-  use Smee.Publish.LegacyCompatibility
-
   @doc """
   Lists the available supported formats, as atoms, that are used with the `:format` tag in other Publish functions.
 
