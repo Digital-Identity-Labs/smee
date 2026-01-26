@@ -15,12 +15,7 @@ defmodule Smee.MixProject do
       test_coverage: [
         tool: ExCoveralls
       ],
-      preferred_cli_env: [
-        coveralls: :test,
-        "coveralls.detail": :test,
-        "coveralls.post": :test,
-        "coveralls.html": :test
-      ],
+      cli: cli(),
       docs: [
         main: "readme",
         logo: "logo.png",
@@ -42,7 +37,7 @@ defmodule Smee.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-{:req, "~> 0.5"},
+      {:req, "~> 0.5"},
       {:sweet_xml, "~> 0.7"},
       {:rambo, "~> 0.3"},
       {:briefly, "~> 0.5"},
@@ -66,6 +61,18 @@ defmodule Smee.MixProject do
       {:doctor, "~> 0.21", only: :dev, runtime: false},
       {:ex_json_schema, "~> 0.10.2", only: :test, runtime: false},
       {:json_comparator, "~> 1.0", only: :test, runtime: false}
+    ]
+  end
+
+
+  def cli do
+    [
+      preferred_envs: [
+        coveralls: :test,
+        "coveralls.detail": :test,
+        "coveralls.post": :test,
+        "coveralls.html": :test
+      ]
     ]
   end
 
