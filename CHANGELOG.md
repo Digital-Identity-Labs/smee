@@ -6,8 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.6.0]
 
-* Deps have been updated
+* Dependencies have been updated. Req has changed exception behaviour, causing a breaking change, see below.
 * Now developed with Elixir 1.19 and Erlang 28 by default, older versions *should* still work
+* No longer grumble about metadata with a 'text/xml' MIME type to avoid STDERR noise and pedantry 
 
 ## Breaking Changes
 * Req new returns it's own Exception types rather than Mint exceptions, so when it returned a Mint.TransportError,
