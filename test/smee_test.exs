@@ -51,7 +51,7 @@ defmodule SmeeTest do
     end
 
     test "Raises an exception if metadata cannot be downloaded" do
-      assert_raise Mint.TransportError,
+      assert_raise Req.TransportError,
                    fn ->
                      Smee.source("http://metadata.example.com/metadata.xml", retries: 0)
                      |> Smee.fetch!()

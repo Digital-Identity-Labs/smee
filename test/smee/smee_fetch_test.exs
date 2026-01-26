@@ -40,7 +40,7 @@ defmodule SmeeFetchTest do
     end
 
     test "it raises an exception if the resource cannot be downloaded" do
-      assert_raise Mint.TransportError,
+      assert_raise  Req.TransportError,
                    fn ->
                      @remote_bad_source
                      |> Fetch.fetch!()
@@ -71,7 +71,7 @@ defmodule SmeeFetchTest do
     end
 
     test "it raises an exception if the resource cannot be downloaded" do
-      {:error, %Mint.TransportError{reason: :nxdomain}} = Fetch.fetch(@remote_bad_source)
+      {:error, %Req.TransportError{reason: :nxdomain}} = Fetch.fetch(@remote_bad_source)
     end
 
   end
@@ -120,7 +120,7 @@ defmodule SmeeFetchTest do
     end
 
     test "it raises an exception if the resource cannot be downloaded" do
-      assert_raise Mint.TransportError,
+      assert_raise Req.TransportError,
                    fn ->
                      @remote_bad_source
                      |> Fetch.remote!()
