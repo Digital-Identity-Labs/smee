@@ -277,6 +277,15 @@ defmodule SmeeMetadataTest do
 
       assert %Metadata{valid_until: ~U[2024-03-27 00:06:57.780708Z]} = Metadata.new(raw_xml)
     end
+
+    test "fedid defaults to nil" do
+      assert %Metadata{fedid: nil} = Metadata.new(@valid_metadata_xml)
+    end
+
+    test "fedid can be set with options" do
+      assert %Metadata{fedid: "federation"} = Metadata.new(@valid_metadata_xml, fedid: "federation")
+    end
+
   end
 
   describe "derive/2" do
@@ -515,8 +524,17 @@ defmodule SmeeMetadataTest do
 
     test "tags can be set with options" do
       assert %Metadata{tags: ["bar", "foo"]} =
-               Metadata.new(@valid_metadata_xml, tags: ["foo", "bar"])
+               Metadata.derive(Metadata.entities(@valid_metadata), tags: ["foo", "bar"])
     end
+
+    test "fedid defaults to nil" do
+      assert %Metadata{fedid: nil} = Metadata.derive(Metadata.entities(@valid_metadata))
+    end
+
+    test "fedid can be set with options" do
+      assert %Metadata{fedid: "federation"} = Metadata.derive(Metadata.entities(@valid_metadata), fedid: "federation")
+    end
+
   end
 
   describe "update/1" do

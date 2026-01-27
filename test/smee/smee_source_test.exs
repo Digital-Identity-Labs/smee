@@ -92,7 +92,8 @@ defmodule SmeeSourceTest do
       assert %Source{
                cache: false
              } =
-               Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+               Source.new(
+                 "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
                  cache: false
                )
     end
@@ -168,6 +169,14 @@ defmodule SmeeSourceTest do
                  tags: ["foo", "bar"]
                )
     end
+
+    test "fedid can be set with options" do
+      assert %Source{fedid: "federation"} = Source.new(
+               "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+               fedid: "federation"
+             )
+    end
+
   end
 
   describe "check/2" do
@@ -233,7 +242,8 @@ defmodule SmeeSourceTest do
   describe "tags/1" do
     test "returns a list of tags" do
       source =
-        Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+        Source.new(
+          "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
           tags: ["a", :b, 5, :b]
         )
 
@@ -242,7 +252,8 @@ defmodule SmeeSourceTest do
 
     test "returns an empty list even if tags value is nil" do
       source =
-        Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+        Source.new(
+          "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
           tags: ["a", :b, 5]
         )
 
@@ -254,7 +265,8 @@ defmodule SmeeSourceTest do
   describe "tag/2" do
     test "sets all tags, overwriting existing tags, as a sorted, unique list of tags as strings" do
       source =
-        Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+        Source.new(
+          "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
           tags: ["a", :b, 5]
         )
 
@@ -263,7 +275,8 @@ defmodule SmeeSourceTest do
 
     test "list can be set with a single string" do
       source =
-        Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+        Source.new(
+          "http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
           tags: ["a", :b, 5]
         )
 

@@ -293,7 +293,9 @@ defmodule Smee.Fetch do
             priority: source.priority,
             trustiness: source.trustiness,
             tags: source.tags,
-            fedid: source.fedid
+            fedid: source.fedid,
+            bilateral: source.bilateral,
+            local: source.local
           )
         }
 
@@ -318,7 +320,9 @@ defmodule Smee.Fetch do
       priority: source.priority,
       trustiness: source.trustiness,
       tags: source.tags,
-      fedid: source.fedid
+      fedid: source.fedid,
+      bilateral: source.bilateral,
+      local: source.local
     )
   end
 

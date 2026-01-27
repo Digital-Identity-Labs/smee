@@ -41,7 +41,9 @@ defmodule Smee.Entity do
           priority: integer(),
           trustiness: float(),
           tags: list(binary()),
-          id: nil | binary()
+          id: nil | binary(),
+          local: boolean(),
+          bilateral: boolean(),
         }
 
   @derive {Jason.Encoder, except: [:xdoc]}
@@ -65,7 +67,9 @@ defmodule Smee.Entity do
     trustiness: 0.5,
     tags: [],
     id: nil,
-    fedid: nil
+    fedid: nil,
+    local: false,
+    bilateral: false
   ]
 
   @doc """
@@ -107,7 +111,9 @@ defmodule Smee.Entity do
       priority: Keyword.get(options, :priority, 5),
       trustiness: Keyword.get(options, :trustiness, 0.5),
       tags: Utils.tidy_tags(Keyword.get(options, :tags, [])),
-      fedid: Keyword.get(options, :fedid, nil)
+      fedid: Keyword.get(options, :fedid, nil),
+      local: !!Keyword.get(options, :local, false),
+      bilateral: !!Keyword.get(options, :bilateral, false)
     }
     |> parse_data()
     |> extract_info()
@@ -126,6 +132,10 @@ defmodule Smee.Entity do
   * valid_until - A DateTime to indicate when an entity expires
   * priority - An integer between 0 and 9 to show priority
   * trustiness - a Float between 0.0 and 0.9 to indicate, well, trustiness.
+  * fedid - a name or tag for the publishing federation or collection
+  * tags - a list of arbitrary tags that you can use for sorting and marking data
+  * local - a boolean to indicate local ownership of the metadata (they're *your* services)
+  * bilateral - a boolean to indicate that the metadata is not from an external full federation
 
   You won't normally need to do this yourself as entities can be extracted from `Smee.Metadata`.
   """
@@ -155,7 +165,9 @@ defmodule Smee.Entity do
       priority: Keyword.get(options, :priority, metadata.priority),
       trustiness: Keyword.get(options, :trustiness, metadata.trustiness),
       tags: Utils.tidy_tags(Keyword.get(options, :tags, metadata.tags)),
-      fedid: Keyword.get(options, :fedid, metadata.fedid)
+      fedid: Keyword.get(options, :fedid, metadata.fedid),
+      local: !!Keyword.get(options, :local, metadata.local),
+      bilateral: !!Keyword.get(options, :bilateral, metadata.bilateral)
     }
     |> parse_data()
     |> extract_info()

@@ -92,6 +92,10 @@ defmodule SmeeEntityTest do
       assert %Entity{id: nil} = Entity.new(@valid_xml)
     end
 
+    test "fedid defaults to nil" do
+      assert %Entity{fedid: nil} = Entity.new(@valid_xml)
+    end
+
     test "downloaded_at can be set with options" do
       %Entity{downloaded_at: @arbitrary_dt} = Entity.new(@valid_xml, downloaded_at: @arbitrary_dt)
     end
@@ -130,6 +134,10 @@ defmodule SmeeEntityTest do
 
     test "tags can be set with options" do
       assert %Entity{tags: ["bar", "foo"]} = Entity.new(@valid_xml, tags: ["foo", "bar"])
+    end
+
+    test "fedid can be set with options" do
+      assert %Entity{fedid: "federation"} = Entity.new(@valid_xml, fedid: "federation")
     end
 
     test "a parsed xmlerl structure is included automatically by default" do
@@ -268,6 +276,13 @@ defmodule SmeeEntityTest do
     test "id defaults to nil" do
       assert %Entity{id: nil} = Entity.new(@valid_xml)
     end
+
+    test "the metadata's fedid is passed on to the resulting entity" do
+      assert %Entity{fedid: "testing"} = Entity.derive(@valid_xml, %{@valid_metadata | fedid: "testing"})
+    end
+
+    # ...
+
   end
 
   describe "update/1" do

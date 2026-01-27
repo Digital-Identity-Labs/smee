@@ -74,6 +74,17 @@ defmodule SmeeFetchTest do
     test "it raises an exception if the resource cannot be downloaded" do
       {:error, %Req.TransportError{reason: :nxdomain}} = Fetch.fetch(@remote_bad_source)
     end
+
+    test "the source's fedid is passed on to the resulting metadata" do
+      assert {:ok, %Metadata{fedid: "testing"}} = Fetch.fetch(%{@remote_aggmd_source | fedid: "testing"})
+    end
+
+    test "the source's tags are passed on to the resulting metadata" do
+      assert {:ok, %Metadata{tags: ["example", "test"]}} = Fetch.fetch(%{@remote_aggmd_source | tags: [:test, :example]})
+    end
+
+    # ...
+
   end
 
   describe "remote/2" do

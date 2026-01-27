@@ -28,7 +28,9 @@ defmodule Smee.Source do
           strict: boolean(),
           tags: list(binary()),
           id: binary() | atom(),
-          fedid: binary() | atom()
+          fedid: binary() | atom(),
+          local: boolean(),
+          bilateral: boolean()
         }
 
   @enforce_keys [:url]
@@ -47,9 +49,10 @@ defmodule Smee.Source do
             strict: false,
             tags: [],
             id: nil,
-            fedid: nil
+            fedid: nil,
+            local: false,
+            bilateral: false
 
-  # Bilateral support?
   @doc """
   Creates a new source struct, describing where and how to find metadata.
 
@@ -71,6 +74,12 @@ defmodule Smee.Source do
     * priority: integer between 0 and 9, used for comparing metadata
     * trustiness: float between 0.0 and 0.9, for comparing metadata
     * strict: defaults to false. If enabled some stricter checks are enabled
+    * fedid - a name or tag for the publishing federation or collection
+    * tags - a list of arbitrary tags that you can use for sorting and marking data
+    * local - a boolean to indicate local ownership of the metadata (they're *your* services)
+    * bilateral - a boolean to indicate that the metadata is not from an external full federation
+
+  Where appropriate values from some options are passed down to the metadata and entities derived from a source.
 
   MDQ sources are intended for use with the `Smee.MDQ` API but will also support normal fetch requests.
 
@@ -90,7 +99,9 @@ defmodule Smee.Source do
       retries: Keyword.get(options, :retries, 5),
       tags: Utils.tidy_tags(Keyword.get(options, :tags, [])),
       id: Keyword.get(options, :id, nil),
-      fedid: Keyword.get(options, :fedid, nil)
+      fedid: Keyword.get(options, :fedid, nil),
+      local: !!Keyword.get(options, :local, false),
+      bilateral: !!Keyword.get(options, :bilateral, false),
     }
     |> fix_type()
     |> fix_url()

@@ -54,7 +54,9 @@ defmodule Smee.Metadata do
           priority: integer(),
           trustiness: float(),
           tags: list(binary()),
-          fedid: nil | binary()
+          fedid: nil | binary(),
+          local: boolean(),
+          bilateral: boolean()
         }
 
   @enforce_keys [:data]
@@ -86,7 +88,9 @@ defmodule Smee.Metadata do
     priority: 5,
     trustiness: 0.5,
     tags: [],
-    fedid: nil
+    fedid: nil,
+    local: false,
+    bilateral: false
   ]
 
   @doc """
@@ -105,6 +109,10 @@ defmodule Smee.Metadata do
   * cert_url - location of a certificate to use for signature verification
   * cert_fingerprint - fingerprint of the certificate to use for certificate verification
   * label - a description for the metadata
+  * fedid - a name or tag for the publishing federation or collection
+  * tags - a list of arbitrary tags that you can use for sorting and marking data
+  * local - a boolean to indicate local ownership of the metadata (they're *your* services)
+  * bilateral - a boolean to indicate that the metadata is not from an external full federation
 
   In most cases it is better to use `Smee.Source` and then `Smee.Fetch` to generate a metadata struct.
 
@@ -133,7 +141,9 @@ defmodule Smee.Metadata do
       priority: Keyword.get(options, :priority, 5),
       trustiness: Keyword.get(options, :trustiness, 0.5),
       tags: Utils.tidy_tags(Keyword.get(options, :tags, [])),
-      fedid: Keyword.get(options, :fedid, nil)
+      fedid: Keyword.get(options, :fedid, nil),
+      local: !!Keyword.get(options, :local, false),
+      bilateral: !!Keyword.get(options, :bilateral, false)
     }
     |> fix_type()
     |> extract_info()
@@ -156,6 +166,10 @@ defmodule Smee.Metadata do
   * cert_url - location of a certificate to use for signature verification
   * cert_fingerprint - fingerprint of the certificate to use for certificate verification
   * label - a description for the metadata
+  * fedid - a name or tag for the publishing federation or collection
+  * tags - a list of arbitrary tags that you can use for sorting and marking data
+  * local - a boolean to indicate local ownership of the metadata (they're *your* services)
+  * bilateral - a boolean to indicate that the metadata is not from an external full federation
 
   """
   @spec derive(data :: Enumerable.t() | Entity.t(), options :: keyword()) :: Metadata.t()
