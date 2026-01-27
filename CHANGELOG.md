@@ -4,16 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.6.0]
+## [0.6.0] - 2026-01-27
 
-* Dependencies have been updated. Req has changed exception behaviour, causing a breaking change, see below.
-* Now developed with Elixir 1.19 and Erlang 28 by default, older versions *should* still work
-* No longer grumble about metadata with a 'text/xml' MIME type to avoid STDERR noise and pedantry
+Mostly a bugfix release, Elixir 1.19 compatibility, and a couple of minor features needed for a project. 
+
+### New Features
+* Tags, fedid, local and bilateral options are now available on Sources, Metadata and Entity structs, and are inherited 
+  between them.
+* Fedid (string) can be used to carry a name or tag for a federation
+* Local (boolean) indicates that all entities are managed/owned by the local institution
+* Bilateral (boolean) indicates that entities are not from a proper federation-managed source 
+
+### Fixes
+* Fixes and improvements to tests
+* Better, type-safe handling of exception messages
 * Fixed compiler warnings from Elixir 1.19
 * There should be no module-attribute compiled regexes now, to make Erlang 28+ happy and avoid the deprecation in Elixir.
 
-* Fixes and improvements to tests
-* Better, type-safe handling of exception messages
+### Improvements
+* Dependencies have been updated. Req has changed exception behaviour, causing a breaking change, see below.
+* Now developed with Elixir 1.19 and Erlang 28 by default, older versions *should* still work
+* No longer grumble about metadata with a 'text/xml' MIME type to avoid STDERR noise and pedantry
 
 ## Breaking Changes
 * Req new returns it's own Exception types rather than Mint exceptions, so when it returned a Mint.TransportError,
@@ -161,6 +172,7 @@ XML storage and publishing bugfixes and small improvements, plus some breaking A
 ## [0.1.0] - 2023-04-11
 Initial release
 
+[0.6.0]: https://github.com/Digital-Identity-Labs/smee/compare/0.5.1...0.6.0
 [0.5.1]: https://github.com/Digital-Identity-Labs/smee/compare/0.5.0...0.5.1
 [0.5.0]: https://github.com/Digital-Identity-Labs/smee/compare/0.4.1...0.5.0
 [0.4.1]: https://github.com/Digital-Identity-Labs/smee/compare/0.4.0...0.4.1

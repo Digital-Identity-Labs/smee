@@ -45,6 +45,10 @@ Smee contain more tools for handling SAML metadata, such as:
 
 * [SmeeFeds](https://github.com/Digital-Identity-Labs/smee_feds) - a federation management extension for use in
   research, testing and development. SmeeFeds has a built-in list of many education and research federations.
+* [SmeeView](https://github.com/Digital-Identity-Labs/smee_view) - an experimental package for extracting information
+  from metadata XML - if it's in there, SmeeView should make it easy to extract and process.
+* SmeeOrgs (Coming Soon) - Extract, merge and enhance Organization information from metadata 
+* SmeeLogos (Coming Soon) - Fetch, process and audit logo data in metadata 
 
 ## Examples
 
@@ -117,7 +121,7 @@ by adding `Smee` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:smee, "~> 0.5.1"}
+    {:smee, "~> 0.6.0"}
   ]
 end
 ```
@@ -219,7 +223,7 @@ If you are comfortable working with Python but Smee's Elixir code is unfamiliar 
 
 ## Copyright and License
 
-Copyright (c) 2023, 2025 Digital Identity Ltd, UK
+Copyright (c) 2023, 2026 Digital Identity Ltd, UK
 
 Smee is Apache 2.0 licensed.
 
