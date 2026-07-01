@@ -62,8 +62,8 @@ defmodule Smee.MixProject do
       {:doctor, "~> 0.21", only: :dev, runtime: false},
       {:ex_json_schema, "~> 0.10", only: :test, runtime: false},
       {:json_comparator, "~> 1.0", only: :test, runtime: false},
-      {:mix_safe, "~> 1.0", only: [:dev, :test], runtime: false},
-      {:mdex, "~> 0.13.2"}
+      {:mdex, "~> 0.13.2"},
+      #{:mix_safe, "~> 1.1", only: [:dev, :test], runtime: false},
       # https://github.com/lucacorti/sassone ?
       # https://hex.pm/packages/cheer
       # https://hex.pm/packages/xm
