@@ -31,6 +31,7 @@ defmodule Smee.XmlCfg do
     ns7: "urn:oasis:names:tc:SAML:metadata:ui",
     ns8: "http://refeds.org/metadata",
     oaf: "http://schemas.eduserv.org.uk/openathens-federation/1.0",
+    oidcmd: "urn:mace:shibboleth:metadata:oidc:1.0",
     privacy: "http://docs.oasis-open.org/wsfed/privacy/200706",
     pyff: "http://pyff.io/NS",
     q1: "urn:oasis:names:tc:SAML:2.0:metadata",
