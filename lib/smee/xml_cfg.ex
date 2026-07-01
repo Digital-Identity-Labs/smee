@@ -29,6 +29,7 @@ defmodule Smee.XmlCfg do
     ns5: "urn:oasis:names:tc:SAML:metadata:algsupport",
     ns6: "urn:oasis:names:tc:SAML:profiles:SSO:idp-discovery-protocol",
     ns7: "urn:oasis:names:tc:SAML:metadata:ui",
+    ns8: "http://refeds.org/metadata",
     oaf: "http://schemas.eduserv.org.uk/openathens-federation/1.0",
     privacy: "http://docs.oasis-open.org/wsfed/privacy/200706",
     pyff: "http://pyff.io/NS",
