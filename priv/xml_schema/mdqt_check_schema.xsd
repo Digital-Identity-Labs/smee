@@ -2,4 +2,7 @@
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://digitalidentitylabs.com/r/schema/saml_metadata_bundle">
   <xs:import namespace="urn:oasis:names:tc:SAML:2.0:metadata" schemaLocation="saml-schema-metadata-2.0.xsd" />
   <xs:import namespace="http://docs.oasis-open.org/wsfed/federation/200706" schemaLocation="ws-federation.xsd" />
+  <xs:import namespace="urn:mace:shibboleth:metadata:oidc:1.0" schemaLocation="saml-metadata-ext-oidcmd.xsd" />
 </xs:schema>
+
+        

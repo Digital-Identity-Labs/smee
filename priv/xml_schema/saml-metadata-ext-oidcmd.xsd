@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:oidcmd="urn:mace:shibboleth:metadata:oidc:1.0" targetNamespace="urn:mace:shibboleth:metadata:oidc:1.0" elementFormDefault="unqualified" attributeFormDefault="unqualified" blockDefault="substitution" version="2.0">
+
+    <annotation>
+        <documentation>
+            Document title: SAML Metadata Extension Schema for OIDC OP/RP information.
+        </documentation>
+    </annotation>
+
+    <simpleType name="string">
+        <restriction base="string">
+            <minLength value="1"/>
+        </restriction>
+    </simpleType>
+
+    <simpleType name="anyURI">
+        <restriction base="anyURI">
+            <minLength value="1"/>
+        </restriction>
+    </simpleType>
+
+    <simpleType name="stringListType">
+        <list itemType="oidcmd:string"/>
+    </simpleType>
+
+    <simpleType name="anyURIListType">
+        <list itemType="oidcmd:anyURI"/>
+    </simpleType>
+
+    <element name="OAuthRPExtensions">
+        <complexType>
+            <sequence>
+                <element ref="oidcmd:default_acr_value" minOccurs="0" maxOccurs="unbounded"/><!-- order matters -->
+                <element ref="oidcmd:request_uri" minOccurs="0" maxOccurs="unbounded"/>
+                <element ref="oidcmd:post_logout_redirect_uri" minOccurs="0" maxOccurs="unbounded" />
+                <any namespace="##other" processContents="lax" minOccurs="0" maxOccurs="unbounded" />
+            </sequence>
+            <attribute name="token_endpoint_auth_method" type="oidcmd:string" />
+            <attribute name="grant_types" type="oidcmd:stringListType" />
+            <attribute name="response_types" type="oidcmd:stringListType" />
+            <attribute name="application_type" type="oidcmd:string" />
+            <attribute name="client_uri" type="oidcmd:anyURI" />
+            <attribute name="scopes" type="oidcmd:stringListType" />
+            <attribute name="software_id" type="oidcmd:string" />
+            <attribute name="software_version" type="oidcmd:string" />
+            <attribute name="sector_identifier_uri" type="oidcmd:anyURI" />
+            <attribute name="id_token_signed_response_alg" type="oidcmd:string" />
+            <attribute name="id_token_encrypted_response_alg" type="oidcmd:string" />
+            <attribute name="id_token_encrypted_response_enc" type="oidcmd:string" />
+            <attribute name="userinfo_signed_response_alg" type="oidcmd:string" />
+            <attribute name="userinfo_encrypted_response_alg" type="oidcmd:string" />
+            <attribute name="userinfo_encrypted_response_enc" type="oidcmd:string" />
+            <attribute name="request_object_signing_alg" type="oidcmd:string" />
+            <attribute name="request_object_encryption_alg" type="oidcmd:string" />
+            <attribute name="request_object_encryption_enc" type="oidcmd:string" />
+            <attribute name="token_endpoint_auth_signing_alg" type="oidcmd:string" />
+            <attribute name="initiate_login_uri" type="oidcmd:anyURI" />
+            <attribute name="default_max_age" type="int" />
+            <attribute name="require_auth_time" type="boolean" />
+            <attribute name="frontchannel_logout_session_required" type="boolean" />
+            <attribute name="backchannel_logout_session_required" type="boolean" />
+            <anyAttribute namespace="##other" processContents="lax" />
+        </complexType>
+    </element>
+
+    <element name="default_acr_value" type="oidcmd:string" />
+    <element name="request_uri" type="oidcmd:anyURI" />
+    <element name="post_logout_redirect_uri" type="oidcmd:anyURI" />
+    
+    <element name="JwksUri" type="oidcmd:anyURI" />
+    <element name="JwksData" type="base64Binary" />
+    <element name="ClientSecret" type="oidcmd:string" />
+    <element name="ClientSecretKeyReference" type="oidcmd:string" />
+
+</schema>
