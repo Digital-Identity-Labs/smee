@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<EntityDescriptor
+        xmlns="urn:oasis:names:tc:SAML:2.0:metadata"
+        xmlns:ds="http://www.w3.org/2000/09/xmldsig#"
+        entityID="https://foo.example.org/adfs">
+  <IDPSSODescriptor protocolSupportEnumeration="http://schemas.xmlsoap.org/ws/2003/07/secext">
+    <KeyDescriptor use="signing">
+      <ds:KeyInfo>
+        <ds:X509Data>
+          <ds:X509Certificate>
+            MIIDRTCCAi2gAwIBAgIJAJWAmqfrwZdvMA0GCSqGSIb3DQEBCwUAMCAxHjAcBgNV
+            BAMTFWFscGhhLmRldi5leGFtcGxlLm9yZzAeFw0xODA2MTgxNjUwMThaFw0xODA3
+            MTgxNjUwMThaMCAxHjAcBgNVBAMTFWFscGhhLmRldi5leGFtcGxlLm9yZzCCASIw
+            DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAMdLNFRwzRYG0CNHc/W8diRpoBOM
+            0pPFs0effNLeYucSC6Q5UWuv5xEHIopRBBvwwg+S68qvPeWegKg7CUUxE+KC0KGO
+            jdQkZNgQxj3ZJBCvbhTqcT/d3aoVp/Y80hbVKKdKPFsTXF5PRt0txNkdRwTbIR8c
+            oWFyBcgmmu9HVx4EkG9hicBO4+BTEyOraSziRfEbSc2VPXdDAF/KQG/ojVaSRzTq
+            YS+QzMo23OtrIErU/KBUE1UxRAAWftO/pzbwG1UsUT1IgqP7llym5aS6NU0kXV1h
+            02Z8DPc+K4R0+3bKXe3av+/gI/5TyQGVCzoDzfFisDQywedRg6t8vdRNa1kCAwEA
+            AaOBgTB/MB0GA1UdDgQWBBT/5yBm3mXtsYDvz11kTHsPVGeRcDBQBgNVHSMESTBH
+            gBT/5yBm3mXtsYDvz11kTHsPVGeRcKEkpCIwIDEeMBwGA1UEAxMVYWxwaGEuZGV2
+            LmV4YW1wbGUub3JnggkAlYCap+vBl28wDAYDVR0TBAUwAwEB/zANBgkqhkiG9w0B
+            AQsFAAOCAQEAZJvp0luHvSlb1pSNpH1roT3R35FyZc+rLJWzmtVAdjt0eQU4q6da
+            /lQ/83ntRj82GOxZEbyJwyhXLaav2nTe7N+wQoz6maTYXMX8Q9DZVLihy1SSrCY6
+            bLi2+byxKORw9GXrVaul8yckElyvx2HxMg8iXcLmuG1pVb1bk8BlnwHNDPZYTNMY
+            iPgHtdsquziKrb08y/fjNiyeEIFlHloK+b4jggjOUbQ/jTkLkG6mkRQwu1NolvvB
+            BBr0q/P8Z86TMmdp1deZEqQMVY6uWNgVs5Ci0piyQdKJjOvaGE/XXItD8blH3d4O
+            SsADjh/HEFpp0Pu5ypQNryzdNL+6sw4XyQ==
+          </ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </KeyDescriptor>
+    <SingleSignOnService Binding="http://schemas.xmlsoap.org/ws/2003/07/secext"
+                         Location="https://foo.example.org/adfs/ls/clientlogon.aspx"/>
+  </IDPSSODescriptor>
+  <SPSSODescriptor protocolSupportEnumeration="http://schemas.xmlsoap.org/ws/2003/07/secext">
+    <AssertionConsumerService Binding="http://schemas.xmlsoap.org/ws/2003/07/secext"
+                              Location="https://foo.example.org/adfs/ls/clientlogon.aspx"
+                              index="0"
+    />
+  </SPSSODescriptor>
+</EntityDescriptor>
