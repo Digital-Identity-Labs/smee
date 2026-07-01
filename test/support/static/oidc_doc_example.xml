@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<md:EntityDescriptor
+        xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+        xmlns:oidcmd="urn:mace:shibboleth:metadata:oidc:1.0"
+        entityID="mockSamlClientId">
+  <md:SPSSODescriptor protocolSupportEnumeration="http://openid.net/specs/openid-connect-core-1_0.html">
+    <md:Extensions>
+      <oidcmd:OAuthRPExtensions
+              grant_types="authorization_code"
+              response_types="code"
+              token_endpoint_auth_method="client_secret_basic"
+              scopes="openid profile" />
+    </md:Extensions>
+    <md:KeyDescriptor>
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <oidcmd:ClientSecret>mockClientSecretValue</oidcmd:ClientSecret>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:NameIDFormat>urn:mace:shibboleth:metadata:oidc:1.0:nameid-format:public</md:NameIDFormat>
+    <md:AssertionConsumerService
+            Binding="https://tools.ietf.org/html/rfc6749#section-3.1.2"
+            Location="https://example.org/cb"
+            index="1"/>
+  </md:SPSSODescriptor>
+</md:EntityDescriptor>
