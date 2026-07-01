@@ -340,7 +340,8 @@ defmodule Smee.Fetch do
         user_agent: Utils.http_agent_name(),
         # http_errors: :raise,
         max_retries: source.retries,
-        retry_delay: &retry_jitter/1
+        retry_delay: &retry_jitter/1,
+        compressed: true
       ],
       extra_options
     )

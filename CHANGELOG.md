@@ -4,12 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.7.0] - 2026-xx-xx
+## [0.7.0] - 2026-07-xx
 
 ### Fixes
 * Metadata files with the rare `xmlns:ns8="http://refeds.org/metadata"` namespace definition can be parsed
 * Metadata files with the rather clever `oidcmd: "urn:mace:shibboleth:metadata:oidc:1.0"` namespace definition can be parsed
 * Smee should now work when compiled into a release and then wrapped by `Burrito`.
+* Req 0.6+ requires the `compressed: true` option, and Smee requires Req 0.6+
 
 ## Improvements
 * XML Schema now include OIDC extensions to SAML Metadata
