@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Improvements
 * XML Schema now include OIDC extensions to SAML Metadata
 * Tests have been added to check compatibility with CAS, ADFS SecExt and OIDC entities in SAML metadata
+* Replace Earmark with MDex in tests for Markdown validation
 
 
 ## [0.6.0] - 2026-01-27

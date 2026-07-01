@@ -230,8 +230,8 @@ defmodule SmeePublishMarkdownTest do
                data
 
       assert data
-             |> Earmark.as_ast!()
-             |> Earmark.transform()
+             |> MDEx.to_html!()
+
     end
 
     # ...
@@ -252,13 +252,19 @@ defmodule SmeePublishMarkdownTest do
         Metadata.stream_entities(@valid_metadata)
         |> ThisModule.items()
 
-      assert Enum.any?(data, fn {i, r} ->
-               String.contains?(r, ~s|https://test.ukfederation.org.uk/entity|)
-             end)
+      assert Enum.any?(
+               data,
+               fn {i, r} ->
+                 String.contains?(r, ~s|https://test.ukfederation.org.uk/entity|)
+               end
+             )
 
-      assert Enum.any?(data, fn {i, r} ->
-               String.contains?(r, ~s|https://indiid.net/idp/shibboleth|)
-             end)
+      assert Enum.any?(
+               data,
+               fn {i, r} ->
+                 String.contains?(r, ~s|https://indiid.net/idp/shibboleth|)
+               end
+             )
     end
 
     test "each item is valid" do
@@ -300,8 +306,7 @@ defmodule SmeePublishMarkdownTest do
       file = File.read!(filename)
 
       assert file
-             |> Earmark.as_ast!()
-             |> Earmark.transform()
+             |> MDEx.to_html!()
     end
   end
 
@@ -340,8 +345,7 @@ defmodule SmeePublishMarkdownTest do
         file = File.read!(filename)
 
         assert file
-               |> Earmark.as_ast!()
-               |> Earmark.transform()
+               |> MDEx.to_html!()
       end
     end
 
