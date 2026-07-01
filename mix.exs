@@ -39,7 +39,7 @@ defmodule Smee.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:req, "~> 0.5"},
+      {:req, "~> 0.6"},
       {:sweet_xml, "~> 0.7"},
       {:rambo, "~> 0.3"},
       {:briefly, "~> 0.5"},
@@ -55,16 +55,14 @@ defmodule Smee.MixProject do
 
       {:apex, "~> 1.2", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.14 and >= 0.14.4", only: [:dev, :test]},
+      {:excoveralls, "~> 0.18", only: [:dev, :test]},
       {:benchee, "~> 1.3", only: [:dev, :test]},
-      {:ex_doc, "~> 0.40.0"}, ## FIX THIS
-      {:earmark, "~> 1.4", only: [:dev, :test], runtime: false},
+      {:ex_doc, "~> 0.40"},
       {:dialyxir, "~> 1.4", only: [:dev], runtime: false},
       {:doctor, "~> 0.21", only: :dev, runtime: false},
-      {:ex_json_schema, "~> 0.10.2", only: :test, runtime: false},
+      {:ex_json_schema, "~> 0.10", only: :test, runtime: false},
       {:json_comparator, "~> 1.0", only: :test, runtime: false},
       {:mix_safe, "~> 1.0", only: [:dev, :test], runtime: false}
-      
       # https://github.com/lucacorti/sassone ?
       # https://hex.pm/packages/cheer
       # https://hex.pm/packages/xm
