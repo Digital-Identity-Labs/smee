@@ -12,11 +12,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Smee should now work when compiled into a release and then wrapped by `Burrito`.
 * Req 0.6+ requires the `compressed: true` option, and Smee requires Req 0.6+
 
+
 ## Improvements
 * XML Schema now include OIDC extensions to SAML Metadata
 * Tests have been added to check compatibility with CAS, ADFS SecExt and OIDC entities in SAML metadata
 * Replace Earmark with MDex in tests for Markdown validation
-
+* Hopefully prevent `Metadata.stream_entities/2` from raising/crashing if it hits entity parsing errors, and add new 
+  `Metadata.stream_entities!` which *does* raise, but hopefully doesn't cause exits.
 
 ## [0.6.0] - 2026-01-27
 

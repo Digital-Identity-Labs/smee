@@ -18,6 +18,11 @@ defmodule SmeeMetadataTest do
                   |> Source.new()
                   |> Fetch.local!()
 
+  @badns_metadata_file "test/support/static/aggregate_with_unknown_ns.xml"
+  @badns_metadata @badns_metadata_file
+                  |> Source.new()
+                  |> Fetch.local!()
+
   @updated_xml String.replace(
                  @valid_metadata_xml,
                  ~s|<mdui:DisplayName xml:lang="en">Indiid</mdui:DisplayName>|,
@@ -794,6 +799,45 @@ defmodule SmeeMetadataTest do
                Metadata.stream_entities(@valid_metadata)
                |> Enum.to_list()
     end
+
+    test "Does not fail with an exception if it encounters an unparsable entity" do
+      assert %Stream{} = Metadata.stream_entities(@badns_metadata)
+
+      assert [
+               %Entity{uri: "https://test.ukfederation.org.uk/entity"},
+               %Entity{uri: "https://indiid.net/idp/shibboleth"},
+             ] =
+               Metadata.stream_entities(@badns_metadata)
+               |> Enum.to_list()
+
+    end
+
+  end
+
+  describe "stream_entities!/2" do
+    test "returns a stream of all entities in the metadata" do
+      assert %Stream{} = Metadata.stream_entities!(@valid_metadata)
+
+      assert [
+               %Entity{uri: "https://test.ukfederation.org.uk/entity"},
+               %Entity{uri: "https://indiid.net/idp/shibboleth"}
+             ] =
+               Metadata.stream_entities!(@valid_metadata)
+               |> Enum.to_list()
+    end
+
+    test "fails with an exception if it encounters unparsable entities" do
+      assert %Stream{} = Metadata.stream_entities!(@badns_metadata)
+
+      assert_raise(
+        RuntimeError,
+        fn -> Metadata.stream_entities!(@badns_metadata)
+              |> Enum.to_list()
+        end
+      )
+
+    end
+    
   end
 
   describe "random_entity/1" do

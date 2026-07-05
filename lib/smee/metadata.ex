@@ -18,6 +18,8 @@ defmodule Smee.Metadata do
 
   """
 
+  require Logger
+
   alias __MODULE__
   alias Smee.Utils
   alias Smee.XmlMunger
@@ -29,35 +31,35 @@ defmodule Smee.Metadata do
   # @metadata_types [:aggregate, :single]
 
   @type t :: %__MODULE__{
-          downloaded_at: nil | DateTime.t(),
-          modified_at: nil | DateTime.t(),
-          url: nil | binary(),
-          id: nil | binary(),
-          type: atom(),
-          size: integer(),
-          data: nil | binary(),
-          url_hash: nil | binary(),
-          data_hash: nil | binary(),
-          etag: nil | binary(),
-          label: nil | binary(),
-          entity_count: integer(),
-          uri: nil | binary(),
-          uri_hash: nil | binary(),
-          file_uid: nil | binary(),
-          valid_until: nil | DateTime.t(),
-          cache_duration: nil | binary(),
-          cert_url: nil | binary(),
-          cert_fingerprint: nil | binary(),
-          verified: boolean(),
-          compressed: boolean(),
-          changes: integer(),
-          priority: integer(),
-          trustiness: float(),
-          tags: list(binary()),
-          fedid: nil | binary(),
-          local: boolean(),
-          bilateral: boolean()
-        }
+               downloaded_at: nil | DateTime.t(),
+               modified_at: nil | DateTime.t(),
+               url: nil | binary(),
+               id: nil | binary(),
+               type: atom(),
+               size: integer(),
+               data: nil | binary(),
+               url_hash: nil | binary(),
+               data_hash: nil | binary(),
+               etag: nil | binary(),
+               label: nil | binary(),
+               entity_count: integer(),
+               uri: nil | binary(),
+               uri_hash: nil | binary(),
+               file_uid: nil | binary(),
+               valid_until: nil | DateTime.t(),
+               cache_duration: nil | binary(),
+               cert_url: nil | binary(),
+               cert_fingerprint: nil | binary(),
+               verified: boolean(),
+               compressed: boolean(),
+               changes: integer(),
+               priority: integer(),
+               trustiness: float(),
+               tags: list(binary()),
+               fedid: nil | binary(),
+               local: boolean(),
+               bilateral: boolean()
+             }
 
   @enforce_keys [:data]
   @derive Jason.Encoder
@@ -341,13 +343,52 @@ defmodule Smee.Metadata do
 
   @doc """
   Returns a stream of all entities in the metadata.
+    
+  Any exceptions that occur while processing an individual record will cause that record to be dropped from the stream,
+    and the stream will continue. Errors will be logged. 
   """
   @spec stream_entities(metadata :: Metadata.t(), options :: keyword()) :: Enumerable.t()
   def stream_entities(metadata, options \\ []) do
     options = Keyword.take(options, [:slim, :compress])
 
     split_to_stream(metadata)
-    |> Stream.map(fn xml -> Smee.Entity.derive(xml, metadata, options) end)
+    |> Stream.map(
+         fn xml ->
+           try do
+             Smee.Entity.derive(xml, metadata, options)
+           rescue
+             oops ->
+               Logger.error("Continuing after failure to stream an entity from metadata: #{Exception.message(oops)}")
+               nil
+           catch
+             :exit, _e -> nil
+           end
+         end
+       )
+    |> Stream.reject(&is_nil/1)
+  end
+
+  @doc """
+  Returns a stream of all entities in the metadata.
+    
+  An error while processing will raise an exception and halt the stream immediately (this is the previous behaviour of
+    `stream_entities/2`), this function has been added just in case you want that sort of thing.
+  """
+  @spec stream_entities!(metadata :: Metadata.t(), options :: keyword()) :: Enumerable.t()
+  def stream_entities!(metadata, options \\ []) do
+    options = Keyword.take(options, [:slim, :compress])
+
+
+    split_to_stream(metadata)
+    |> Stream.map(
+         fn xml ->
+           try do
+             Smee.Entity.derive(xml, metadata, options)
+           catch
+             :exit, e -> raise "Parsing error while processing entity XML! Error is: #{inspect(e)}"
+           end
+         end
+       )
   end
 
   @doc """
@@ -527,17 +568,20 @@ defmodule Smee.Metadata do
     info =
       Regex.replace(~r/>$/, snippet, "\/>")
       |> xmap(
-        uri: ~x"string(/*/@Name)"s,
-        file_uid: ~x"string(/*/@ID)"s,
-        valid_until: ~x"string(/*/@validUntil)"s
-      )
+           uri: ~x"string(/*/@Name)"s,
+           file_uid: ~x"string(/*/@ID)"s,
+           valid_until: ~x"string(/*/@validUntil)"s
+         )
       |> Utils.nillify_map_empties()
 
     info =
-      Map.merge(info, %{
-        uri_hash: Smee.Utils.sha1(info.uri),
-        valid_until: tweak_valid_until(info.valid_until)
-      })
+      Map.merge(
+        info,
+        %{
+          uri_hash: Smee.Utils.sha1(info.uri),
+          valid_until: tweak_valid_until(info.valid_until)
+        }
+      )
 
     Map.merge(metadata, info)
   end
@@ -548,18 +592,21 @@ defmodule Smee.Metadata do
     info =
       metadata.data
       |> xmap(
-        uri: ~x"string(/*/@entityID)"s,
-        file_uid: ~x"string(/*/@ID)"s,
-        cache_duration: ~x"string(/*/@cacheDuration)"s,
-        valid_until: ~x"string(/*/@validUntil)"s
-      )
+           uri: ~x"string(/*/@entityID)"s,
+           file_uid: ~x"string(/*/@ID)"s,
+           cache_duration: ~x"string(/*/@cacheDuration)"s,
+           valid_until: ~x"string(/*/@validUntil)"s
+         )
       |> Utils.nillify_map_empties()
 
     info =
-      Map.merge(info, %{
-        uri_hash: Smee.Utils.sha1(info.uri),
-        valid_until: tweak_valid_until(info.valid_until)
-      })
+      Map.merge(
+        info,
+        %{
+          uri_hash: Smee.Utils.sha1(info.uri),
+          valid_until: tweak_valid_until(info.valid_until)
+        }
+      )
 
     Map.merge(metadata, info)
   end
@@ -603,8 +650,8 @@ defmodule Smee.Metadata do
         IO.warn("DateTime formatted without a Z offset found in metadata, retrying as UTC", [])
 
         if String.ends_with?(date, "Z"),
-          do: raise("Bad date format!"),
-          else: tweak_valid_until(date <> "Z")
+           do: raise("Bad date format!"),
+           else: tweak_valid_until(date <> "Z")
     end
   end
 
