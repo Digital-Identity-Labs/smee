@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Metadata files with the rather clever `oidcmd: "urn:mace:shibboleth:metadata:oidc:1.0"` namespace definition can be parsed
 * Smee should now work when compiled into a release and then wrapped by `Burrito`.
 * Req 0.6+ requires the `compressed: true` option, and Smee requires Req 0.6+
+* SIR federation parsing issue has been fixed, I think.
 
 ## Improvements
 * XML Schema now include OIDC extensions to SAML Metadata

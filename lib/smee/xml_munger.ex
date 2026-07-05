@@ -282,9 +282,9 @@ defmodule Smee.XmlMunger do
   @spec remove_groups(xml :: binary()) :: binary()
   def remove_groups(xml) do
     if contains_entities_groups?(xml) do
-      [top] = Regex.run(top_eds_pattern(), xml, global: false)
-      [bottom] = Regex.run(bot_eds_pattern(), xml, global: false)
-      middle = Regex.replace(all_eds_pattern(), xml, "", global: true)
+      [top] = Regex.run(top_eds_pattern(), xml, global: false, capture: :first)
+      [bottom] = Regex.run(bot_eds_pattern(), xml, global: false, capture: :first)
+      middle = Regex.replace(all_eds_pattern(), xml, "", global: true, capture: :first)
       top <> middle <> bottom
     else
       xml
