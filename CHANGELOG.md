@@ -49,7 +49,7 @@ Mostly a bugfix release, Elixir 1.19 compatibility, and a couple of minor featur
 * No longer grumble about metadata with a 'text/xml' MIME type to avoid STDERR noise and pedantry
 
 ## Breaking Changes
-* Req new returns it's own Exception types rather than Mint exceptions, so when it returned a Mint.TransportError,
+* Req new returns its own Exception types rather than Mint exceptions, so when it returned a Mint.TransportError,
   it now returns a Req.TransportError, and so on. This may break code that expects the Mint exceptions.
 * Removed deprecated Publish functions (from the earliest releases of Smee) such as stream, aggregate, xml, etc.
 

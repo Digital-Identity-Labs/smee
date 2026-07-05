@@ -13,11 +13,11 @@ defmodule Smee.Transform do
   alias Smee.XSLT
   alias Smee.Metadata
 
-  @valid_until_s File.read!("priv/xslt/valid_until.xsl")
-  # @strip_comments_s File.read! "priv/xslt/strip_comments.xsl"
-  @strip_idp_s File.read!("priv/xslt/strip_adfs_idp.xsl")
-  @strip_sp_s File.read!("priv/xslt/strip_adfs_sp.xsl")
-
+  @valid_until_s File.read!(Application.app_dir(:smee, "priv/xslt/valid_until.xsl"))
+  # @strip_comments_s File.read!("Application.app_dir(:smee, priv/xslt/strip_comments.xsl"))
+  @strip_idp_s File.read!(Application.app_dir(:smee, "priv/xslt/strip_adfs_idp.xsl"))
+  @strip_sp_s File.read!(Application.app_dir(:smee, "priv/xslt/strip_adfs_sp.xsl"))
+  
   @doc """
   Applies an XSLT stylesheet to a metadata struct, returning a transformed metadata struct in an :ok/error tuple
   """
