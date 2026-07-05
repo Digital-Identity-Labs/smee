@@ -6,19 +6,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.7.0] - 2026-07-xx
 
+## New Features
+* `Metadata.stream_entities!/2` is a new function that handles errors in the same way the old 
+  `Metadata.stream_entities/2` did. `Metadata.stream_entities/2` *should* now skip any entities with problems.
+
+## Possibly Breaking Changes
+* Minimum version of Elixir is now 1.19
+
 ### Fixes
 * Metadata files with the rare `xmlns:ns8="http://refeds.org/metadata"` namespace definition can be parsed
 * Metadata files with the rather clever `oidcmd: "urn:mace:shibboleth:metadata:oidc:1.0"` namespace definition can be parsed
 * Smee should now work when compiled into a release and then wrapped by `Burrito`.
 * Req 0.6+ requires the `compressed: true` option, and Smee requires Req 0.6+
 
-
 ## Improvements
 * XML Schema now include OIDC extensions to SAML Metadata
 * Tests have been added to check compatibility with CAS, ADFS SecExt and OIDC entities in SAML metadata
 * Replace Earmark with MDex in tests for Markdown validation
 * Hopefully prevent `Metadata.stream_entities/2` from raising/crashing if it hits entity parsing errors, and add new 
-  `Metadata.stream_entities!` which *does* raise, but hopefully doesn't cause exits.
+  `Metadata.stream_entities!/2` which *does* raise, but hopefully doesn't cause exits. 
 
 ## [0.6.0] - 2026-01-27
 
