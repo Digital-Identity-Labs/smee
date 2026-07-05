@@ -13,7 +13,7 @@ defmodule Smee.XSLT do
     # {:ok, xml_stream} = StringIO.open(xml)
 
     {:ok, stylesheet_file} = Briefly.create()
-
+    
     {:ok, fh} = File.open(stylesheet_file, [:write, :utf8])
     IO.write(fh, stylesheet)
     File.close(fh)

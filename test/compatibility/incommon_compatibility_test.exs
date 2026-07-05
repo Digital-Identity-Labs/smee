@@ -11,7 +11,7 @@ defmodule CompatibilityIncommonTest do
   alias Smee.MDQ
 
   @aggregate_url "https://mdq.incommon.org/entities"
-  @aggregate_cert_url "http://md.incommon.org/certs/inc-md-cert-mdq.pem"
+  @aggregate_cert_url "https://mdq.incommon.org/certs/inc-md-cert-mdq.pem"
   @aggregate_cert_fp "F8:4E:F8:47:EF:BB:EE:47:86:32:DB:94:17:8A:31:A6:94:73:19:36"
 
   @mdq_url "https://mdq.incommon.org/"
