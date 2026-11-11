@@ -1,5 +1,5 @@
 [package]
-name = "xml"
+name = "uppsala_xml_processor"
 version = "0.1.0"
 authors = []
 edition = "2021"

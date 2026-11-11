@@ -7,18 +7,6 @@ mod atoms {
 }
 
 
-
-#[rustler::nif]
-fn add(a: i64, b: i64) -> (rustler::Atom,i64) {
-	use rustler::types::atom;
-	let num = do_add(a,b);
-	(atom::ok(),num)
-}
-
-pub fn do_add(a: i64, b: i64) -> i64 {
-	a + b
-}
-
 #[rustler::nif(schedule = "DirtyCpu")]
 fn parse(xml: &str) -> (rustler::Atom,String) {
 	use rustler::types::atom;
@@ -162,4 +150,4 @@ fn do_extract_entities(xml: &str, entity_id: &str) -> Result<Vec<String>,XmlErro
 	Ok(out)
 }
 
-rustler::init!("Elixir.Rusty.XML");
+rustler::init!("Elixir.Smee.XMLProcessor.Uppsala.Native");

@@ -36,5 +36,10 @@ defmodule Smee.SysCfg do
     Application.get_env(:smee, :validity_days, 16)
   end
 
+  @spec xml_processor() :: atom()
+  def xml_processor() do
+    Application.get_env(:smee, :xml_processor, Smee.XMLProcessor.Legacy)
+  end
+  
   ################################################################################
 end

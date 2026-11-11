@@ -1,4 +1,4 @@
-defmodule Smee.Security.Xmlsec1 do
+defmodule Smee.XMLProcessor.Legacy.Xmlsec1 do
   use Memoize
 
   @moduledoc false

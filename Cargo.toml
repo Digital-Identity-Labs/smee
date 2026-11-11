@@ -1,5 +1,5 @@
 [workspace]
 resolver = "2"
 
-members = ["native/xml", "xml_cli"]
+members = ["native/uppsala_xml_processor"]
 

@@ -27,3 +27,5 @@ smee-*.tar
 /out*/
 /published
 /example_scripts/output
+/target
+/priv/native/*.so
