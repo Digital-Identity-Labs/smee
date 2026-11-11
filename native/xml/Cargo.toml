@@ -1,0 +1,13 @@
+[package]
+name = "xml"
+version = "0.1.0"
+authors = []
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib","lib"]
+
+[dependencies]
+rustler = "0.38"
+uppsala = "0.12"
+bergshamra = "0.11"
