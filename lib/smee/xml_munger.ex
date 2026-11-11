@@ -244,6 +244,7 @@ defmodule Smee.XmlMunger do
   @spec snip_aggregate(xml :: binary()) :: binary()
   def snip_aggregate(xml) do
     # TODO this is temp workaround - can be improved
+    #case Regex.run(entities_descriptor_pattern(), xml, capture: :first) do
     case Regex.run(entities_descriptor_pattern(), xml) do
       [capture] ->
         capture

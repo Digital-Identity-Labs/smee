@@ -562,9 +562,9 @@ defmodule Smee.Metadata do
   @spec extract_info(metadata :: Metadata.t()) :: Metadata.t()
   defp extract_info(%{type: :aggregate} = metadata) do
     import SweetXml
-
+    
     snippet = XmlMunger.snip_aggregate(metadata.data)
-
+    
     info =
       Regex.replace(~r/>$/, snippet, "\/>")
       |> xmap(
