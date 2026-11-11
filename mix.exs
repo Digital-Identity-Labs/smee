@@ -52,6 +52,7 @@ defmodule Smee.MixProject do
       {:csv, "~> 3.2"},
       {:zarex, "~> 1.0"},
       {:iteraptor, "~> 1.15"},
+      {:rustler, "~> 0.38.0"},
 
       {:apex, "~> 1.2", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
