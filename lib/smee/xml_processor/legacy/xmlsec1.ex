@@ -9,18 +9,31 @@ defmodule Smee.XMLProcessor.Legacy.Xmlsec1 do
 
   @base_command ~w(verify --enabled-key-data rsa --id-attr:ID urn:oasis:names:tc:SAML:2.0:metadata:EntitiesDescriptor)
 
-  @spec verify!(metadata :: Metadata.t()) :: Metadata.t()
-  def verify!(metadata) do
-    cert_file = SigningCertificate.prepare_file!(metadata)
 
+  @spec verify(metadata :: Metadata.t(), cert_file :: binary(), opts :: keyword()) :: Metadata.t()
+  def verify(metadata, cert_file, opts \\ []) do
+    
     command = build_command(metadata, cert_file)
 
     case Rambo.run("xmlsec1", command, in: metadata.data, log: false) do
-      {:ok, %Rambo{status: 0, out: _out}} -> Map.merge(metadata, %{verified: true})
-      {:error, %Rambo{status: status, err: err}} -> raise(parse_error(status, err))
-      _other -> raise "Unknown xmlsec1 error has occurred. Command was: #{debug_command(command)}"
+      {:ok, %Rambo{status: 0, out: _out}} -> {:ok, Map.merge(metadata, %{verified: true})}
+      {:error, %Rambo{status: status, err: err}} -> {:error, parse_error(status, err)}
+      _other -> {:error, "Unknown xmlsec1 error has occurred. Command was: #{debug_command(command)}"}
     end
   end
+  
+#  @spec verify!(metadata :: Metadata.t()) :: Metadata.t()
+#  def verify!(metadata) do
+#    cert_file = SigningCertificate.prepare_file!(metadata)
+#
+#    command = build_command(metadata, cert_file)
+#
+#    case Rambo.run("xmlsec1", command, in: metadata.data, log: false) do
+#      {:ok, %Rambo{status: 0, out: _out}} -> Map.merge(metadata, %{verified: true})
+#      {:error, %Rambo{status: status, err: err}} -> raise(parse_error(status, err))
+#      _other -> raise "Unknown xmlsec1 error has occurred. Command was: #{debug_command(command)}"
+#    end
+#  end
 
   @spec build_command(metadata :: Metadata.t(), cert_file :: binary()) :: list()
   defp build_command(_metadata, cert_file) do

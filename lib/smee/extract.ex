@@ -9,25 +9,22 @@ defmodule Smee.Extract do
 
   """
 
-  alias Smee.XSLT
+  alias Smee.XMLProcessor
   alias Smee.Metadata
   alias Smee.Entity
 
-  @list_ids_s File.read!(Application.app_dir(:smee, "priv/xslt/list_ids.xsl")) 
-  @list_entity_attrs_s File.read!(Application.app_dir(:smee, "priv/xslt/list_entity_attrs.xsl")) 
+  # @list_ids_s File.read!(Application.app_dir(:smee, "priv/xslt/list_ids.xsl"))
+  @list_entity_attrs_s File.read!(Application.app_dir(:smee, "priv/xslt/list_entity_attrs.xsl"))
   # @list_mdui_s File.read! Path.join(Application.app_dir(:smee, "priv"), "xslt/list_mdui.xsl") 
-  @entity_s File.read!(Application.app_dir(:smee, "priv/xslt/extract_entity.xsl")) 
-  
-  
+  #@entity_s File.read!(Application.app_dir(:smee, "priv/xslt/extract_entity.xsl"))
+
+
   @doc """
   Returns a list of all entity IDs in a Metadata struct.
   """
   @spec list_ids(metadata :: Metadata.t()) :: list(binary())
   def list_ids(metadata) do
-    case XSLT.transform(metadata.data, @list_ids_s, []) do
-      {:ok, txt} -> String.split(txt)
-      {:error, _msg} -> []
-    end
+    XMLProcessor.list_ids(metadata.data)
   end
 
   @doc """
@@ -35,7 +32,7 @@ defmodule Smee.Extract do
   """
   @spec list_entity_attrs(metadata :: Metadata.t()) :: map()
   def list_entity_attrs(%Metadata{} = metadata) do
-    case XSLT.transform(metadata.data, @list_entity_attrs_s, []) do
+    case XMLProcessor.transform(metadata.data, @list_entity_attrs_s, []) do
       {:ok, txt} -> build_ea_tree(txt)
       {:error, _msg} -> %{}
     end
@@ -51,11 +48,9 @@ defmodule Smee.Extract do
   @spec entity!(metadata :: Metadata.t(), uri :: binary()) :: Entity.t()
   def entity!(metadata, uri) do
     data = Metadata.xml_processed(metadata, :strip)
-    
-    case XSLT.transform(data, @entity_s, entityID: uri) do
-      {:ok, ""} -> raise "Cannot find #{uri} in metadata!"
-      {:ok, xml} -> Entity.derive(xml, metadata)
-      {:error, msg} -> raise "Cannot find #{uri} in metadata, error occurred! #{msg}"
+    case XMLProcessor.extract_entity!(data, uri) do
+      nil -> raise "Cannot find #{uri} in metadata!"
+      xml -> Entity.derive(xml, metadata)
     end
   end
 
@@ -64,7 +59,7 @@ defmodule Smee.Extract do
   """
   @spec mdui_info(metadata :: Metadata.t()) :: map()
   def mdui_info(%Metadata{} = metadata) do
-    case XSLT.transform(metadata.data, File.read!("priv/xslt/list_mdui.xsl"), []) do
+    case XMLProcessor.transform(metadata.data, File.read!("priv/xslt/list_mdui.xsl"), []) do
       {:ok, txt} -> build_mdui_records(txt)
       {:error, _msg} -> %{}
     end
@@ -100,24 +95,28 @@ defmodule Smee.Extract do
     txt
     |> String.splitter("\n")
     |> Stream.map(fn line -> String.split(line, "§") end)
-    |> Stream.map(fn parts ->
-      Enum.zip([
-        [
-          :entity_id,
-          :idp_displayname,
-          :idp_description,
-          :idp_information_url,
-          :idp_privacy_url,
-          :sp_displayname,
-          :sp_description,
-          :sp_information_url,
-          :sp_privacy_url,
-          :org_name,
-          :org_displayname
-        ],
-        parts
-      ])
-    end)
+    |> Stream.map(
+         fn parts ->
+           Enum.zip(
+             [
+               [
+                 :entity_id,
+                 :idp_displayname,
+                 :idp_description,
+                 :idp_information_url,
+                 :idp_privacy_url,
+                 :sp_displayname,
+                 :sp_description,
+                 :sp_information_url,
+                 :sp_privacy_url,
+                 :org_name,
+                 :org_displayname
+               ],
+               parts
+             ]
+           )
+         end
+       )
     |> Stream.map(fn tuples -> Map.new(tuples) end)
     |> Enum.to_list()
   end

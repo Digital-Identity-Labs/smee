@@ -134,7 +134,7 @@ defmodule Smee.SigningCertificate do
         {:ok, path}
       else
         {:error,
-         "Certificate fingerprint #{actual_fingerprint} does not match source fingerprint #{src_fingerprint}}"}
+         "Certificate fingerprint #{actual_fingerprint} does not match source fingerprint #{src_fingerprint}"}
       end
     rescue
       _ -> {:error, "Unable to parse certificate #{path}"}

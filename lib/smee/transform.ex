@@ -10,7 +10,7 @@ defmodule Smee.Transform do
 
   """
 
-  alias Smee.XSLT
+  alias Smee.XMLProcessor
   alias Smee.Metadata
 
   @valid_until_s File.read!(Application.app_dir(:smee, "priv/xslt/valid_until.xsl"))
@@ -24,7 +24,7 @@ defmodule Smee.Transform do
   @spec transform(metadata :: Metadata.t(), stylesheet :: binary, params :: keyword()) ::
           {:ok, Metadata.t()} | {:error, binary()}
   def transform(metadata, stylesheet, params \\ []) do
-    case XSLT.transform(metadata.data, stylesheet, params) do
+    case XMLProcessor.transform(metadata.data, stylesheet, params) do
       {:ok, xml} -> {:ok, Metadata.update(metadata, xml)}
       {:error, msg} -> {:error, msg}
     end

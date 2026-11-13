@@ -1,4 +1,7 @@
 defmodule Smee.Security do
+  
+  require Logger
+  
   @moduledoc """
   `Smee.Security` uses XML signatures to provide anti-tampering and origin authentication features.
 
@@ -9,13 +12,16 @@ defmodule Smee.Security do
   """
 
   alias Smee.Metadata
+  alias Smee.XMLProcessor
+  alias Smee.SigningCertificate
 
   @doc """
   Returns a metadata struct with `verified: true` set if verification passes, or raises an exception.
   """
   @spec verify!(metadata :: Metadata.t()) :: Metadata.t()
   def verify!(metadata) do
-    apply(selected_backend(), :verify!, [metadata])
+    cert_file = SigningCertificate.prepare_file!(metadata)
+    XMLProcessor.verify!(metadata, cert_file, [])
   end
 
   @doc """
@@ -23,10 +29,8 @@ defmodule Smee.Security do
   """
   @spec verify(metadata :: Metadata.t()) :: {:ok, Metadata.t()} | {:error, binary()}
   def verify(metadata) do
-    try do
-      {:ok, verify!(metadata)}
-    rescue
-      e -> {:error, Exception.message(e)}
+    with {:ok, cert_file} <- SigningCertificate.prepare_file(metadata) do
+      XMLProcessor.verify(metadata, cert_file, [])
     end
   end
 
@@ -39,22 +43,12 @@ defmodule Smee.Security do
   def verify?(%Metadata{verified: true}), do: true
 
   def verify?(metadata) do
-    try do
-      %Metadata{verified: value} = verify!(metadata)
-      value
-    rescue
-      _ -> false
+    with {:ok, cert_file} <- SigningCertificate.prepare_file(metadata) do
+      XMLProcessor.verify?(metadata, cert_file, [])
+    else
+      _ -> Logger.error("Cannot verify metadata because certificate preparation has failed") 
+        false
     end
   end
 
-  #  def expired?(metadata) do
-  #
-  #  end
-
-  ################################################################################
-
-  @spec selected_backend() :: atom()
-  defp selected_backend() do
-    Smee.SysCfg.security_backend()
-  end
 end
