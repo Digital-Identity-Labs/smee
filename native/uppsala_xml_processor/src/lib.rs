@@ -168,4 +168,21 @@ fn do_extract_entities(xml: &str, entity_id: &str) -> Result<Vec<String>,XmlErro
 	Ok(out)
 }
 
+#[rustler::nif(schedule = "DirtyCpu")]
+fn tidy(xml: &str) -> (rustler::Atom, String) {
+	use rustler::types::atom;
+	match do_tidy(xml) {
+		Ok(doc)  => (atom::ok(), doc),
+		Err(err) => (atom::error(), format!("{}",err))
+	}
+}
+
+fn do_tidy(xml: &str) -> Result<String,XmlError> {
+  use uppsala::{parse, XmlWriteOptions};
+  let doc = parse(xml).unwrap();
+  let opts = XmlWriteOptions::pretty("  ");
+  let out = doc.to_xml_with_options(&opts);
+  Ok(out)
+}
+
 rustler::init!("Elixir.Smee.XMLProcessor.Uppsala.Native");

@@ -6,10 +6,10 @@ defmodule Smee.XMLProcessor.Uppsala do
 
   alias Smee.XMLProcessor.Uppsala.Native
 
-  #  def tidy(xml, opts \\ []) do
-  #    Native.tidy(xml, opts)
-  #  end
-  #
+    def tidy(xml, opts \\ []) do
+      Native.tidy(xml)
+    end
+
   #  def well_formed(xml, opts \\ []) do
   #    Native.well_formed(xml, opts)
   #  end
@@ -18,6 +18,12 @@ defmodule Smee.XMLProcessor.Uppsala do
     Native.validate(xml)
   end
 
+#  def validate(xml, opts \\ []) do
+#    case Native.validate(xml, schema) do
+#
+#    end
+#  end
+  
   def verify(xml, certificates, opts \\ []) do
     Native.verify(xml, certificates)
   end
