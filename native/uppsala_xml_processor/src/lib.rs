@@ -91,16 +91,33 @@ pub fn do_verify(xml: &str, cert: &str) -> Result<bool,bergshamra::Error> {
 #[rustler::nif(schedule = "DirtyCpu")]
 fn transform(xml: &str, xslt: &str) -> (rustler::Atom,String) {
 	use rustler::types::atom;
-	match do_transform(xml, xslt) {
+	match do_transform(xml, xslt, vec![]) {
 		Ok(doc) => (atom::ok(),doc),
 		Err(e)  => (atom::error(), format!("{}",e))
 	}
 }
 
-pub fn do_transform(xml: &str, xslt: &str) -> Result<String,XmlError> {
-	Ok(uppsala::transform(xslt, xml)?)
+#[rustler::nif(schedule = "DirtyCpu")]
+fn transform(xml: &str, xslt: &str, params: Vec<(String,String)>) -> (rustler::Atom,String) {
+
+	use rustler::types::atom;
+	match do_transform(xml, xslt, params) {
+		Ok(doc) => (atom::ok(),doc),
+		Err(e)  => (atom::error(), format!("{}",e))
+	}
 }
 
+pub fn do_transform(xml: &str, xslt: &str, params: Vec<(String,String)>) -> Result<String,XmlError> {
+
+	let xslt_doc = uppsala::parse(xslt)?;
+	let mut stylesheet = uppsala::xslt::Stylesheet::compile(&xslt_doc)?;
+	let mut xml_doc = uppsala::parse(xml)?;
+	xml_doc.prepare_xpath();
+	for (k,v) in params {
+		stylesheet = stylesheet.with_param(k,v);
+	}
+	Ok(stylesheet.transform(&xml_doc)?)
+}
 
 #[rustler::nif(schedule = "DirtyCpu")]
 fn list_ids(xml: &str) -> (rustler::Atom,Vec<String>) {
@@ -139,10 +156,11 @@ fn do_extract_entities(xml: &str, entity_id: &str) -> Result<Vec<String>,XmlErro
 	use uppsala::{parse,XPathEvaluator,XPathValue};
 	let mut doc = parse(xml)?;
 	doc.prepare_xpath();
-	let eval = XPathEvaluator::new().with_max_node_visits(10000000);
+	let mut eval = XPathEvaluator::new().with_max_node_visits(10000000);
+	eval.add_namespace("md", "urn:oasis:names:tc:SAML:2.0:metadata");
 	let root = doc.root();
 	let mut out = vec![];
-	if let XPathValue::NodeSet(nodes) = eval.evaluate(&doc, root, &format!("//md:EntityDescriptor[@entityID='{}']",&entity_id))? {
+	if let XPathValue::NodeSet(nodes) = eval.evaluate(&doc, root, &format!("//md:EntitiesDescriptor/md:EntityDescriptor[@entityID='{}']",&entity_id))? {
 		for node in nodes {
 			out.push(doc.node_to_xml(node));
 		}

@@ -26,7 +26,7 @@ defmodule Smee.XMLProcessor.Legacy do
   def verify(xml, certificates, opts \\ []) do
     Xmlsec1.verify(xml, certificates, opts)
   end
-
+  
   def transform(xml, stylesheet, params, opts \\ []) do
     Xsltproc.transform(xml, stylesheet, params, opts)
   end
