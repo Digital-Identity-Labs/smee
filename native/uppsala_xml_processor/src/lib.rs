@@ -25,6 +25,9 @@ fn do_parse(xml: &str) -> Result<String,XmlError> {
 
 #[rustler::nif(schedule = "DirtyCpu")]
 fn validate(xml: &str, schema: &str) -> (rustler::Atom,String) {
+	
+	  println!("{:#?}", &xml[0..100]);
+	
 	use rustler::types::atom;
 	match do_validate(xml, schema) {
 		Ok(_)  => (atom::ok(),format!("")),
@@ -37,15 +40,15 @@ fn validate(xml: &str, schema: &str) -> (rustler::Atom,String) {
 
 fn setup_validator(schema: &str) -> Result<uppsala::XsdValidator,Vec<XmlError>> {
 	use uppsala::{parse, XsdValidator};
-	let schema_doc= parse(schema).map_err(|e| { vec![e]})?;
+	let schema_doc = parse(schema).map_err(|e| { vec![e]})?;
 	Ok(XsdValidator::from_schema(&schema_doc).map_err(|e| vec![e])?)
-
 }
 
 fn do_validate(xml: &str, schema: &str) -> Result<(),Vec<XmlError>> {
 	use uppsala::parse;
 	let mut out = Vec::new();
-	let validator = setup_validator(schema)?;
+	let mut validator = setup_validator(schema)?;
+	validator.set_lenient(true);
 	let doc = parse(xml).map_err(|e| vec![e])?;
 	for err in validator.validate(&doc) {
 		out.push(uppsala::XmlError::Validation(err));
