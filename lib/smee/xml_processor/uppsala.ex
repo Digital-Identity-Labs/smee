@@ -13,18 +13,21 @@ defmodule Smee.XMLProcessor.Uppsala do
 
   def well_formed(xml, opts \\ []) do
     case Native.parse(xml) do
-      {:ok, xml} -> xml
+      {:ok, xml} -> {:ok, xml}
       {:error, msg} -> {:error, "Invalid XML: #{msg}"}
     end
   end
-  
+
   def validate(xml, opts \\ []) do
     base_schema = File.read!(Resources.saml_metadata_xml_schema_file())
-    schema_dir  = Resources.saml_metadata_xml_schema_dir()
+    schema_dir = Resources.saml_metadata_xml_schema_dir()
     xml = String.trim(xml)
-    Native.validate(xml, base_schema, schema_dir) 
+    case Native.validate(xml, base_schema, schema_dir) do
+      {:ok, validated_xml} -> if(opts[:return_validated], do: {:ok, validated_xml}, else: {:ok, xml})
+      {:error, msg} -> {:error, msg}
+    end
   end
-  
+
   def verify(xml, certificates, opts \\ []) do
     Native.verify(xml, certificates)
   end
