@@ -5,25 +5,28 @@ defmodule Smee.XMLProcessor.Uppsala do
   require Logger
 
   alias Smee.XMLProcessor.Uppsala.Native
+  alias Smee.Resources
 
-    def tidy(xml, opts \\ []) do
-      Native.tidy(xml)
-    end
-
-  #  def well_formed(xml, opts \\ []) do
-  #    Native.well_formed(xml, opts)
-  #  end
-
-  def validate(xml, opts \\ []) do
-    Native.validate(xml)
+  def tidy(xml, opts \\ []) do
+    Native.tidy(xml)
   end
 
-#  def validate(xml, opts \\ []) do
-#    case Native.validate(xml, schema) do
-#
-#    end
-#  end
+  def well_formed(xml, opts \\ []) do
+    case Native.parse(xml) do
+      {:ok, xml} -> xml
+      {:error, msg} -> {:error, "Invalid XML: #{msg}"}
+    end
+  end
   
+  def validate(xml, opts \\ []) do
+    schema = Resources.saml_metadata_xml_schema_file()
+    xml = String.trim(xml)
+    case Native.validate(xml, schema) do
+      {:ok, xml} -> xml
+      {:error, msg} -> {:error, "Invalid XML: #{msg}"}
+    end
+  end
+
   def verify(xml, certificates, opts \\ []) do
     Native.verify(xml, certificates)
   end
