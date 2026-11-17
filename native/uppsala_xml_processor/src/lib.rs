@@ -7,7 +7,6 @@ mod atoms {
     }
 }
 
-
 #[rustler::nif(schedule = "DirtyCpu")]
 fn parse(xml: &str) -> (rustler::Atom,String) {
 	use rustler::types::atom;

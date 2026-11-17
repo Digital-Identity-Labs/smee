@@ -19,14 +19,12 @@ defmodule Smee.XMLProcessor.Uppsala do
   end
   
   def validate(xml, opts \\ []) do
-    schema = Resources.saml_metadata_xml_schema_file()
+    base_schema = File.read!(Resources.saml_metadata_xml_schema_file())
+    schema_dir  = Resources.saml_metadata_xml_schema_dir()
     xml = String.trim(xml)
-    case Native.validate(xml, schema) do
-      {:ok, xml} -> xml
-      {:error, msg} -> {:error, "Invalid XML: #{msg}"}
-    end
+    Native.validate(xml, base_schema, schema_dir) 
   end
-
+  
   def verify(xml, certificates, opts \\ []) do
     Native.verify(xml, certificates)
   end

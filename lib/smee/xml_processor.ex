@@ -29,6 +29,13 @@ defmodule Smee.XMLProcessor do
     apply(backend(opts[:backend]), :validate, [xml, opts])
   end
 
+  def validate!(xml, opts \\ []) do
+    case validate(xml, opts) do
+      {:ok, result} -> result
+      {:error, error} -> raise(error)
+    end
+  end
+  
   def verify(xml, certificates, opts \\ []) do
     apply(backend(opts[:backend]), :verify, [xml, certificates, opts])
   end
