@@ -7,6 +7,11 @@ defmodule Smee.Resources do
     Path.join(Application.app_dir(:smee, "priv"), "xml_schema/mdqt_check_schema.xsd")
   end
 
+  @spec saml_metadata_xml_schema_dir() :: binary()
+  def saml_metadata_xml_schema_dir do
+    Path.join(Application.app_dir(:smee, "priv"), "xml_schema")
+  end
+  
   @doc false
   @spec default_cert_file() :: binary()
   def default_cert_file do
