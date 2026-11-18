@@ -42,8 +42,7 @@ defmodule Smee.XMLProcessor do
 
   def verify!(xml, certificates, opts \\ []) do
     case verify(xml, certificates, opts) do
-      {:ok, true} -> xml
-      {:ok, false} -> raise("Metadata has failed signing verification!")
+      {:ok, _} -> xml
       {:error, error} -> raise(error)
     end
   end

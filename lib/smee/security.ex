@@ -22,8 +22,7 @@ defmodule Smee.Security do
   def verify(metadata) do
     with {:ok, cert_file_path} <- SigningCertificate.prepare_file(metadata) do
       case XMLProcessor.verify(metadata.data, cert_file_path, []) do
-        {:ok, true} -> {:ok, Map.merge(metadata, %{verified: true})}
-        {:ok, false} -> {:error, "Oops"}
+        {:ok, _} -> {:ok, Map.merge(metadata, %{verified: true})}
         {:error, msg} -> {:error, msg}
       end
     end
@@ -36,7 +35,7 @@ defmodule Smee.Security do
   def verify!(metadata) do
     case verify(metadata) do
       {:ok, result} -> result
-      {:ok, msg} -> raise(msg)
+      {:error, msg} -> raise(msg)
     end
   end
   
@@ -52,8 +51,8 @@ defmodule Smee.Security do
     with {:ok, cert_file_path} <- SigningCertificate.prepare_file(metadata) do
       XMLProcessor.verify?(metadata.data, cert_file_path, [])
     else
-      oops ->
-        Logger.error("Cannot verify metadata because certificate preparation has failed: #{Exception.message(oops)}")
+      {:error, msg} ->
+        Logger.error("Cannot verify metadata because certificate preparation has failed: #{msg}")
         false
     end
   end

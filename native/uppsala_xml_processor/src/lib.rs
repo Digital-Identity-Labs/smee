@@ -41,7 +41,7 @@ fn validate(xml: &str, schema: &str, schema_path: Option<&Path>) -> (rustler::At
 	
 	use rustler::types::atom;
 	match do_validate(xml, schema, schema_path) {
-		Ok(d)  => (atom::ok(),xml),
+		Ok(ok)  => (atom::ok(),ok),
 		Err(e) => {
 			let ret = e.iter().map(|err| err.to_string()).collect::<Vec<String>>();
 			(atom::error(),ret.join("\n"))
@@ -67,7 +67,7 @@ fn do_validate(xml: &str, schema: &str, schema_path: Option<&Path> ) -> Result<S
 	if out.len() > 0 {
 		return Err(out);
 	}
-	Ok(doc.to_string())
+	Ok(format!("ok"))
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
