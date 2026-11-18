@@ -35,14 +35,15 @@ defmodule Smee.XMLProcessor do
       {:error, error} -> raise(error)
     end
   end
-  
+
   def verify(xml, certificates, opts \\ []) do
     apply(backend(opts[:backend]), :verify, [xml, certificates, opts])
   end
 
   def verify!(xml, certificates, opts \\ []) do
     case verify(xml, certificates, opts) do
-      {:ok, result} -> result
+      {:ok, true} -> xml
+      {:ok, false} -> raise("Metadata has failed signing verification!")
       {:error, error} -> raise(error)
     end
   end

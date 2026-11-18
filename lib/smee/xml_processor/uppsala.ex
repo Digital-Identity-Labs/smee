@@ -29,7 +29,12 @@ defmodule Smee.XMLProcessor.Uppsala do
   end
 
   def verify(xml, certificates, opts \\ []) do
-    Native.verify(xml, certificates)
+    certificates = File.read!(certificates)
+    case Native.verify(xml, certificates) do
+      {:ok, "true"} -> {:ok, true}
+      {:ok, "false"} -> {:ok, false}
+      {:error, msg} -> {:error, msg}
+    end
   end
 
   def transform(xml, stylesheet, params \\ [], opts \\ []) do

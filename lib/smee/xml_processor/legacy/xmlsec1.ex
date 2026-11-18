@@ -16,7 +16,7 @@ defmodule Smee.XMLProcessor.Legacy.Xmlsec1 do
     command = build_command(metadata, cert_file)
 
     case Rambo.run("xmlsec1", command, in: metadata.data, log: false) do
-      {:ok, %Rambo{status: 0, out: _out}} -> {:ok, Map.merge(metadata, %{verified: true})}
+      {:ok, %Rambo{status: 0, out: _out}} -> {:ok, true}
       {:error, %Rambo{status: status, err: err}} -> {:error, parse_error(status, err)}
       _other -> {:error, "Unknown xmlsec1 error has occurred. Command was: #{debug_command(command)}"}
     end

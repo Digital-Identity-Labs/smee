@@ -41,7 +41,7 @@ fn validate(xml: &str, schema: &str, schema_path: Option<&Path>) -> (rustler::At
 	
 	use rustler::types::atom;
 	match do_validate(xml, schema, schema_path) {
-		Ok(d)  => (atom::ok(),d),
+		Ok(d)  => (atom::ok(),xml),
 		Err(e) => {
 			let ret = e.iter().map(|err| err.to_string()).collect::<Vec<String>>();
 			(atom::error(),ret.join("\n"))

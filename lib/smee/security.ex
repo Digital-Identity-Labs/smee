@@ -1,7 +1,7 @@
 defmodule Smee.Security do
-  
+
   require Logger
-  
+
   @moduledoc """
   `Smee.Security` uses XML signatures to provide anti-tampering and origin authentication features.
 
@@ -16,24 +16,30 @@ defmodule Smee.Security do
   alias Smee.SigningCertificate
 
   @doc """
-  Returns a metadata struct with `verified: true` set if verification passes, or raises an exception.
-  """
-  @spec verify!(metadata :: Metadata.t()) :: Metadata.t()
-  def verify!(metadata) do
-    cert_file = SigningCertificate.prepare_file!(metadata)
-    XMLProcessor.verify!(metadata, cert_file, [])
-  end
-
-  @doc """
   Returns a metadata struct in an :ok/:error tuple, with `verified: true` set if verification passes.
   """
   @spec verify(metadata :: Metadata.t()) :: {:ok, Metadata.t()} | {:error, binary()}
   def verify(metadata) do
-    with {:ok, cert_file} <- SigningCertificate.prepare_file(metadata) do
-      XMLProcessor.verify(metadata, cert_file, [])
+    with {:ok, cert_file_path} <- SigningCertificate.prepare_file(metadata) do
+      case XMLProcessor.verify(metadata.data, cert_file_path, []) do
+        {:ok, true} -> {:ok, Map.merge(metadata, %{verified: true})}
+        {:ok, false} -> {:error, "Oops"}
+        {:error, msg} -> {:error, msg}
+      end
     end
   end
 
+  @doc """
+  Returns a metadata struct with `verified: true` set if verification passes, or raises an exception.
+  """
+  @spec verify!(metadata :: Metadata.t()) :: Metadata.t()
+  def verify!(metadata) do
+    case verify(metadata) do
+      {:ok, result} -> result
+      {:ok, msg} -> raise(msg)
+    end
+  end
+  
   @doc """
   Returns true or false depending on verification status of the passed metadata.
 
@@ -43,10 +49,11 @@ defmodule Smee.Security do
   def verify?(%Metadata{verified: true}), do: true
 
   def verify?(metadata) do
-    with {:ok, cert_file} <- SigningCertificate.prepare_file(metadata) do
-      XMLProcessor.verify?(metadata, cert_file, [])
+    with {:ok, cert_file_path} <- SigningCertificate.prepare_file(metadata) do
+      XMLProcessor.verify?(metadata.data, cert_file_path, [])
     else
-      _ -> Logger.error("Cannot verify metadata because certificate preparation has failed") 
+      oops ->
+        Logger.error("Cannot verify metadata because certificate preparation has failed: #{Exception.message(oops)}")
         false
     end
   end
