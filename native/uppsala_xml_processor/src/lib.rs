@@ -17,8 +17,11 @@ fn parse(xml: &str) -> (rustler::Atom,String) {
 }
 
 fn do_parse(xml: &str) -> Result<String,XmlError> {
-	use uppsala::{parse, XmlWriteOptions};
-	let doc = parse(xml)?;
+	use uppsala::{XmlWriteOptions, Parser};
+	
+	let parser = Parser::new().with_forbid_dtd(true);
+	
+	let doc = parser.parse(xml)?;
 	let opts = XmlWriteOptions::pretty("  ");
 	Ok(doc.to_xml_with_options(&opts))
 }
