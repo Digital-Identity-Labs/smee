@@ -107,18 +107,26 @@ defmodule Smee.Utils do
     file_url?(url)
   end
 
-  @spec file_url_to_path(url :: binary()) :: binary()
+  @spec file_url_to_path(url :: binary() | nil) :: binary()
+  def file_url_to_path(nil) do
+    raise("Not a file:/ URL!")
+  end
+
   def file_url_to_path(url) do
     if file_url?(url), do: URI.parse(url).path, else: raise("Not a file:/ URL!")
   end
 
-  @spec file_url_to_path(url :: binary(), base_path :: binary()) :: binary()
+  @spec file_url_to_path(url :: binary() | nil, base_path :: binary()) :: binary()
+  def file_url_to_path(nil, _base_path) do
+    raise("Not a file:/ URL!")
+  end
+
   def file_url_to_path(url, base_path) do
     reqpath = Path.absname(file_url_to_path(url))
 
     if String.starts_with?(reqpath, base_path),
-      do: reqpath,
-      else: raise("Illegal path outside base directory!")
+       do: reqpath,
+       else: raise("Illegal path outside base directory!")
   end
 
   @spec http_agent_name() :: binary()
@@ -168,10 +176,10 @@ defmodule Smee.Utils do
         String.match?(fp, ~r/^[0-9a-fA-F]{40}$/) ->
           String.upcase(fp)
           |> String.split(
-            ~r|[0-9a-fA-F]{2}|,
-            include_captures: true,
-            trim: true
-          )
+               ~r|[0-9a-fA-F]{2}|,
+               include_captures: true,
+               trim: true
+             )
           |> Enum.join(":")
 
         true ->
@@ -181,12 +189,14 @@ defmodule Smee.Utils do
   end
 
   @spec check_cache_dir!(cache_dir :: binary() | nil) :: binary()
-  def check_cache_dir!(cache_dir) do
-    if cache_dir == nil || cache_dir == "" || cache_dir == File.cwd!() || cache_dir == "/" ||
-         cache_dir == System.user_home!(),
-       do: raise("Cache directory appears to be set to a bad location!")
+  def check_cache_dir!(nil) do
+    raise("Cache directory appears to be set to a bad location!")
+  end
 
-    cache_dir
+  def check_cache_dir!(cache_dir) do
+    if cache_dir == "" || cache_dir == File.cwd!() || cache_dir == "/" ||
+         cache_dir == System.user_home!(),
+       do: raise("Cache directory appears to be set to a bad location!"), else: cache_dir
   end
 
   @spec tidy_tags(tags :: list() | nil) :: list(binary())

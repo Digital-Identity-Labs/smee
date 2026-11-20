@@ -254,14 +254,14 @@ defmodule SmeePublishMarkdownTest do
 
       assert Enum.any?(
                data,
-               fn {i, r} ->
+               fn {_i, r} ->
                  String.contains?(r, ~s|https://test.ukfederation.org.uk/entity|)
                end
              )
 
       assert Enum.any?(
                data,
-               fn {i, r} ->
+               fn {_i, r} ->
                  String.contains?(r, ~s|https://indiid.net/idp/shibboleth|)
                end
              )

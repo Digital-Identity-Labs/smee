@@ -319,7 +319,7 @@ defmodule SmeePublishUdestTest do
         Metadata.stream_entities(@valid_metadata)
         |> ThisModule.items()
 
-      assert Enum.any?(data, fn {i, r} ->
+      assert Enum.any?(data, fn {_i, r} ->
                String.contains?(r, ~s|https://test.ukfederation.org.uk/entity|)
              end)
     end

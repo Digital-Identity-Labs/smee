@@ -204,11 +204,11 @@ defmodule SmeePublishProgressTest do
         Metadata.stream_entities(@valid_metadata)
         |> ThisModule.items()
 
-      refute Enum.any?(data, fn {i, r} ->
+      refute Enum.any?(data, fn {_i, r} ->
                String.contains?(r, ~s|https://test.ukfederation.org.uk/entity|)
              end)
 
-      refute Enum.any?(data, fn {i, r} ->
+      refute Enum.any?(data, fn {_i, r} ->
                String.contains?(r, ~s|https://indiid.net/idp/shibboleth|)
              end)
     end

@@ -262,7 +262,7 @@ defmodule SmeePublishUdiscoTest do
         Metadata.stream_entities(@valid_metadata)
         |> ThisModule.items()
 
-      assert Enum.any?(data, fn {i, r} ->
+      assert Enum.any?(data, fn {_i, r} ->
                String.contains?(r, ~s|https://indiid.net/idp/shibboleth|)
              end)
     end
