@@ -1,4 +1,13 @@
-Application.put_env(:smee, :xml_processor, :uppsala)
+active_xml_backend = case System.get_env("ACTIVE_XML_BACKEND") do
+  "uppsalla" -> :uppsala
+  "legacy" -> :legacy
+  "libxml_tools" -> :libxml_tools
+  _ -> :uppsala
+end
+
+IO.puts "Active XML backend: #{active_xml_backend}"
+
+Application.put_env(:smee, :xml_processor, active_xml_backend)
 
 ex_unit_opts = [
   capture_log: [
