@@ -20,6 +20,7 @@ defmodule Smee.Security do
   """
   @spec verify(metadata :: Metadata.t()) :: {:ok, Metadata.t()} | {:error, binary()}
   def verify(metadata) do
+    
     with {:ok, cert_file_path} <- SigningCertificate.prepare_file(metadata) do
       case XMLProcessor.verify(metadata.data, cert_file_path, []) do
         {:ok, _} -> {:ok, Map.merge(metadata, %{verified: true})}
