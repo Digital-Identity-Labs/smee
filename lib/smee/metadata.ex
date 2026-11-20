@@ -647,7 +647,7 @@ defmodule Smee.Metadata do
         dt
 
       {:error, :missing_offset} ->
-        IO.warn("DateTime formatted without a Z offset found in metadata, retrying as UTC", [])
+        Logger.warning("DateTime formatted without a Z offset found in metadata, retrying as UTC", [])
 
         if String.ends_with?(date, "Z"),
            do: raise("Bad date format!"),
