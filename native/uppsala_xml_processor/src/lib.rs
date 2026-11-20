@@ -3,26 +3,30 @@ use rustler::types::atom;
 use uppsala::XmlError;
 use uppsala::{XPathEvaluator, XPathValue, Parser, XsdValidator, XmlWriteOptions};
 
+const OK : &str = "ok";
+
 mod atoms {
     rustler::atoms! {
         other_atom
     }
 }
 
+
+
 fn safe_parser() -> uppsala::Parser {
     Parser::new().with_forbid_dtd(true)
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]
-fn parse(xml: &str) -> (rustler::Atom,String) {
+fn well_formed(xml: &str) -> (rustler::Atom,String) {
 
-	match do_parse(xml) {
+	match do_well_formed(xml) {
 		Ok(doc)  => (atom::ok(), doc),
 		Err(err) => (atom::error(), format!("{}",err))
 	}
 }
 
-fn do_parse(xml: &str) -> Result<String,XmlError> {
+fn do_well_formed(xml: &str) -> Result<String,XmlError> {
 	
 	let doc = safe_parser().parse(xml)?;
 	let opts = XmlWriteOptions::pretty("  ");
@@ -72,7 +76,7 @@ fn do_validate(xml: &str, schema: &str, schema_path: Option<&Path> ) -> Result<S
 	if out.len() > 0 {
 		return Err(out);
 	}
-	Ok(format!("ok"))
+	Ok(String::from(OK))
 }
 
 #[rustler::nif(schedule = "DirtyCpu")]

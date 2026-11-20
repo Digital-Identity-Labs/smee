@@ -12,7 +12,7 @@ defmodule Smee.XMLProcessor.Uppsala do
   end
 
   def well_formed(xml, opts \\ []) do
-    case Native.parse(xml) do
+    case Native.well_formed(xml) do
       {:ok, _} -> {:ok, xml}
       {:error, msg} -> {:error, "Invalid XML: #{msg}"}
     end

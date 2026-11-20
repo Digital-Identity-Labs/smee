@@ -3,7 +3,7 @@ defmodule Smee.XMLProcessor.Uppsala.Native do
   use Rustler, otp_app: :smee, crate: "uppsala_xml_processor"
 
   ## When the NIF is loaded these functions will be overloaded with native equivalents
-  def parse(_string), do: :erlang.nif_error(:nif_not_loaded)
+  def well_formed(_string), do: :erlang.nif_error(:nif_not_loaded)
   def tidy(_xml), do: :erlang.nif_error(:nif_not_loaded)
   def validate(_xml, _schema), do: :erlang.nif_error(:nif_not_loaded)
   def validate(_xml, _schema, _schema_base_path), do: :erlang.nif_error(:nif_not_loaded)
