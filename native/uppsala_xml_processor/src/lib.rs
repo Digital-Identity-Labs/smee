@@ -111,6 +111,23 @@ pub fn do_verify(xml: &str, cert: &str) -> Result<bool,bergshamra::Error> {
 	}
 }
 
+// use bergshamra_dsig::VerifyResult;
+// 
+// let result = bergshamra_dsig::verify::verify(&ctx, &xml)?;
+// match result {
+//     VerifyResult::Valid { references, .. } => {
+//         let covers_assertion = references.iter().any(|r| {
+//             r.resolved_node.is_some_and(|n| {
+//                 doc.element(n).is_some_and(|e| {
+//                     &*e.name.local_name == "Assertion"
+//                 })
+//             })
+//         });
+//         assert!(covers_assertion, "signature must cover the Assertion");
+//     }
+//     VerifyResult::Invalid { reason } => panic!("invalid: {reason}"),
+// }
+
 #[rustler::nif(schedule = "DirtyCpu")]
 fn transform(xml: &str, xslt: &str) -> (rustler::Atom,String) {
 
