@@ -17,43 +17,53 @@ defmodule Smee.XMLProcessor.XMLProcessorBackend do
           raise "Unimplemented or unsupported XML Processing Backend feature!"
         end
       end
-      
+
+      @impl true
       def id() do
         unquote(id)
       end
 
+      @impl true
       def tools() do
         unquote(tools)
       end
 
+      @impl true
       def tidy(xml, opts \\ []) do
         unimplemented(opts)
       end
 
+      @impl true
       def well_formed(xml, opts \\ []) do
         unimplemented(opts)
       end
 
+      @impl true
       def validate(xml, opts \\ []) do
         unimplemented(opts)
       end
 
+      @impl true
       def verify(xml, certificates, opts \\ []) do
         unimplemented(opts)
       end
 
+      @impl true
       def sign(xml, certificate, opts \\ []) do
         unimplemented(opts)
       end
 
+      @impl true
       def transform(xml, stylesheet, params \\ [], opts \\ []) do
         unimplemented(opts)
       end
 
+      @impl true
       def list_ids(xml, opts \\ []) do
         unimplemented(opts)
       end
 
+      @impl true
       def extract_entity(xml, entity_id, opts \\ []) do
         unimplemented(opts)
       end

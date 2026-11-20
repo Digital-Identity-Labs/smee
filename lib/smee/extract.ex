@@ -48,10 +48,8 @@ defmodule Smee.Extract do
   @spec entity!(metadata :: Metadata.t(), uri :: binary()) :: Entity.t()
   def entity!(metadata, uri) do
     data = Metadata.xml_processed(metadata, :strip)
-    case XMLProcessor.extract_entity!(data, uri) do
-      nil -> raise "Cannot find #{uri} in metadata!"
-      xml -> Entity.derive(xml, metadata)
-    end
+    XMLProcessor.extract_entity!(data, uri)
+    |> Entity.derive(metadata)
   end
 
   @doc """

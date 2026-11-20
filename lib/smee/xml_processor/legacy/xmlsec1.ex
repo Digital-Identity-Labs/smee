@@ -2,8 +2,7 @@ defmodule Smee.XMLProcessor.Legacy.Xmlsec1 do
   use Memoize
 
   @moduledoc false
-
-  alias Smee.SigningCertificate
+  
   alias Smee.Metadata
   alias Smee.SysCfg
 
@@ -11,7 +10,7 @@ defmodule Smee.XMLProcessor.Legacy.Xmlsec1 do
 
 
   @spec verify(metadata :: Metadata.t(), cert_file :: binary(), opts :: keyword()) :: Metadata.t()
-  def verify(metadata, cert_file, opts \\ []) do
+  def verify(metadata, cert_file, _opts \\ []) do
     
     command = build_command(metadata, cert_file)
 

@@ -1,34 +1,38 @@
 defmodule Smee.XMLProcessor.Uppsala do
 
   use Smee.XMLProcessor.XMLProcessorBackend, id: :uppsala
-
+  
   require Logger
 
   alias Smee.XMLProcessor.Uppsala.Native
   alias Smee.Resources
 
-  def tidy(xml, opts \\ []) do
+  @impl true
+  def tidy(xml, _opts \\ []) do
     Native.tidy(xml)
   end
 
-  def well_formed(xml, opts \\ []) do
+  @impl true
+  def well_formed(xml, _opts \\ []) do
     case Native.well_formed(xml) do
       {:ok, _} -> {:ok, xml}
       {:error, msg} -> {:error, "Invalid XML: #{msg}"}
     end
   end
 
-  def validate(xml, opts \\ []) do
+  @impl true
+  def validate(xml, _opts \\ []) do
     base_schema = File.read!(Resources.saml_metadata_xml_schema_file())
     schema_dir = Resources.saml_metadata_xml_schema_dir()
     xml = String.trim(xml)
     case Native.validate(xml, base_schema, schema_dir) do
-      {:ok, validated_xml} -> {:ok, xml} 
+      {:ok, _validated_xml} -> {:ok, xml} 
       {:error, msg} -> {:error, msg}
     end
   end
 
-  def verify(xml, certificates, opts \\ []) do
+  @impl true
+  def verify(xml, certificates, _opts \\ []) do
     certificates = File.read!(certificates)
     case Native.verify(xml, certificates) do
       {:ok, "true"} -> {:ok, true}
@@ -37,11 +41,13 @@ defmodule Smee.XMLProcessor.Uppsala do
     end
   end
 
-  def transform(xml, stylesheet, params \\ [], opts \\ []) do
+  @impl true
+  def transform(xml, stylesheet, params \\ [], _opts \\ []) do
     Native.transform(xml, stylesheet, preprocess_params(params))
   end
 
-  def list_ids(xml, opts \\ []) do
+  @impl true
+  def list_ids(xml, _opts \\ []) do
     case Native.list_ids(xml) do
       {:ok, list} -> list
       {:error, _msg} ->
@@ -52,7 +58,8 @@ defmodule Smee.XMLProcessor.Uppsala do
     end
   end
 
-  def extract_entity(xml, entity_id, opts \\ []) do
+  @impl true
+  def extract_entity(xml, entity_id, _opts \\ []) do
     case Native.extract_entities(xml, sanitize_id!(entity_id)) do
       {:ok, []} -> {:ok, nil}
       {:ok, entities} -> {:ok, List.first(entities)}

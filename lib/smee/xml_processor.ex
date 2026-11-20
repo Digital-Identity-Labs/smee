@@ -7,7 +7,6 @@ defmodule Smee.XMLProcessor do
   }
 
   alias Smee.SysCfg
-  alias Smee.SigningCertificate
 
   def id(opts \\ []) do
     apply(backend(opts[:backend]), :id, [])
