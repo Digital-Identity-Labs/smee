@@ -111,6 +111,7 @@ pub fn do_verify(xml: &str, cert: &str) -> Result<bool,bergshamra::Error> {
 	}
 }
 
+// 1. Example from docs
 // use bergshamra_dsig::VerifyResult;
 // 
 // let result = bergshamra_dsig::verify::verify(&ctx, &xml)?;
@@ -127,6 +128,43 @@ pub fn do_verify(xml: &str, cert: &str) -> Result<bool,bergshamra::Error> {
 //     }
 //     VerifyResult::Invalid { reason } => panic!("invalid: {reason}"),
 // }
+
+// 2. Example from docs updated badly with a broken function return type
+// pub fn do_verify(xml: &str, cert: &str) -> Result<bool, bergshamra::Error, Vec<XmlError>> {
+//     use bergshamra::DsigContext;
+//     use bergshamra::KeysManager;
+//     use bergshamra::VerifyResult;
+// 
+//     let doc = safe_parser().parse(xml).map_err(|e| vec![e])?;
+// 
+//     let key = bergshamra::keys::loader::load_pem_auto(cert.as_bytes(), None)?;
+//     let mut keys_manager = KeysManager::new();
+//     keys_manager.add_key(key);
+//     let mut ctx = DsigContext::new(keys_manager);
+//     ctx.trusted_keys_only = true; // reject inline keys
+//     ctx.strict_verification = true; // reject unexpected reference positions
+//     match bergshamra::verify(&ctx, xml)? {
+//         VerifyResult::Valid { references, .. } => {
+//             
+//             let covers_md = references.iter().any(|r| {
+//                 r.resolved_node.is_some_and(|n| {
+//                     doc.element(n).is_some_and(|e| {
+//                         &*e.name.local_name == "EntitiesDescriptor"
+//                             || &*e.name.local_name == "EntityDescriptor"
+//                     })
+//                 })
+//             });
+// 
+//             if covers_md {
+//                 Ok(true)
+//             } else {
+//                 Ok(false)
+//             }
+//         }
+//         VerifyResult::Invalid { reason: _ } => Ok(false),
+//     }
+// }
+
 
 #[rustler::nif(schedule = "DirtyCpu")]
 fn transform(xml: &str, xslt: &str) -> (rustler::Atom,String) {
