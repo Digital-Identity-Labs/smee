@@ -16,6 +16,20 @@ defmodule Smee.XMLProcessor do
     apply(backend(opts[:backend]), :tools, [])
   end
 
+  def tools_status() do
+    tools()
+    |> Enum.map(fn tool -> if(System.find_executable(tool), do: {tool, true}, else: {tool, false}) end)
+    |> Map.new()
+  end
+
+  def tools_ok?() do
+    if Enum.empty?(tools_status()) do
+      true
+    else
+      Enum.all?(tools_status(), fn {t, s} -> s == true end)
+    end
+  end
+
   def tidy(xml, opts \\ []) do
     apply(backend(opts[:backend]), :tidy, [xml, opts])
   end
