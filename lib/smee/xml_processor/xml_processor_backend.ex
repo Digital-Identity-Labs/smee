@@ -1,11 +1,11 @@
 defmodule Smee.XMLProcessor.XMLProcessorBackend do
 
   defmacro __using__(opts) do
-
-
+    
     id = Keyword.get(opts, :id, nil)
     if is_nil(id), do: raise "XMLProcessorBackend requires an :id!"
     tools = Keyword.get(opts, :tools, [])
+    status = Keyword.get(opts, :status, :normal)
 
     quote do
 
@@ -28,6 +28,11 @@ defmodule Smee.XMLProcessor.XMLProcessorBackend do
         unquote(tools)
       end
 
+      @impl true
+      def status() do
+        unquote(status)
+      end
+      
       @impl true
       def tidy(xml, opts \\ []) do
         unimplemented(opts)
