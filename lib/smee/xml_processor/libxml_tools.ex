@@ -32,5 +32,31 @@ defmodule Smee.XMLProcessor.LibXMLTools do
     Xmlsec1.verify(xml, certificates, opts)
   end
 
+  @impl true
+  def transform(xml, stylesheet, params, opts \\ []) do
+    Xsltproc.transform(xml, stylesheet, params, opts)
+  end
+
+  @impl true
+  def list_ids(xml, _opts \\ []) do
+    case transform(xml, @list_ids_s, []) do
+      {:ok, txt} -> String.split(txt)
+      {:error, _msg} ->
+        Logger.error(
+          "Unable to read list of entity IDs from metadata!"
+        ) # Should I just raise an exception at this point?
+        []
+    end
+  end
+
+  @impl true
+  def extract_entity(xml, entity_id, _opts \\ []) do
+    case transform(xml, @entity_s, entityID: entity_id) do
+      {:ok, nil} -> {:ok, nil}
+      {:ok, ""} -> {:ok, nil}
+      {:ok, xml} -> {:ok, xml}
+      {:error, msg} -> {:error, "Cannot find #{entity_id} in metadata, error occurred! #{msg}"}
+    end
+  end
 
 end
