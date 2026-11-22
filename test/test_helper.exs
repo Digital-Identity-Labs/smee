@@ -5,9 +5,9 @@ active_xml_backend = case System.get_env("ACTIVE_XML_BACKEND") do
   _ -> :uppsala
 end
 
-IO.puts "Active XML backend: #{active_xml_backend}"
-
 Application.put_env(:smee, :xml_processor, active_xml_backend)
+
+IO.puts Smee.XMLProcessor.information()
 
 ex_unit_opts = [
   capture_log: [

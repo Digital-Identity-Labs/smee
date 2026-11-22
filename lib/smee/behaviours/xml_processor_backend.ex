@@ -1,7 +1,8 @@
 defmodule Smee.Behaviours.XMLProcessorBackend do
   
   @callback  id() :: atom() | nil
-  @callback  tools() :: list()
+  @callback  tools() :: list(binary())
+  @callback  status() :: atom()
   @callback  tidy(xml :: binary(), options :: keyword()) :: {:ok, binary()} | {:error, binary()}
   @callback  well_formed(xml :: binary(), options :: keyword()) :: {:ok, binary()} | {:error, binary()}
   @callback  validate(xml :: binary(), options :: keyword()) :: {:ok, binary()} | {:error, binary()}

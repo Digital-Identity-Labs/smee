@@ -38,7 +38,7 @@ defmodule Smee.SysCfg do
 
   @spec xml_processor() :: atom()
   def xml_processor() do
-    Application.get_env(:smee, :xml_processor, Smee.XMLProcessor.Legacy)
+    Application.get_env(:smee, :xml_processor, Smee.XMLProcessor.Uppsala)
   end
   
   ################################################################################

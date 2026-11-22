@@ -1,6 +1,6 @@
 defmodule Smee.XMLProcessor.Legacy do
 
-  use Smee.XMLProcessor.XMLProcessorBackend, id: :legacy, tools: ["xmllint", "xsltproc", "xmlsec1"]
+  use Smee.XMLProcessor.XMLProcessorBackend, id: :legacy, tools: ["xmllint", "xsltproc", "xmlsec1"], status: :deprecated
   
   require Logger
 

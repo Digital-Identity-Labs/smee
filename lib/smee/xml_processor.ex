@@ -16,13 +16,22 @@ defmodule Smee.XMLProcessor do
     apply(backend(opts[:backend]), :tools, [])
   end
 
-  def tools_status() do
-    tools()
+  def status(opts \\ []) do
+    apply(backend(opts[:backend]), :status, [])
+  end
+
+  def information(opts \\ []) do
+    "Active XML Processing Backend: #{id(opts)} #{if(status(opts) != :normal, do: "[#{status(opts)}]", else: "")}"
+    |> String.trim()
+  end
+
+  def tools_status(opts \\ []) do
+    tools(opts)
     |> Enum.map(fn tool -> if(System.find_executable(tool), do: {tool, true}, else: {tool, false}) end)
     |> Map.new()
   end
 
-  def tools_ok?() do
+  def tools_ok?(opts \\ []) do
     if Enum.empty?(tools_status()) do
       true
     else
