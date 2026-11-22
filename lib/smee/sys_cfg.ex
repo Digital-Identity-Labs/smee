@@ -40,6 +40,16 @@ defmodule Smee.SysCfg do
   def xml_processor() do
     Application.get_env(:smee, :xml_processor, Smee.XMLProcessor.Uppsala)
   end
+
+  @spec xml_service_node() :: atom()
+  def xml_service_node() do
+    Application.get_env(:smee, :xml_service_node, "xml@localhost")
+  end
+
+  @spec xml_service_name() :: atom()
+  def xml_service_name() do
+    Application.get_env(:smee, :xml_service_name, :xml_service)
+  end
   
   ################################################################################
 end
