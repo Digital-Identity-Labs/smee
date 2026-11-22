@@ -46,7 +46,7 @@ defmodule Smee.XMLProcessor.LibXMLTools.Xmllint do
 
   @spec lint(xml :: binary(), command_params :: binary(), options :: keyword()) ::
           {:ok, binary()} | {:error, binary()}
-  defp lint(xml, command_params, options) do
+  defp lint(xml, command_params, _options) do
     
     {:ok, xml_file} = Briefly.create()
 
@@ -63,7 +63,7 @@ defmodule Smee.XMLProcessor.LibXMLTools.Xmllint do
           {:ok, xml_out}
         {:ok, %Forcola.Result{status: code, stderr: err}} ->
           {:error, parse_error(code, err)}
-        {:error, {:timeout, %Forcola.Result{stdout: partial}}} ->
+        {:error, {:timeout, %Forcola.Result{stdout: _partial}}} ->
           {:error, "Timeout while calling xmllint because task took over 60 seconds!"}
         {:error, {:spawn, reason}} ->
           {:error, {:spawn, reason}}

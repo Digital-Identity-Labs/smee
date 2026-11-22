@@ -2,8 +2,7 @@ defmodule Smee.XMLProcessor.LibXMLTools.Xmlsec1 do
 
 
   @moduledoc false
-
-  alias Smee.SysCfg
+  
   alias Smee.XMLProcessor.LibXMLTools.Xmlsec1Version
 
   @base_command ~w(xmlsec1 verify --enabled-key-data rsa --id-attr:ID urn:oasis:names:tc:SAML:2.0:metadata:EntitiesDescriptor)
@@ -23,7 +22,7 @@ defmodule Smee.XMLProcessor.LibXMLTools.Xmlsec1 do
     case Forcola.run(command, timeout_ms: 60_000) do
       {:ok, %Forcola.Result{status: 0}} -> {:ok, true}
       {:ok, %Forcola.Result{status: code, stderr: err}} -> {:error, parse_error(code, err)}
-      {:error, {:timeout, %Forcola.Result{stdout: partial}}} ->
+      {:error, {:timeout, %Forcola.Result{stdout: _partial}}} ->
         {:error, "Timeout while calling xmlsec1 because task took over 60 seconds!"}
       {:error, {:spawn, reason}} ->
         {:error, {:spawn, reason}}

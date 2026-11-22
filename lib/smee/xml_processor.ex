@@ -32,10 +32,10 @@ defmodule Smee.XMLProcessor do
   end
 
   def tools_ok?(opts \\ []) do
-    if Enum.empty?(tools_status()) do
+    if Enum.empty?(tools_status(opts)) do
       true
     else
-      Enum.all?(tools_status(), fn {t, s} -> s == true end)
+      Enum.all?(tools_status(opts), fn {_t, s} -> s == true end)
     end
   end
 

@@ -22,7 +22,7 @@ defmodule Smee.XMLProcessor.LibXMLTools.Xmlsec1Version do
       case Forcola.run(["xmlsec1", "version"], timeout_ms: 5_000) do
         {:ok, %Forcola.Result{status: 0, stdout: output}} -> String.trim(output)
         {:ok, %Forcola.Result{status: 1, stdout: output}} -> String.trim(output)
-        {:error, {:timeout, %Forcola.Result{stdout: partial}}} ->
+        {:error, {:timeout, %Forcola.Result{stdout: _partial}}} ->
           {:error, "Timeout while calling xmlsec1 because task took over 5 seconds!"}
         {:error, {:spawn, reason}} ->
           {:error, {:spawn, reason}}

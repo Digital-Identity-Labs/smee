@@ -31,7 +31,7 @@ defmodule Smee.XMLProcessor.LibXMLTools.Xsltproc do
       case Forcola.run(command, timeout_ms: 60_000) do
         {:ok, %Forcola.Result{status: 0, stdout: xml_out}} -> {:ok, xml_out}
         {:ok, %Forcola.Result{status: code, stderr: err}} -> {:error, parse_error(code, err)}
-        {:error, {:timeout, %Forcola.Result{stdout: partial}}} ->
+        {:error, {:timeout, %Forcola.Result{stdout: _partial}}} ->
           {:error, "Timeout while calling xsltproc because task took over 60 seconds!"}
         {:error, {:spawn, reason}} ->
           {:error, {:spawn, reason}}
