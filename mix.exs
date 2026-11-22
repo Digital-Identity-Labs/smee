@@ -42,6 +42,7 @@ defmodule Smee.MixProject do
       {:req, "~> 0.6"},
       {:sweet_xml, "~> 0.7"},
       {:rambo, "~> 0.3"},
+      {:forcola, "~> 0.12.1"},
       {:briefly, "~> 0.5"},
       # {:easy_ssl, "~> 1.3"},
       {:xmerl_xml_indent, "~> 0.2.0"},
