@@ -27,4 +27,10 @@ defmodule Smee.XMLProcessor.LibXMLTools do
     Xmllint.validate(xml, opts)
   end
   
+  @impl true
+  def verify(xml, certificates, opts \\ []) do
+    Xmlsec1.verify(xml, certificates, opts)
+  end
+
+
 end
