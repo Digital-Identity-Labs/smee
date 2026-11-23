@@ -8,7 +8,8 @@ Application.put_env(:smee, :xml_processor, active_xml_backend)
 
 if active_xml_backend == :erpc do
   raise "Cannot currently do full integration tests with erpc backend, sorry!"
-  #Application.put_env(:smee, :xml_service_node, Node.self()) # Oh no. OH NO NO NO
+#  System.cmd("iex", ~w| --sname xml@localhost -S mix|)
+#  Node.connect(:xml@localhost)
 end
 
 IO.puts Smee.XMLProcessor.information()
