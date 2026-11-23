@@ -1,4 +1,4 @@
-defmodule Smee.XMLProcessor.Erpc do
+defmodule Smee.XMLProcessor.ERPC do
 
   use Smee.XMLProcessor.XMLProcessorBackend, id: :erpc, status: :experimental
 

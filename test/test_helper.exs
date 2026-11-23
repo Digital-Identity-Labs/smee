@@ -12,6 +12,11 @@ if active_xml_backend == :erpc do
 #  Node.connect(:xml@localhost)
 end
 
+
+if active_xml_backend == :service do
+  {:ok, pid} = GenServer.start_link(Smee.XMLServer, [], [name: {:global, :xml_service}])
+end
+
 IO.puts Smee.XMLProcessor.information()
 
 ex_unit_opts = [

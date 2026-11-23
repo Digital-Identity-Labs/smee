@@ -4,8 +4,8 @@ defmodule Smee.XMLProcessor do
     legacy: Smee.XMLProcessor.Legacy,
     uppsala: Smee.XMLProcessor.Uppsala,
     libxml_tools: Smee.XMLProcessor.LibXMLTools,
-    erpc: Smee.XMLProcessor.Erpc,
-    ex_proc: Smee.XMLProcessor.ExProc,
+    erpc: Smee.XMLProcessor.ERPC,
+    service: Smee.XMLProcessor.Service,
     http: Smee.XMLProcessor.HTTP,
   }
 
