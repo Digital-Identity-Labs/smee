@@ -1,5 +1,5 @@
 #!/usr/bin/env elixir
-Mix.install([{:smee, ">= 0.5.0"}])
+Mix.install([{:smee, ">= 0.7.0"}])
 
 ## Create a DiscoFeed file from a full federation aggregate
 Smee.Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
