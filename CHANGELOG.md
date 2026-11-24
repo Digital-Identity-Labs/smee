@@ -4,6 +4,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.0] - 2026-11-29
+
+A rewritten XML processing backend, at last!
+
+## New Features
+* The various backend options for tidying, verify and validating XML, applying stylesheets and extracting reports have been
+  replaced by a single `XMLProcessor` module, used by the various user-facing modules such as `Metadata`, `Security` and
+  `Extract`. There are various XMLProcessor backends, the active backend can be selected with a global configuration setting
+   or (only sometimes at present) by passing an option.
+* `Uppsala` is the new default XML backend, and is based on the excellent new Rust libraries Uppsala and Bergshamra by
+  Kushal Das. Uppsala and Bergshamra are now used by PyFF and a few other academic SAML projects. They are actively 
+  developed, well supported and very capable libraries. When using the Uppsala backend no external tools are required, 
+  so Smee will work with default Livebooks and other systems lacking UNIX tools.
+* `LibXMLTools` is an alternative to `Uppsala` that relies on external UNIX tools. It uses the excellent new Forcola package
+  to safely manage external tools. 
+* `Legacy` is a slight rewrite of the original XML backends in Smee - it uses the same tools as LibXML, but is deprecated and
+  will be removed in a future version of Smee (after 0.10 I expect)
+* A few other experimental backends are provided:
+  * `ERPC` will use the specified remote node for XML processing
+  * `Service` will use a local or remote GenServer process to handle XML
+  * `HTTP` will make HTTP calls to a suitable web server for XML processing
+  * `Null` will politely fail to do anything at all
+  These are all under-development and may be dropped in future releases, or maybe fully supported. Do not use in production!
+* `Metadata` has two new functions for listing entity IDs, 
+* `Extract` also has two new functions for listing entity IDs, confusing with the name of the old function in Metadata, list_entity_ids and
+* A rather basic web service for processing XML is provided in `example_scripts` in the Smee git repository.
+
+## Possibly Breaking Changes
+* MDQT and Java tools for XML verification and validation are no longer used by Smee. A new XMLProcessor backend that uses
+  Java commandline tools may be added in a future Smee release if there's any demand or curiousity, but MDQT will not return   
+  as a backend unless I can rewrite it in Rust... I don't know of anyone who actually uses them with Smee, so if you do
+  please let me know.
+* The default XMLProcessor backend is now Uppsala, which uses a Rust NIF to process XML. This may change the memory usage
+  of Smee, temporarily causes larger amounts of RAM to be used by the BEAM process.
+
+### Fixes
+* Compiling Rambo again on modern Macs is no longer required if using the new XML backends
+
+## Improvements
+* You no longer need to specifically compile `Rambo` on Apple Silicon Macs (M1 and later CPUs) unless you configure Smee
+  to use the `Legacy` backend.
+
+## Deprecations
+* The `Legacy` backend is deprecated, as the `Rambo` package it relies on is unmaintained and does not compile properly
+  on modern Macs. It is provided as a fallback option in case the two new supported backends (Uppsala and LibXMLTools)
+  do not behave as expected.
+
+
 ## [0.7.0] - 2026-07-xx
 
 ## New Features
