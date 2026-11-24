@@ -99,6 +99,21 @@ defmodule Smee.XMLProcessor do
     apply(backend(opts[:backend]), :list_ids, [xml])
   end
 
+  def list_ids!(xml, opts \\ []) do
+    case list_ids(xml, opts) do
+      {:ok, data} -> data
+      {:error, msg} -> raise msg
+    end
+  end
+
+  def list_ids_compat(xml, opts \\ []) do
+    case list_ids(xml, opts) do
+      {:ok, data} -> data
+      {:error, msg} -> Logger.error("Unable to read list of entity IDs from metadata! #{msg}")
+                       []
+    end
+  end
+
   def extract_entity(xml, entity_id, opts \\ []) do
     apply(backend(opts[:backend]), :extract_entity, [xml, entity_id, opts])
   end

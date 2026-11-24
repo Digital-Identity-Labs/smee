@@ -21,12 +21,37 @@ defmodule Smee.Extract do
 
   @doc """
   Returns a list of all entity IDs in a Metadata struct.
+ 
+  If an error occurs it will be logged and an empty list returned.
+    
+  This is an old function from the early days of Smee and has caused a few problems, because sometimes it's better to
+    fail properly. It's better to use a newer alternative function if you can.
   """
   @spec list_ids(metadata :: Metadata.t()) :: list(binary())
   def list_ids(metadata) do
-    XMLProcessor.list_ids(metadata.data)
+    XMLProcessor.list_ids_compat(metadata.data)
   end
 
+  @doc """
+  Returns an :ok tuple with a list of all entity IDs in a Metadata struct.
+
+  This is the recommended replacement for `list_ids/1` but `list_entity_ids!/2` returns a list like the original.
+  """
+  @spec list_entity_ids(metadata :: Metadata.t(), opts :: keyword()) :: list(binary())
+  def list_entity_ids(metadata, opts \\ []) do
+    XMLProcessor.list_ids(metadata.data, opts)
+  end
+  
+  @doc """
+  Returns a list of all entity IDs in a Metadata struct.
+
+  Any errors will cause an exception.  
+  """
+  @spec list_entity_ids!(metadata :: Metadata.t(), opts :: keyword()) :: list(binary())
+  def list_entity_ids!(metadata, opts \\ []) do
+    XMLProcessor.list_ids!(metadata.data, opts)
+  end
+  
   @doc """
   Returns a map of all unique metadata Entity Attributes and their values
   """

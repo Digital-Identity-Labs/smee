@@ -23,6 +23,7 @@ defmodule Smee.Metadata do
   alias __MODULE__
   alias Smee.Utils
   alias Smee.XmlMunger
+  alias Smee.XmlProcessor
   alias Smee.Extract
   alias Smee.Entity
   alias Smee.Metadata
@@ -398,7 +399,7 @@ defmodule Smee.Metadata do
   def random_entity(%Metadata{entity_count: max} = metadata) do
     if max > 10 do
       uri =
-        Extract.list_ids(metadata)
+        Extract.list_ids!(metadata)
         |> Enum.random()
 
       Extract.entity!(metadata, uri)
@@ -415,7 +416,7 @@ defmodule Smee.Metadata do
   end
 
   @doc """
-  Returns a list of all entity IDs in the metadata
+  Returns a list of all entity IDs in the metadata (deprecated)
   """
   @spec entity_ids(metadata :: Metadata.t()) :: list(binary())
   def entity_ids(%{type: :single} = metadata) do
@@ -428,6 +429,22 @@ defmodule Smee.Metadata do
     else
       list_ids_int(metadata)
     end
+  end
+
+  @doc """
+  Returns a list of all entity IDs in the metadata in an :ok/:error tuple
+  """
+  @spec list_ids(metadata :: Metadata.t(), opts :: keyword()) :: {:ok, list(binary())} | {:error, binary()}
+  def list_ids(metadata, opts \\ []) do
+    XmlProcessor.list_ids(metadata.data, opts)
+  end
+
+  @doc """
+  Returns a list of all entity IDs in the metadata or raises an exception.
+  """
+  @spec list_ids!(metadata :: Metadata.t(), opts :: keyword()) :: list(binary())
+  def list_ids!(metadata, opts \\ []) do
+    XmlProcessor.list_ids!(metadata.data, opts)
   end
 
   @doc """
@@ -562,9 +579,9 @@ defmodule Smee.Metadata do
   @spec extract_info(metadata :: Metadata.t()) :: Metadata.t()
   defp extract_info(%{type: :aggregate} = metadata) do
     import SweetXml
-    
+
     snippet = XmlMunger.snip_aggregate(metadata.data)
-    
+
     info =
       Regex.replace(~r/>$/, snippet, "\/>")
       |> xmap(

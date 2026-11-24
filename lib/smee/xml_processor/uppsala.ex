@@ -1,7 +1,7 @@
 defmodule Smee.XMLProcessor.Uppsala do
 
   use Smee.XMLProcessor.XMLProcessorBackend, id: :uppsala
-  
+
   require Logger
 
   alias Smee.XMLProcessor.Uppsala.Native
@@ -26,7 +26,7 @@ defmodule Smee.XMLProcessor.Uppsala do
     schema_dir = Resources.saml_metadata_xml_schema_dir()
     xml = String.trim(xml)
     case Native.validate(xml, base_schema, schema_dir) do
-      {:ok, _validated_xml} -> {:ok, xml} 
+      {:ok, _validated_xml} -> {:ok, xml}
       {:error, msg} -> {:error, msg}
     end
   end
@@ -45,17 +45,11 @@ defmodule Smee.XMLProcessor.Uppsala do
   def transform(xml, stylesheet, params \\ [], _opts \\ []) do
     Native.transform(xml, stylesheet, preprocess_params(params))
   end
+  
 
   @impl true
-  def list_ids(xml, _opts \\ []) do
-    case Native.list_ids(xml) do
-      {:ok, list} -> list
-      {:error, _msg} ->
-        Logger.error(
-          "Unable to read list of entity IDs from metadata!"
-        ) # Should I just raise an exception at this point?
-        []
-    end
+  def list_ids(xml, _opts) do
+    Native.list_ids(xml)
   end
 
   @impl true
@@ -65,7 +59,6 @@ defmodule Smee.XMLProcessor.Uppsala do
       {:ok, entities} -> {:ok, List.first(entities)}
       {:error, msg} -> {:error, "Cannot find #{entity_id} in metadata, error occurred! #{msg}"}
     end
-
   end
 
   ####################

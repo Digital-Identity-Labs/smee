@@ -40,12 +40,8 @@ defmodule Smee.XMLProcessor.LibXMLTools do
   @impl true
   def list_ids(xml, _opts) do
     case transform(xml, @list_ids_s, []) do
-      {:ok, txt} -> String.split(txt)
-      {:error, _msg} ->
-        Logger.error(
-          "Unable to read list of entity IDs from metadata!"
-        ) # Should I just raise an exception at this point?
-        []
+      {:ok, txt} -> {:ok, String.split(txt)}
+      {:error, msg} -> {:error, msg}
     end
   end
 
