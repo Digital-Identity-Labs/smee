@@ -4,7 +4,7 @@ defmodule Smee.MixProject do
   def project do
     [
       app: :smee,
-      version: "0.7.0",
+      version: "0.8.0",
       elixir: "~> 1.19",
       description:
         "SAML Metadata Extractor, Etc: A library for processing large collections of SAML metadata",
@@ -20,7 +20,7 @@ defmodule Smee.MixProject do
       docs: [
         main: "readme",
         logo: "logo.png",
-        extras: ["README.md", "LICENSE"]
+        extras: ["README.md", "LICENSE", "CHANGELOG.md", "CODE_OF_CONDUCT.md"]
       ],
       deps: deps(),
       # Needed until issue fixed in Rambo
@@ -65,12 +65,6 @@ defmodule Smee.MixProject do
       {:ex_json_schema, "~> 0.10", only: :test, runtime: false},
       {:json_comparator, "~> 1.0", only: :test, runtime: false},
       {:mdex, "~> 0.13.2"},
-      #{:mix_safe, "~> 1.1", only: [:dev, :test], runtime: false},
-      # https://github.com/lucacorti/sassone ?
-      # https://hex.pm/packages/cheer
-      # https://hex.pm/packages/xm
-      # https://hex.pm/packages/forcola
-
     ]
   end
 
