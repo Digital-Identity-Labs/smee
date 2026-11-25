@@ -45,6 +45,8 @@ A rewritten XML processing backend, at last! 🎉
 ### Improvements
 * You no longer need to specifically compile `Rambo` on Apple Silicon Macs (M1 and later CPUs) unless you configure Smee
   to use the `Legacy` backend.
+* Tests should run a little more quickly and the HTTP cache for large live metadata files is warmed before running tests
+* Test output is clearer: messages while starting, and log output is hidden so the nice green dots aren't interrupted.
 
 ### Deprecations
 * The `Smee.XMLProcessor.Legacy` backend is deprecated, as the `Rambo` package it relies on is unmaintained and does not

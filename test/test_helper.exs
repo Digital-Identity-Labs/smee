@@ -1,4 +1,4 @@
-active_xml_backend = System.get_env("ACTIVE_XML_BACKEND")
+active_xml_backend = System.get_env("ACTIVE_XML_BACKEND", "uppsala")
                      |> String.downcase()
                      |> String.trim()
                      |> String.to_atom()
@@ -19,9 +19,19 @@ end
 
 IO.puts Smee.XMLProcessor.information()
 
+IO.puts "Priming Smee HTTP cache with UK Federation metadata, and storing local copy in test/support/dynamic..."
+ukfmd = Smee.Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+|> Smee.fetch!()
+File.write!("test/support/dynamic/ukfederation-metadata.xml", ukfmd.data)
+
+log_level = System.get_env("SMEE_TEST_LOG", "error")
+                     |> String.downcase()
+                     |> String.trim()
+                     |> String.to_atom()
+IO.puts "Smee logs below level #{log_level} have been captured and hidden"
 ex_unit_opts = [
   capture_log: [
-    level: :error
+    level: log_level
   ]
 ]
 
