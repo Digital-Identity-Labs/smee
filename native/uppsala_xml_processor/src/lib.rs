@@ -252,7 +252,7 @@ fn tidy(xml: &str) -> (rustler::Atom, String) {
 }
 
 fn do_tidy(xml: &str) -> Result<String, XmlError> {
-    let doc = safe_parser().parse(xml).unwrap();
+    let doc = safe_parser().parse(xml)?;
     let opts = XmlWriteOptions::pretty("  ");
     let out = doc.to_xml_with_options(&opts);
     Ok(out)
