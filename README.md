@@ -25,6 +25,7 @@ projects. Smee can be used within applications or in simpler scripts for process
 * Access XML using Erlang's Xmerl library (sweetened by SweetXML)
 * Recombine entity streams into aggregates or other data formats
 * Can be used with applications or in simple .exs scripts
+* Swappable XML-processing backends: Rust NIF, external LibXML tools or distributed processing 
 
 The top level `Smee` module contains simplified, top level functions better suited to simpler scripts. Other modules in
 Smee contain more tools for handling SAML metadata, such as:
@@ -47,8 +48,8 @@ Smee contain more tools for handling SAML metadata, such as:
   research, testing and development. SmeeFeds has a built-in list of many education and research federations.
 * [SmeeView](https://github.com/Digital-Identity-Labs/smee_view) - an experimental package for extracting information
   from metadata XML - if it's in there, SmeeView should make it easy to extract and process.
-* SmeeOrgs (Coming Soon) - Extract, merge and enhance Organization information from metadata 
-* SmeeLogos (Coming Soon) - Fetch, process and audit logo data in metadata 
+* [SmeeOrgs](https://github.com/Digital-Identity-Labs/smee_orgs) - Extract, merge and enhance Organization information from metadata 
+* [SmeeLogos](https://github.com/Digital-Identity-Labs/smee_logos) - Fetch, process and audit logo data in metadata 
 
 ## Examples
 
@@ -121,15 +122,49 @@ by adding `Smee` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:smee, "~> 0.6.0"}
+    {:smee, "~> 0.8.0"}
   ]
 end
 ```
 
-### Backend tools
+## XML Backends
 
-**Please note:** Smee does not do all processing itself using Elixir - it sometimes cheats (OK, it often cheats) by sending data to
-external programs for processing. At the moment it requires the following commandline utilities:
+It is now possible to select an XML-processing backend. The XML backend is responsible for tidying, verify and validating XML,
+applying stylesheets and extracting reports. 
+
+### Selecting an XML backend
+
+Currently three backends are supported:
+
+* `:uppsala` - `Smee.XMLProcessor.Uppsala` Uses a Rust NIF embedded into Smee (the default)
+* `:libxml_tools` - `Smee.XMLProcessor.LibXMLTools` Uses external UNIX tools from the LibXML project
+* `:legacy` - `Smee.XMLProcessor.Legacy` Uses external UNIX tools from the LibXML project (deprecated, see below)
+
+The active backend can be selected using a config option in your application:
+
+```elixir
+# Use a shortcut name for a built-in backend
+config :smee, :xml_processor, :libxml_tools
+```
+
+```elixir
+# Specify a module directly, useful when writing your own backend
+config :smee, :xml_processor, Smee.XMLProcessor.Uppsala
+```
+
+If you are happy to use the default backend (`Smee.XMLProcessor.Uppsala`) then no configuration is necessary. You will
+almost certainly not need to use the backend directly.
+
+### Supported XML Backends
+
+`Smee.XMLProcessor.Uppsala` is the new default XML backend and is based on the excellent new Rust libraries Uppsala and Bergshamra by
+[Kushal Das](https://github.com/kushaldas) at [SUNET](https://www.sunet.se/en). Uppsala and Bergshamra are used by [PyFF](https://github.com/IdentityPython/pyFF) and a few other academic SAML projects. They are actively developed, well-supported and very capable libraries. When using the Uppsala backend no external tools are required,
+so Smee will work with normal LiveBooks and other systems lacking UNIX tools.
+
+`Smee.XMLProcessor.LibXMLTools` is an alternative to `Smee.XMLProcessor.Uppsala` that relies on external UNIX tools. It uses the excellent new 
+[Forcola](https://hex.pm/packages/forcola) package to safely manage external tools. 
+
+If you have selected the `:legacy` or `:libxml_tools` XML processing backends then you must install the following executables:
 
 * `xmlsec1`
 * `xmllint`
@@ -141,11 +176,9 @@ Smee now includes a Mix task to install the default backend software - just run:
 
 (Currently only tested on Macs with Homebrew, but it *should* also work on Debian, Ubuntu, Red Hat and Alpine Linux)
 
-A future version of Smee will support alternative sets of backends.
+### The Legacy Backend: Rambo and Rust (TLDR: avoid it)
 
-### Rambo and Rust
-
-Smee uses an Elixir library called [Rambo](https://hex.pm/packages/rambo) to run external utilities like xsltproc. Rambo 
+The Legacy backend uses an Elixir library called [Rambo](https://hex.pm/packages/rambo) to run external utilities like xsltproc. Rambo 
 relies on a small compiled shim that is provided pre-compiled for various architectures or automatically built during installation.
 
 - If your system does not match any of the supplied binary shims, you will need to have a rust compiler installed so Rambo
@@ -156,20 +189,34 @@ relies on a small compiled shim that is provided pre-compiled for various archit
   Hopefully this will be fixed in later versions of Rambo. 
 - If you are using a modern M1/M2/M3 Mac you may need to explicitly include Rambo as a dependency in your project.
 
+This is why the Legacy backend (the original XML processing code in Smee) is now deprecated. The default backend does not
+require this fix, and the optional LibXMLTools backend does not depend on Rambo.
+
 ## Uses
 
-Metadata Database: Smee was extracted from an application that downloads, processes and stores SAML metadata in a database for access 
-with an API. The original code had become rather messy and was very difficult to test - hopefully Smee will be an 
-improvement and will be used to replace the original code. Smee doesn't currently handle digestion and storage.
+Smee is best suited to consuming metadata: reports, databases, service catalogues, discovery and so on. It can be used to
+manage the metadata consumed by an organisation. But while it could be used to produce metadata at a federation or publisher
+it was not initially designed with this in mind and has not been used for this yet in production. See the next section for some
+alternatives better suited to publishing federated metadata.
 
-MDQ Service: We've made a streaming MDQ service using Smee that should soon be available 
 
-Reports: We've generated reports for clients using Smee
+We've used Smee for the following projects:
+
+* Metadata Database: Smee was extracted from an application that downloads, processes and stores SAML metadata in a database for access 
+with an API. The original code had become rather messy and was very difficult to test - Smee is a huge improvement.
+* MDQ service: We've made a streaming MDQ service using Smee that should eventually be open-sourced
+* We've generated reports for clients using Smee
+* A federated authentication observability application for universities and colleges
+* A metadata management application
+* A database-less metadata browser
+* Producing JSON data files for a WAYF/Disco service written in Vue
+* Producing JSON data files for a SAML test application
+* An entity logo processing service
 
 ## Possible Alternatives
 
-These aren't quite the same but are mature, widely used projects that are a lot more stable than Smee. In many cases you 
-should definitely use these instead of Smee.
+These aren't quite the same but are mature, widely used projects that are a lot more stable than Smee. Publishers and federations 
+should probably use these instead of Smee when creating metadata aggregates.
 
 * [SAML Library by Tom Scavo](https://github.com/trscavo/saml-library/) A collection of Bash and XSLT scripts 
 * [PyFF](https://github.com/IdentityPython/pyFF) A metadata pipeline and server using Python and YAML
@@ -218,6 +265,8 @@ be found at <https://hexdocs.pm/smee>.
 You can request new features by creating an [issue](https://github.com/Digital-Identity-Labs/smee/issues),
 or submit a [pull request](https://github.com/Digital-Identity-Labs/smee/pulls) with your contribution.
 
+This software was produced without generative AI and no contributions from generative AI will be accepted.
+
 If you are comfortable working with Python but Smee's Elixir code is unfamiliar then this blog post may help: 
 [Elixir For Humans Who Know Python](https://hibox.live/elixir-for-humans-who-know-python)
 
@@ -229,4 +278,3 @@ Smee is Apache 2.0 licensed.
 
 ## Disclaimer
 Smee is not endorsed by The Shibboleth Foundation or any of the NREN's that may have had their XSLT borrowed.
-The API will definitely change considerably in the first few releases after 0.1.0 - it is not stable!
