@@ -6,59 +6,59 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.8.0] - 2026-11-29
 
-A rewritten XML processing backend, at last!
+A rewritten XML processing backend, at last! 🎉
 
-## New Features
+### New Features
 * The various backend options for tidying, verify and validating XML, applying stylesheets and extracting reports have been
-  replaced by a single `XMLProcessor` module, used by the various user-facing modules such as `Metadata`, `Security` and
-  `Extract`. There are various XMLProcessor backends, the active backend can be selected with a global configuration setting
-   or (only sometimes at present) by passing an option.
-* `Uppsala` is the new default XML backend, and is based on the excellent new Rust libraries Uppsala and Bergshamra by
-  Kushal Das. Uppsala and Bergshamra are now used by PyFF and a few other academic SAML projects. They are actively 
-  developed, well supported and very capable libraries. When using the Uppsala backend no external tools are required, 
-  so Smee will work with default Livebooks and other systems lacking UNIX tools.
-* `LibXMLTools` is an alternative to `Uppsala` that relies on external UNIX tools. It uses the excellent new Forcola package
-  to safely manage external tools. 
-* `Legacy` is a slight rewrite of the original XML backends in Smee - it uses the same tools as LibXML, but is deprecated and
+  replaced by a single `Smee.XMLProcessor` module, used by the various user-facing modules such as `Smee.Metadata`, `Smee.Security` and
+  `Smee.Extract`. There are various XMLProcessor backends, and the active backend can be selected with a global configuration setting
+   or (only sometimes at present) by passing an option. You do not need to change anything in your code to use the new backends.
+* `Smee.XMLProcessor.Uppsala` is the new default XML backend, and is based on the excellent new Rust libraries Uppsala and Bergshamra by
+   [Kushal Das](https://github.com/kushaldas) at SUNET. Uppsala and Bergshamra are used by PyFF and a few other academic SAML projects. They are actively developed, well-supported and very capable libraries. When using the Uppsala backend no external tools are required, 
+   so Smee will work with normal LiveBooks and other systems lacking UNIX tools.
+* `Smee.XMLProcessor.LibXMLTools` is an alternative to `Uppsala` that relies on external UNIX tools. It uses the excellent new 
+   [Forcola](https://hex.pm/packages/forcola) package to safely manage external tools. 
+* `Smee.XMLProcessor.Legacy` is a slight rewrite of the original XML backends in Smee - it uses the same tools as LibXML, but is deprecated and
   will be removed in a future version of Smee (after 0.10 I expect)
-* A few other experimental backends are provided:
-  * `ERPC` will use the specified remote node for XML processing
-  * `Service` will use a local or remote GenServer process to handle XML
-  * `HTTP` will make HTTP calls to a suitable web server for XML processing
-  * `Null` will politely fail to do anything at all
-  These are all under-development and may be dropped in future releases, or maybe fully supported. Do not use in production!
-* `Metadata` has two new functions for listing entity IDs, 
-* `Extract` also has two new functions for listing entity IDs, confusing with the name of the old function in Metadata, list_entity_ids and
-* A rather basic web service for processing XML is provided in `example_scripts` in the Smee git repository.
+* A few other experimental backends are included. These are all under-development and may be dropped in future releases.
+  Do not use in production!
+  * `Smee.XMLProcessor.ERPC` will use the specified remote node for XML processing
+  * `Smee.XMLProcessor.Service` will use a local or remote GenServer process to handle XML
+  * `Smee.XMLProcessor.HTTP` will make HTTP calls to a suitable web server for XML processing
+  * `Smee.XMLProcessor.Null` will politely fail to do anything at all
+* `Smee.Metadata` has two new functions for listing entity IDs, `Smee.Metadata.list_ids/2` and `Smee.Metadata.list_ids!/2` 
+* `Smee.Extract` also has two new functions for listing entity IDs, confusing with the name of the old function in Metadata
+* A rather basic web service for processing XML is provided in `example_scripts` in the Smee repository. This is
+  not for production use, it is just for testing and demonstrating the `Smee.XMLProcessor.HTTP` backend.
 
-## Possibly Breaking Changes
+### Possibly Breaking Changes
 * MDQT and Java tools for XML verification and validation are no longer used by Smee. A new XMLProcessor backend that uses
-  Java commandline tools may be added in a future Smee release if there's any demand or curiousity, but MDQT will not return   
-  as a backend unless I can rewrite it in Rust... I don't know of anyone who actually uses them with Smee, so if you do
-  please let me know.
-* The default XMLProcessor backend is now Uppsala, which uses a Rust NIF to process XML. This may change the memory usage
-  of Smee, temporarily causes larger amounts of RAM to be used by the BEAM process.
+  Java commandline tools may be added in a future Smee release if there's any demand but MDQT will not return   
+  as a backend unless I can rewrite it in Rust - it was unbearably slow to shell out to. I don't know of anyone who 
+  actually uses them with Smee but if you do then please let me know.
+* The default XMLProcessor backend is now `Smee.XMLProcessor.Uppsala`, which uses a Rust NIF to process XML. This may 
+  change the memory usage of Smee, and temporarily causes larger amounts of RAM to be used by the BEAM process.
 
 ### Fixes
-* Compiling Rambo again on modern Macs is no longer required if using the new XML backends
+* Compiling `Rambo` again on modern Macs is no longer required if using the new XML backends, thank goodness.
 
-## Improvements
+### Improvements
 * You no longer need to specifically compile `Rambo` on Apple Silicon Macs (M1 and later CPUs) unless you configure Smee
   to use the `Legacy` backend.
 
-## Deprecations
-* The `Legacy` backend is deprecated, as the `Rambo` package it relies on is unmaintained and does not compile properly
-  on modern Macs. It is provided as a fallback option in case the two new supported backends (Uppsala and LibXMLTools)
-  do not behave as expected.
+### Deprecations
+* The `Smee.XMLProcessor.Legacy` backend is deprecated, as the `Rambo` package it relies on is unmaintained and does not
+  compile properly on modern Macs. It is only provided as a temporary fallback option in case the two new supported backends
+  (Uppsala and LibXMLTools) do not behave as expected.
 
 
 ## [0.7.0] - 2026-07-xx
 
-## New Features
+### New Features
 * `Metadata.stream_entities!/2` is a new function that handles errors in the same way the old 
   `Metadata.stream_entities/2` did. `Metadata.stream_entities/2` *should* now skip any entities with problems.
 
-## Possibly Breaking Changes
+### Possibly Breaking Changes
 * Minimum version of Elixir is now 1.19
 
 ### Fixes
@@ -68,7 +68,7 @@ A rewritten XML processing backend, at last!
 * Req 0.6+ requires the `compressed: true` option, and Smee requires Req 0.6+
 * SIR federation parsing issue has been fixed, I think.
 
-## Improvements
+### Improvements
 * XML Schema now include OIDC extensions to SAML Metadata
 * Tests have been added to check compatibility with CAS, ADFS SecExt and OIDC entities in SAML metadata
 * Replace Earmark with MDex in tests for Markdown validation
@@ -97,7 +97,7 @@ Mostly a bugfix release, Elixir 1.19 compatibility, and a couple of minor featur
 * Now developed with Elixir 1.19 and Erlang 28 by default, older versions *should* still work
 * No longer grumble about metadata with a 'text/xml' MIME type to avoid STDERR noise and pedantry
 
-## Breaking Changes
+### Breaking Changes
 * Req new returns its own Exception types rather than Mint exceptions, so when it returned a Mint.TransportError,
   it now returns a Req.TransportError, and so on. This may break code that expects the Mint exceptions.
 * Removed deprecated Publish functions (from the earliest releases of Smee) such as stream, aggregate, xml, etc.
