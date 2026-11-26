@@ -12,12 +12,6 @@ defmodule SmeeLintTest do
   @invalid_metadata_xml File.read!(@invalid_metadata_file)
   @valid_single_metadata_xml File.read!(@valid_single_metadata_file)
 
-  @ukamf_xml Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
-               retries: 0
-             )
-             |> Smee.fetch!()
-             |> Metadata.xml()
-
   describe "validate/2" do
     test "returns an :ok tuple with validated XML if the XML is actually valid" do
       assert {:ok, _xml} = Lint.validate(@valid_metadata_xml)
@@ -32,7 +26,14 @@ defmodule SmeeLintTest do
     end
 
     test "returns an :ok tuple for large and live UKAMF metadata" do
-      assert {:ok, _xml} = Lint.validate(@ukamf_xml)
+
+      ukamf_xml = Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml",
+                    retries: 0
+                  )
+                  |> Smee.fetch!()
+                  |> Metadata.xml()
+      
+      assert {:ok, _xml} = Lint.validate(ukamf_xml)
     end
   end
 
