@@ -7,9 +7,6 @@ defmodule SmeeExtractTest do
   @small_agg_md Smee.Source.new("test/support/static/aggregate.xml")
                 |> Smee.fetch!()
 
-  @big_agg_md Smee.Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
-              |> Smee.fetch!()
-
   describe "list_ids/1" do
     test "returns a list of all entityIDs present in a metadata struct" do
       assert ["https://test.ukfederation.org.uk/entity", "https://indiid.net/idp/shibboleth"] =
@@ -17,9 +14,48 @@ defmodule SmeeExtractTest do
     end
   end
 
+  describe "list_entity_ids/2" do
+
+    test "returns an :ok tuple with a list of all entityIDs in an aggregate" do
+      assert {
+               :ok,
+               [
+                 "https://test.ukfederation.org.uk/entity",
+                 "https://indiid.net/idp/shibboleth"
+               ]
+             } = Extract.list_entity_ids(@small_agg_md)
+    end
+
+    test "return an :error tuple if fed nonsense" do
+      assert {:error, _} = Extract.list_entity_ids(%{data: "NOT XML AT ALL"})
+    end
+  end
+
+  describe "list_entity_ids!/2" do
+
+    test "returns a list of all entityIDs in an aggregate" do
+      assert [
+               "https://test.ukfederation.org.uk/entity",
+               "https://indiid.net/idp/shibboleth"
+             ] = Extract.list_entity_ids!(@small_agg_md)
+    end
+
+    test "raises an exception if processing fails" do
+      assert_raise(
+        RuntimeError,
+        fn -> Extract.list_entity_ids!(%{data: "NOT XML AT ALL"}) end
+      )
+    end
+  end
+
+
   describe "list_entity_attrs/1" do
     test "returns a map of all entity attribute names and values present in a metadata struct" do
-      ea_map = Extract.list_entity_attrs(@big_agg_md)
+      
+      big_agg_md = Smee.Source.new("http://metadata.ukfederation.org.uk/ukfederation-metadata.xml")
+                   |> Smee.fetch!()
+
+      ea_map = Extract.list_entity_attrs(big_agg_md)
       ea_keys = Map.keys(ea_map)
       assert Enum.count(ea_keys) > 1
       assert ea_map["http://macedir.org/entity-category"]
