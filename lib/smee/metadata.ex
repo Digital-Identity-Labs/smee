@@ -417,6 +417,11 @@ defmodule Smee.Metadata do
 
   @doc """
   Returns a list of all entity IDs in the metadata (deprecated)
+  
+  Smaller files will be processed using Elixir, larger files will be processed using the `Smee.XMLBackend` module.
+  This function will return an empty list on errors, which may not be what you want.
+  
+  See `list_ids/2` and `list_ids!/2` for alternatives. 
   """
   @spec entity_ids(metadata :: Metadata.t()) :: list(binary())
   def entity_ids(%{type: :single} = metadata) do
@@ -431,19 +436,23 @@ defmodule Smee.Metadata do
     end
   end
 
+  def entity_ids(_) do
+    []
+  end
+
   @doc """
   Returns a list of all entity IDs in the metadata in an :ok/:error tuple
   """
-  @spec list_ids(metadata :: Metadata.t(), opts :: keyword()) :: {:ok, list(binary())} | {:error, binary()}
-  def list_ids(metadata, opts \\ []) do
+  @spec list_entity_ids(metadata :: Metadata.t(), opts :: keyword()) :: {:ok, list(binary())} | {:error, binary()}
+  def list_entity_ids(metadata, opts \\ []) do
     XMLProcessor.list_ids(metadata.data, opts)
   end
 
   @doc """
   Returns a list of all entity IDs in the metadata or raises an exception.
   """
-  @spec list_ids!(metadata :: Metadata.t(), opts :: keyword()) :: list(binary())
-  def list_ids!(metadata, opts \\ []) do
+  @spec list_entity_ids!(metadata :: Metadata.t(), opts :: keyword()) :: list(binary())
+  def list_entity_ids!(metadata, opts \\ []) do
     XMLProcessor.list_ids!(metadata.data, opts)
   end
 

@@ -837,19 +837,61 @@ defmodule SmeeMetadataTest do
       )
 
     end
-    
+
   end
 
   describe "random_entity/1" do
     assert %Entity{} = Metadata.random_entity(@valid_metadata)
   end
 
-  describe "entity_ids/1" do
-    assert [
-             "https://test.ukfederation.org.uk/entity",
-             "https://indiid.net/idp/shibboleth"
-           ] = Metadata.entity_ids(@valid_metadata)
+  describe "list_entity_ids/2" do
+
+    test "returns an :ok tuple with a list of all entityIDs in an aggregate" do
+      assert {
+               :ok,
+               [
+                 "https://test.ukfederation.org.uk/entity",
+                 "https://indiid.net/idp/shibboleth"
+               ]
+             } = Metadata.list_entity_ids(@valid_metadata)
+    end
+
+    test "return an :error tuple if fed nonsense" do
+      assert {:error, _} = Metadata.list_entity_ids(%{data: "NOT XML AT ALL"})
+    end
   end
+
+  describe "list_entity_ids!/2" do
+
+    test "returns a list of all entityIDs in an aggregate" do
+      assert [
+               "https://test.ukfederation.org.uk/entity",
+               "https://indiid.net/idp/shibboleth"
+             ] = Metadata.list_entity_ids!(@valid_metadata)
+    end
+
+    test "raises an exception if processing fails" do
+      assert_raise(
+        RuntimeError,
+        fn -> Metadata.list_entity_ids!(%{data: "NOT XML AT ALL"}) end
+      )
+    end
+  end
+
+  describe "entity_ids/1" do
+
+    test "returns a list of all entityIDs in an aggregate" do
+      assert [
+               "https://test.ukfederation.org.uk/entity",
+               "https://indiid.net/idp/shibboleth"
+             ] = Metadata.entity_ids(@valid_metadata)
+    end
+
+    test "return an empty list on errors, which is not great TBH" do
+      assert [] = Metadata.entity_ids(%{data: "NOT XML AT ALL"})
+    end
+  end
+
 
   describe "filename/2" do
     test "return a suggested filename for the Metadata, even if no format specified" do

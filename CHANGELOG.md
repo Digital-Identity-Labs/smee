@@ -26,8 +26,8 @@ A rewritten XML processing backend, at last! 🎉
   * `Smee.XMLProcessor.Service` will use a local or remote GenServer process to handle XML
   * `Smee.XMLProcessor.HTTP` will make HTTP calls to a suitable web server for XML processing
   * `Smee.XMLProcessor.Null` will politely fail to do anything at all
-* `Smee.Metadata` has two new functions for listing entity IDs, `Smee.Metadata.list_ids/2` and `Smee.Metadata.list_ids!/2` 
-* `Smee.Extract` also has two new functions for listing entity IDs, confusing with the name of the old function in Metadata
+* `Smee.Metadata` has two new functions for listing entity IDs, `Smee.Metadata.list_entity_ids/2` and `Smee.Metadata.list_entity_ids!/2` 
+* `Smee.Extract` also has two new functions for listing entity IDs but you should probably use the new `Smee.Metadata` ones
 * A rather basic web service for processing XML is provided in `example_scripts` in the Smee repository. This is
   not for production use, it is just for testing and demonstrating the `Smee.XMLProcessor.HTTP` backend.
 
