@@ -44,7 +44,7 @@ defmodule Smee.XMLProcessor.LibXMLTools.Xmllint do
 
   ################################################################################
 
-  @spec lint(xml :: binary(), command_params :: binary(), options :: keyword()) ::
+  @spec lint(xml :: binary(), command_params :: list(binary()), options :: keyword()) ::
           {:ok, binary()} | {:error, binary()}
   defp lint(xml, command_params, _options) do
     
@@ -66,7 +66,7 @@ defmodule Smee.XMLProcessor.LibXMLTools.Xmllint do
         {:error, {:timeout, %Forcola.Result{stdout: _partial}}} ->
           {:error, "Timeout while calling xmllint because task took over 60 seconds!"}
         {:error, {:spawn, reason}} ->
-          {:error, {:spawn, reason}}
+          {:error, "Exe spawn error: #{reason}"}
         _ ->
           {:error, "Unknown XML linter error has occurred"}
       end
@@ -77,11 +77,10 @@ defmodule Smee.XMLProcessor.LibXMLTools.Xmllint do
   end
 
   # credo:disable-for-this-file Credo.Check.Refactor.CyclomaticComplexity
-  @spec parse_error(status :: integer, err :: binary()) :: binary()
+  @spec parse_error(status :: integer(), err :: binary()) :: binary()
   defp parse_error(status, err) do
     type =
       case status do
-        0 -> "No error"
         1 -> "Unclassified error"
         2 -> "Error in DTD"
         3 -> "Validation error"

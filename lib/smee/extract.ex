@@ -37,7 +37,7 @@ defmodule Smee.Extract do
 
   This is the recommended replacement for `list_ids/1` but `list_entity_ids!/2` returns a list like the original.
   """
-  @spec list_entity_ids(metadata :: Metadata.t(), opts :: keyword()) :: list(binary())
+  @spec list_entity_ids(metadata :: Metadata.t(), opts :: keyword()) :: {:ok, list(binary())} | {:error, binary()}
   def list_entity_ids(metadata, opts \\ []) do
     XMLProcessor.list_ids(metadata.data, opts)
   end

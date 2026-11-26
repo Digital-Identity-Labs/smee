@@ -47,7 +47,6 @@ defmodule Smee.XMLProcessor.Legacy do
   @impl true
   def extract_entity(xml, entity_id, _opts) do
     case transform(xml, @entity_s, entityID: entity_id) do
-      {:ok, nil} -> {:ok, nil}
       {:ok, ""} -> {:ok, nil}
       {:ok, xml} -> {:ok, xml}
       {:error, msg} -> {:error, "Cannot find #{entity_id} in metadata, error occurred! #{msg}"}

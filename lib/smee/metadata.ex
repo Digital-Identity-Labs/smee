@@ -23,7 +23,7 @@ defmodule Smee.Metadata do
   alias __MODULE__
   alias Smee.Utils
   alias Smee.XmlMunger
-  alias Smee.XmlProcessor
+  alias Smee.XMLProcessor
   alias Smee.Extract
   alias Smee.Entity
   alias Smee.Metadata
@@ -399,7 +399,7 @@ defmodule Smee.Metadata do
   def random_entity(%Metadata{entity_count: max} = metadata) do
     if max > 10 do
       uri =
-        Extract.list_ids!(metadata)
+        Extract.list_entity_ids!(metadata)
         |> Enum.random()
 
       Extract.entity!(metadata, uri)
@@ -436,7 +436,7 @@ defmodule Smee.Metadata do
   """
   @spec list_ids(metadata :: Metadata.t(), opts :: keyword()) :: {:ok, list(binary())} | {:error, binary()}
   def list_ids(metadata, opts \\ []) do
-    XmlProcessor.list_ids(metadata.data, opts)
+    XMLProcessor.list_ids(metadata.data, opts)
   end
 
   @doc """
@@ -444,7 +444,7 @@ defmodule Smee.Metadata do
   """
   @spec list_ids!(metadata :: Metadata.t(), opts :: keyword()) :: list(binary())
   def list_ids!(metadata, opts \\ []) do
-    XmlProcessor.list_ids!(metadata.data, opts)
+    XMLProcessor.list_ids!(metadata.data, opts)
   end
 
   @doc """

@@ -76,7 +76,7 @@ defmodule Smee.XMLProcessor.Service do
     name = opts[:service_name] || SysCfg.xml_service_name()
 
     case :global.whereis_name(name) do
-      :unknown -> {:error, "Cannot find an active node that has globally registered #{name} for remote XML processing"}
+      :undefined -> {:error, "Cannot find an active node that has globally registered #{name} for remote XML processing"}
       found_pid -> {:ok, found_pid}
     end
 

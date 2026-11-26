@@ -8,8 +8,8 @@ defmodule Smee.Behaviours.XMLProcessorBackend do
   @callback  validate(xml :: binary(), options :: keyword()) :: {:ok, binary()} | {:error, binary()}
   @callback  verify(xml :: binary(), certificates :: binary(), options :: keyword()) :: {:ok, binary()} | {:error, binary()}
   @callback  sign(xml :: binary(), certificate :: binary(), options :: keyword()) :: {:ok, binary()} | {:error, binary()}
-  @callback  transform(xml :: binary(),  stylesheet :: binary(), params :: keyword, options :: keyword()) :: {:ok, binary()} | {:error, binary()}
-  @callback  list_ids(xml :: binary(), options :: keyword()) :: {:ok, binary()} | {:error, binary()}
+  @callback  transform(xml :: binary(),  stylesheet :: binary(), params :: keyword, options :: keyword()) :: {:ok, binary()} | {:ok, nil} | {:error, binary()}
+  @callback  list_ids(xml :: binary(), options :: keyword()) :: {:ok, list()} | {:error, binary()}
   @callback  extract_entity(xml :: binary(),  entity_id :: binary(), options :: keyword()) :: {:ok, binary()} | {:ok, nil} | {:error, binary()}
   
 end

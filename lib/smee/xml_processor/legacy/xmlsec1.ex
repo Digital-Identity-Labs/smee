@@ -9,7 +9,7 @@ defmodule Smee.XMLProcessor.Legacy.Xmlsec1 do
   @base_command ~w(verify --enabled-key-data rsa --id-attr:ID urn:oasis:names:tc:SAML:2.0:metadata:EntitiesDescriptor)
 
 
-  @spec verify(xml :: binary(), cert_file :: binary(), opts :: keyword()) :: Metadata.t()
+  @spec verify(xml :: binary(), cert_file :: binary(), opts :: keyword()) :: {:ok, binary} | {:error, binary()}
   def verify(xml, cert_file, _opts \\ []) do
     
     command = build_command(xml, cert_file)

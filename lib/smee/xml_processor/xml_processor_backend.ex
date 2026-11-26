@@ -14,7 +14,7 @@ defmodule Smee.XMLProcessor.XMLProcessorBackend do
       defmacro unimplemented(opts) do
         quote do
           opts = unquote(opts)
-          raise "Unimplemented or unsupported XML Processing Backend feature!"
+          {:error, "Unimplemented or unsupported XML Processing Backend feature!"}
         end
       end
 
@@ -86,16 +86,6 @@ defmodule Smee.XMLProcessor.XMLProcessorBackend do
       ]
       
       ##################
-
-     
-      
-#      defp unimplemented(opts) do
-#        raise "Unimplemented or unsupported XML Processing Backend feature!\nYou are currently using #{
-#          Smee.XMLProcessor.backend(opts[:backend])
-#        } (:#{
-#          Smee.XMLProcessor.backend(opts[:backend]).id
-#        })"
-#      end
 
     end
 
