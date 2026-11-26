@@ -1,7 +1,7 @@
 defmodule Smee.XMLProcessor do
 
   require Logger
-  
+
   @default_registered_backends %{
     legacy: Smee.XMLProcessor.Legacy,
     uppsala: Smee.XMLProcessor.Uppsala,
@@ -67,7 +67,7 @@ defmodule Smee.XMLProcessor do
       {:error, _} -> false
     end
   end
-  
+
   @spec validate(xml :: binary(), opts :: keyword()) :: {:ok, binary()} | {:error, binary()}
   def validate(xml, opts \\ []) do
     apply(backend(opts[:backend]), :validate, [xml, opts])
@@ -107,7 +107,13 @@ defmodule Smee.XMLProcessor do
     apply(backend(opts[:backend]), :sign, [xml, certificate, opts])
   end
 
-  @spec transform(xml :: binary(), stylesheet :: binary(), params :: keyword(), opts :: keyword()) :: {:ok, binary()} | {:error, binary()}
+  @spec transform(xml :: binary(), stylesheet :: binary(), params :: keyword(), opts :: keyword()) :: {
+                                                                                                        :ok,
+                                                                                                        binary()
+                                                                                                      } | {
+                                                                                                        :error,
+                                                                                                        binary()
+                                                                                                      }
   def transform(xml, stylesheet, params \\ [], opts \\ []) do
     apply(backend(opts[:backend]), :transform, [xml, stylesheet, params, opts])
   end
@@ -129,7 +135,7 @@ defmodule Smee.XMLProcessor do
   def list_ids!(xml, opts \\ []) do
     case list_ids(xml, opts) do
       {:ok, data} -> data
-      {:error, msg} -> raise msg
+      {:error, msg} -> raise(prep_msg(msg))
     end
   end
 
@@ -142,7 +148,10 @@ defmodule Smee.XMLProcessor do
     end
   end
 
-  @spec extract_entity(xml :: binary(), entity_id :: binary(), opts :: keyword()) :: {:ok, binary()} | {:ok, nil} | {:error, binary()}
+  @spec extract_entity(xml :: binary(), entity_id :: binary(), opts :: keyword()) :: {:ok, binary()} | {:ok, nil} | {
+    :error,
+    binary()
+  }
   def extract_entity(xml, entity_id, opts \\ []) do
     apply(backend(opts[:backend]), :extract_entity, [xml, entity_id, opts])
   end
@@ -155,7 +164,7 @@ defmodule Smee.XMLProcessor do
       {:error, msg} -> raise "Cannot find #{entity_id} in metadata, error occurred! #{msg}"
     end
   end
-  
+
   @spec backend(name :: binary() | atom()) :: atom()
   def backend(name \\ SysCfg.xml_processor())
 
@@ -175,6 +184,16 @@ defmodule Smee.XMLProcessor do
   @spec registered_backends() :: map()
   def registered_backends() do
     @default_registered_backends
+  end
+
+  @spec prep_msg(msg :: binary() | list()) :: binary()
+  defp prep_msg(msg) when is_list(msg) do
+    Enum.join(msg, "\n")
+    |> prep_msg()
+  end
+
+  defp prep_msg(msg) when is_binary(msg) do
+    msg
   end
 
 end
