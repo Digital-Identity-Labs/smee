@@ -18,19 +18,19 @@ defmodule Smee.XMLProcessor.Uppsala do
   """
   
   use Smee.XMLProcessor.XMLProcessorBackend, id: :uppsala
-
+  
   require Logger
 
   alias Smee.XMLProcessor.Uppsala.Native
   alias Smee.Resources
 
   @impl true
-  def tidy(xml, _opts \\ []) do
+  def tidy(xml, _opts) do
     Native.tidy(xml)
   end
 
   @impl true
-  def well_formed(xml, _opts \\ []) do
+  def well_formed(xml, _opts) do
     case Native.well_formed(xml) do
       {:ok, _} -> {:ok, xml}
       {:error, msg} -> {:error, "Invalid XML: #{msg}"}
@@ -38,7 +38,7 @@ defmodule Smee.XMLProcessor.Uppsala do
   end
 
   @impl true
-  def validate(xml, _opts \\ []) do
+  def validate(xml, _opts) do
     base_schema = File.read!(Resources.saml_metadata_xml_schema_file())
     schema_dir = Resources.saml_metadata_xml_schema_dir()
     xml = String.trim(xml)
@@ -49,7 +49,7 @@ defmodule Smee.XMLProcessor.Uppsala do
   end
 
   @impl true
-  def verify(xml, certificates, _opts \\ []) do
+  def verify(xml, certificates, _opts) do
     certificates = File.read!(certificates)
     case Native.verify(xml, certificates) do
       {:ok, "true"} -> {:ok, true}
@@ -59,10 +59,9 @@ defmodule Smee.XMLProcessor.Uppsala do
   end
 
   @impl true
-  def transform(xml, stylesheet, params \\ [], _opts \\ []) do
+  def transform(xml, stylesheet, params, _opts) do
     Native.transform(xml, stylesheet, preprocess_params(params))
   end
-  
 
   @impl true
   def list_ids(xml, _opts) do
@@ -70,7 +69,7 @@ defmodule Smee.XMLProcessor.Uppsala do
   end
 
   @impl true
-  def extract_entity(xml, entity_id, _opts \\ []) do
+  def extract_entity(xml, entity_id, _opts) do
     case Native.extract_entities(xml, sanitize_id!(entity_id)) do
       {:ok, []} -> {:ok, nil}
       {:ok, entities} -> {:ok, List.first(entities)}

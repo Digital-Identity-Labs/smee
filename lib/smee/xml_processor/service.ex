@@ -9,7 +9,7 @@ defmodule Smee.XMLProcessor.Service do
   alias Smee.SysCfg
 
   @impl true
-  def tidy(xml, opts \\ []) do
+  def tidy(xml, opts) do
     with {:ok, opts} <- sanitize_opts(opts),
          {:ok, pid} <- service_pid(opts) do
       GenServer.call(pid, {:tidy, xml, opts})
@@ -17,7 +17,7 @@ defmodule Smee.XMLProcessor.Service do
   end
 
   @impl true
-  def well_formed(xml, opts \\ []) do
+  def well_formed(xml, opts) do
     with {:ok, opts} <- sanitize_opts(opts),
          {:ok, pid} <- service_pid(opts) do
       GenServer.call(pid, {:well_formed, xml, opts})
@@ -25,7 +25,7 @@ defmodule Smee.XMLProcessor.Service do
   end
 
   @impl true
-  def validate(xml, opts \\ []) do
+  def validate(xml, opts) do
     with {:ok, opts} <- sanitize_opts(opts),
          {:ok, pid} <- service_pid(opts) do
       GenServer.call(pid, {:validate, xml, opts})
@@ -33,7 +33,7 @@ defmodule Smee.XMLProcessor.Service do
   end
 
   @impl true
-  def verify(xml, certificates, opts \\ []) do
+  def verify(xml, certificates, opts) do
     with {:ok, opts} <- sanitize_opts(opts),
          {:ok, pid} <- service_pid(opts) do
       GenServer.call(pid, {:verify, xml, certificates, opts})
@@ -41,7 +41,7 @@ defmodule Smee.XMLProcessor.Service do
   end
 
   @impl true
-  def transform(xml, stylesheet, params \\ [], opts \\ []) do
+  def transform(xml, stylesheet, params, opts) do
     with {:ok, opts} <- sanitize_opts(opts),
          {:ok, pid} <- service_pid(opts) do
       GenServer.call(pid, {:transform, xml, stylesheet, params, opts})
@@ -49,7 +49,7 @@ defmodule Smee.XMLProcessor.Service do
   end
 
   @impl true
-  def list_ids(xml, opts \\ []) do
+  def list_ids(xml, opts) do
     with {:ok, opts} <- sanitize_opts(opts),
          {:ok, pid} <- service_pid(opts) do
       GenServer.call(pid, {:list_ids, xml, opts})
@@ -57,7 +57,7 @@ defmodule Smee.XMLProcessor.Service do
   end
 
   @impl true
-  def extract_entity(xml, entity_id, opts \\ []) do
+  def extract_entity(xml, entity_id, opts) do
     with {:ok, opts} <- sanitize_opts(opts),
          {:ok, pid} <- service_pid(opts) do
       GenServer.call(pid, {:extract_entity, xml, entity_id, opts})

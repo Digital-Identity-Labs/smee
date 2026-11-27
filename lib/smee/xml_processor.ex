@@ -272,11 +272,10 @@ defmodule Smee.XMLProcessor do
   @spec prep_msg(msg :: binary() | list()) :: binary()
   defp prep_msg(msg) when is_list(msg) do
     Enum.join(msg, "\n")
-    |> prep_msg()
   end
 
-  defp prep_msg(msg) when is_binary(msg) do
+  defp prep_msg(msg) do
     msg
   end
-
+  
 end

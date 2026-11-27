@@ -55,7 +55,7 @@ defmodule Smee.XMLProcessor.Legacy do
   end
 
   @impl true
-  def well_formed(xml, opts ) do
+  def well_formed(xml, opts) do
     Xmllint.well_formed(xml, opts)
   end
 
