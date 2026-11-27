@@ -1,5 +1,22 @@
 defmodule Smee.XMLProcessor.LibXMLTools do
 
+  @moduledoc """
+  A backend for XML processing that relies on external UNIX tools
+  
+  This is an alternative to `Smee.XMLProcessor.Uppsala` that executes commandline tools to process XML. It uses the
+   excellent new [Forcola](https://hex.pm/packages/forcola) package to safely manage external processes. 
+  
+  This backend is useful if you cannot compile the Uppsala NIF (or fetch it), or want quicker recovery of memory at the
+    cost of extra processing time.
+  
+  ### Specifying as the default XML processing backend
+  
+  ```elixir
+  config :smee, :xml_processor, :libxml_tools
+  ```
+
+  """
+  
   use Smee.XMLProcessor.XMLProcessorBackend, id: :libxml_tools, tools: ["xmllint", "xsltproc", "xmlsec1"]
 
   require Logger

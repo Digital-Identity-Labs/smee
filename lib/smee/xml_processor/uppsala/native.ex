@@ -1,5 +1,7 @@
 defmodule Smee.XMLProcessor.Uppsala.Native do
 
+  @moduledoc false
+  
   use Rustler, otp_app: :smee, crate: "uppsala_xml_processor"
 
   ## When the NIF is loaded these functions will be overloaded with native equivalents

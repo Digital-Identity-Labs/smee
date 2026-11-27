@@ -1,6 +1,5 @@
 defmodule Smee.XMLProcessor.LibXMLTools.Xsltproc do
-
-
+  
   @moduledoc false
 
   @base_command ~w(xsltproc --nowrite)

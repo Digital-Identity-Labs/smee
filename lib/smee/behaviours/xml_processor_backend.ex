@@ -1,5 +1,7 @@
 defmodule Smee.Behaviours.XMLProcessorBackend do
   
+  @moduledoc false
+  
   @callback  id() :: atom() | nil
   @callback  tools() :: list(binary())
   @callback  status() :: atom()

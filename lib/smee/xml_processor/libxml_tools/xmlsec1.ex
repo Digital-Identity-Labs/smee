@@ -1,6 +1,5 @@
 defmodule Smee.XMLProcessor.LibXMLTools.Xmlsec1 do
-
-
+  
   @moduledoc false
   
   alias Smee.XMLProcessor.LibXMLTools.Xmlsec1Version

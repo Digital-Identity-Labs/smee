@@ -1,8 +1,6 @@
 defmodule Smee.XMLProcessor.LibXMLTools.Xmllint do
 
-  @moduledoc """
-  Lint runs basic XML quality checks against XML strings
-  """
+  @moduledoc false
 
   alias Smee.Resources
 

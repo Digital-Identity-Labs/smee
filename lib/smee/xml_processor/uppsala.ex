@@ -1,5 +1,22 @@
 defmodule Smee.XMLProcessor.Uppsala do
 
+  @moduledoc """
+  An embedded Rust NIF backend for XML processing
+  
+  The default XML backend, based on the excellent Rust libraries Uppsala and Bergshamra by
+  [Kushal Das](https://github.com/kushaldas) at [SUNET](https://www.sunet.se/en). Uppsala and Bergshamra are used by 
+  [PyFF](https://github.com/IdentityPython/pyFF) and a few other academic SAML projects. They are actively developed, 
+  well-supported and very capable libraries. When using the Uppsala backend no external tools are required,
+  so Smee will work with normal LiveBooks and other systems lacking UNIX tools.
+  
+  ### Specifying as the default XML processing backend
+  
+  ```elixir
+  config :smee, :xml_processor, :uppsala
+  ```
+
+  """
+  
   use Smee.XMLProcessor.XMLProcessorBackend, id: :uppsala
 
   require Logger

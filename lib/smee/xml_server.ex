@@ -1,5 +1,7 @@
 defmodule Smee.XMLServer do
 
+  @moduledoc false
+  
   use GenServer
   
   alias Smee.SysCfg

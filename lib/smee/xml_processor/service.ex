@@ -1,5 +1,7 @@
 defmodule Smee.XMLProcessor.Service do
 
+  @moduledoc false
+  
   use Smee.XMLProcessor.XMLProcessorBackend, id: :service, status: :experimental
 
   require Logger

@@ -1,5 +1,7 @@
 defmodule Smee.XMLProcessor.HTTP do
 
+  @moduledoc false
+  
   use Smee.XMLProcessor.XMLProcessorBackend, id: :erpc, status: :experimental
 
   require Logger
